@@ -3,8 +3,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
@@ -29,6 +27,8 @@ public class RobotContainer {
     // private final Joystick driver = new Joystick(0);
     public final static CommandXboxController driver = new CommandXboxController(0);
 
+    public final static CommandXboxController coDriver = new CommandXboxController(1);
+
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
@@ -41,7 +41,7 @@ public class RobotContainer {
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
 
-    public final Arm m_arm = new Arm();
+    public final Arm m_arm = new Arm(false);
     private final Intake mIntake = new Intake();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -56,6 +56,10 @@ public class RobotContainer {
             )
         );
 
+        // mIntake.setDefaultCommand(
+        //     new ConstantIntake(mIntake)
+        // );
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -69,16 +73,30 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-
         driver.a().onTrue(new MoveToPos(m_arm, 0, 0));
-
-        driver.b().onTrue(new MoveToPos(m_arm, Constants.ArmConstants.HIGH_BASE_POS_ALT, Constants.ArmConstants.HIGH_WRIST_POS_ALT));
-
-        driver.x().onTrue(new MoveToPos(m_arm, Constants.ArmConstants.INTAKE_BASE_POS_CONE, Constants.ArmConstants.INTAKE_WRIST_POS_CONE));
-
-        driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(0.01), mIntake));
-        
+        driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.1), mIntake));
         driver.rightTrigger().whileTrue(Commands.runEnd(() -> mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS), () -> mIntake.set(0), mIntake));
+        
+        // Stow
+        coDriver.a().onTrue(new MoveToPos(m_arm, 0, 0));
+        // High
+        coDriver.y().onTrue(new MoveToPos(m_arm, Constants.ArmConstants.HIGH_BASE_POS_ALT - 2000, Constants.ArmConstants.HIGH_WRIST_POS_ALT + 6000));
+        // Mid
+        coDriver.x().onTrue(new MoveToPos(m_arm, -67582, -26966));
+        // Ground Intake
+        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, Constants.ArmConstants.INTAKE_BASE_POS_CONE - 2000, Constants.ArmConstants.INTAKE_WRIST_POS_CONE + 10000));
+        // Substation
+        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, 2933, 10842));
+
+
+        
+        // coDriver.x().onTrue(
+        //     new SequentialCommandGroup(
+        //         new MoveToPos(m_arm, -72132, -32472),
+        //         new PrintCommand("ONTO SECOND MOVE"),
+        //         new MoveToPos(m_arm, -63511, -42830)
+        // ));
+
 
         // driver.b().onTrue(new TwoPartHigh(m_arm));
     

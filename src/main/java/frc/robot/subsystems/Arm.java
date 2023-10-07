@@ -71,7 +71,7 @@ public class Arm extends SubsystemBase {
             .withProperties(Map.of("min", -5, "max", 5)).getEntry();
 
 
-    public Arm() {
+    public Arm(boolean tuningMode) {
         baseTalon = new WPI_TalonFX(BASE_ID);
         wristTalon = new WPI_TalonFX(WRIST_ID);
 
@@ -83,40 +83,38 @@ public class Arm extends SubsystemBase {
 
         baseTalon.setSelectedSensorPosition(BASE_START_POS);
 
-        baseTalon.setNeutralMode(NeutralMode.Brake);
+        baseTalon.setNeutralMode(tuningMode ? NeutralMode.Coast : NeutralMode.Brake);
 
         baseTalon.config_kF(0, BASE_kF);
         baseTalon.config_kP(0, BASE_kP);
         baseTalon.config_kI(0, BASE_kI);
         baseTalon.config_kD(0, BASE_kD);
 
-        // baseTalon.configMotionCruiseVelocity(BASE_MAX_V);
-        // baseTalon.configMotionAcceleration(BASE_MAX_A);
+        baseTalon.configMotionCruiseVelocity(BASE_MAX_V);
+        baseTalon.configMotionAcceleration(BASE_MAX_A);
         
-        baseTalon.configMotionCruiseVelocity(1000);
-        baseTalon.configMotionAcceleration(1000);
+        // baseTalon.configMotionCruiseVelocity(12000);
+        // baseTalon.configMotionAcceleration(30000);
 
         baseTalon.configMotionSCurveStrength(BASE_CURVE_STR);
 
-        baseFollower.setNeutralMode(NeutralMode.Brake);
+        baseFollower.setNeutralMode(tuningMode ? NeutralMode.Coast : NeutralMode.Brake);
         baseFollower.follow(baseTalon);
         baseFollower.setInverted(InvertType.FollowMaster);
 
         wristTalon.setSelectedSensorPosition(WRIST_START_POS);
 
         wristTalon.setInverted(TalonFXInvertType.Clockwise);
-        wristTalon.setNeutralMode(NeutralMode.Brake);
+        wristTalon.setNeutralMode(tuningMode ? NeutralMode.Coast : NeutralMode.Brake);
 
         wristTalon.config_kF(0, WRIST_kF);
         wristTalon.config_kP(0, WRIST_kP);
         wristTalon.config_kI(0, WRIST_kI);
         wristTalon.config_kD(0, WRIST_kD);
 
-        // wristTalon.configMotionCruiseVelocity(WRIST_MAX_V);
-        // wristTalon.configMotionAcceleration(WRIST_MAX_A);
-
-        wristTalon.configMotionCruiseVelocity(1000);
-        wristTalon.configMotionAcceleration(1000);
+        wristTalon.configMotionCruiseVelocity(WRIST_MAX_V);
+        wristTalon.configMotionAcceleration(WRIST_MAX_A);
+        // wristTalon.configMotionAcceleration(40000);
         
         wristTalon.configMotionSCurveStrength(WRIST_CURVE_STR);
 
