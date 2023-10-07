@@ -121,9 +121,10 @@ public class Arm extends SubsystemBase {
     }
 
 //    @Override
-//    public void periodic() {
-//        System.out.println(wristTalon.getSelectedSensorPosition()*180/1024/WRIST_GEAR_RATIO);
-//    }
+   public void periodic() {
+    //    System.out.println(wristTalon.getSelectedSensorPosition()*180/1024/WRIST_GEAR_RATIO);
+    System.out.println(wristTalon.getClosedLoopTarget());
+   }
 
     public void passSetpoints(double basePos, double wristPos) {
         baseTalon.set(TalonFXControlMode.MotionMagic, basePos);
@@ -237,8 +238,10 @@ public class Arm extends SubsystemBase {
 
     public void setArmStow() {
         overriding = false;
+
         baseTalonTarget = 0;
         wristTalonTarget = 0;
+        // passSetpoints(baseTalonTarget, wristTalonTarget);
     }
 
     // convenience function to see if arm is at a position yet

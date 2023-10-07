@@ -61,6 +61,10 @@ public class TwoPartHigh extends CommandBase {
     // end once arm is at position
     @Override
     public boolean isFinished() {
+
+        System.out.println("First: " + (abs(mArm.getWristPos() - (HIGH_WRIST_POS_ALT - mArm.getHighWristFudge())) < 1000));
+        System.out.println("Second: " + (abs(mArm.getBasePos() - (HIGH_BASE_POS_ALT - mArm.getHighBaseFudge())) < 1000));
+
         return abs(mArm.getWristPos() - (HIGH_WRIST_POS_ALT - mArm.getHighWristFudge())) < 1000 &&
                 abs(mArm.getBasePos() - (HIGH_BASE_POS_ALT - mArm.getHighBaseFudge())) < 1000;
     }
