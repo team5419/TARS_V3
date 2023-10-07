@@ -11,6 +11,8 @@ public class MoveToPos extends CommandBase {
     private double bicepTarget = 0;
     private double wristTarget = 0;
 
+    private SequentialCommandGroup group;
+
     public MoveToPos(Arm arm, double bicepTarget, double wristTarget) {
         this.arm = arm;
         this.bicepTarget = bicepTarget;
@@ -23,11 +25,12 @@ public class MoveToPos extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        new SequentialCommandGroup(
+        group = new SequentialCommandGroup(
             new WristToPos(arm, 0),
             new BisepToPos(arm, bicepTarget),
             new WristToPos(arm, wristTarget)
-        ).schedule();
+        );
+        group.schedule();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -45,8 +48,8 @@ public class MoveToPos extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        
-        return false;
+        System.out.println(group.isFinished());
+        return group.isFinished();
     }
 
 }
