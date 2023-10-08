@@ -73,20 +73,32 @@ public class RobotContainer {
     private void configureButtonBindings() {
         /* Driver Buttons */
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-        driver.a().onTrue(new MoveToPos(m_arm, 0, 0));
+        // Stow
+        driver.a().onTrue(new MoveToPos(m_arm, stow));
+        // Run Rollers in
         driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.1), mIntake));
+        // Run rollers out
         driver.rightTrigger().whileTrue(Commands.runEnd(() -> mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS), () -> mIntake.set(0), mIntake));
         
         // Stow
-        coDriver.a().onTrue(new MoveToPos(m_arm, 0, 0));
+        coDriver.a().onTrue(new MoveToPos(m_arm, stow));
         // High
-        coDriver.y().onTrue(new MoveToPos(m_arm, Constants.ArmConstants.HIGH_BASE_POS_ALT - 2000, Constants.ArmConstants.HIGH_WRIST_POS_ALT + 6000));
+        coDriver.y().onTrue(new MoveToPos(m_arm, high));
         // Mid
-        coDriver.x().onTrue(new MoveToPos(m_arm, -67582, -26966));
+        coDriver.x().onTrue(new MoveToPos(m_arm, mid));
         // Ground Intake
-        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, Constants.ArmConstants.INTAKE_BASE_POS_CONE - 2000, Constants.ArmConstants.INTAKE_WRIST_POS_CONE + 10000));
+        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, ground));
         // Substation
-        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, 2933, 10842));
+        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, substation));
+
+        coDriver.b().onTrue(
+            new SequentialCommandGroup(
+                new MoveToPos(m_arm, -2000, -2000),
+                new PrintCommand("EXITED FIRST"),
+                new MoveToPos(m_arm, 4000, 4000),
+                new PrintCommand("EXITED SECOND")
+            )
+        );
 
         coDriver.b().onTrue(
             new SequentialCommandGroup(
