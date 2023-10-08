@@ -56,7 +56,7 @@ public final class Constants {
         /* These values are used by the drive falcon to ramp in open loop and closed loop driving.
          * We found a small open loop ramp (0.25) helps with tread wear, tipping, etc */
         public static final double openLoopRamp = 0.25;
-        public static final double closedLoopRamp = 0.0;
+        public static final double closedLoopRamp = 0.25;
 
         /* Angle Motor PID Values */
         public static final double angleKP = chosenModule.angleKP;
@@ -132,6 +132,17 @@ public final class Constants {
         }
     }
 
+    public static final class ArmTargets {
+        public double wristTarget;
+        public double bicepTarget;
+
+        ArmTargets (double bicepTarget, double wristTarget) {
+            this.bicepTarget = bicepTarget;
+            this.wristTarget = wristTarget;
+        }
+        
+    }
+
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
         public static final double kMaxSpeedMetersPerSecond = 3;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
@@ -173,6 +184,21 @@ public final class Constants {
     public static final double OUTTAKE_VOLTS_CUBE = 4.2;
   }
   public static class ArmConstants {
+
+    // public static final ArmTargets high = new ArmTargets(-67421.79081481483 - 2000, -45004.799999999996 + 6000); // This looks bad IK but I don't have a choice
+    // public static final ArmTargets ground = new ArmTargets(12986.98 - 2000, -47616.0 + 8000);
+
+    
+    public static final ArmTargets stow = new ArmTargets(0, 0);
+    public static final ArmTargets coneSubstation = new ArmTargets(2933, 10842);
+    public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933); // This looks bad IK but I don't have a choice
+    public static final ArmTargets coneMid = new ArmTargets(-67582, -26966);
+    public static final ArmTargets coneGround = new ArmTargets(13481, -46766);
+
+    // public static final ArmTargets cubeGound = new ArmTargets(, PI)
+    // public static final double INTAKE_BASE_POS_CUBE = 45.5*PI/180/(PI/1024/BASE_GEAR_RATIO);
+    // public static final double INTAKE_WRIST_POS_CUBE = -175*PI/180/(PI/1024/WRIST_GEAR_RATIO);
+    
     public static final int BASE_ID = 42;
     public static final int WRIST_ID = 43;
 
@@ -186,11 +212,6 @@ public final class Constants {
     public static final double BASE_MAX_V = 19500; // ticks / 100ms
     public static final double BASE_MAX_A = 48000; // ticks / 100ms / s
     public static final int BASE_CURVE_STR = 2; // smoothness
-
-    // slomo testing
-//    public static final double BASE_MAX_V = 2000;
-//    public static final double BASE_MAX_A = 4000;
-//    public static final int BASE_CURVE_STR = 1;
 
     public static final double WRIST_kF = 0;
     public static final double WRIST_kP = 0.4;

@@ -139,6 +139,19 @@ public class Swerve extends SubsystemBase {
                 )
         );
     }
+
+    public void lock () {
+        // lock pose to make it hard to move
+        setModuleStates(
+            new SwerveModuleState[] {
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
+            }
+        );
+    }
+    
     @Override
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());  
