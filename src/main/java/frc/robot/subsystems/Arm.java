@@ -138,7 +138,7 @@ public class Arm extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Encoder", wristTalon.getSelectedSensorPosition());
    }
 
-   public double degreesToTicks(double degrees) {
+   public double degreesToTicksBicep(double degrees) {
         return degrees * PI / 180 / (PI / 1024 / BASE_GEAR_RATIO);
    }
 

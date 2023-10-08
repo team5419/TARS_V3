@@ -140,6 +140,20 @@ public final class Constants {
             this.bicepTarget = bicepTarget;
             this.wristTarget = wristTarget;
         }
+
+        ArmTargets() {
+            this.bicepTarget = 0;
+            this.wristTarget = 0;
+        }
+
+        public ArmTargets fromDegrees (double bicepDegrees, double wristDegrees) {
+            this.bicepTarget = bicepDegrees * PI / 180 / (PI / 1024 / (58.286 * 3 / 36 * 20));
+            // Some magic done by 6672                                ^^^^^^^^^^^^^^^^^^^^^^ Arm gear ratio
+            this.wristTarget = wristDegrees * PI / 180 / (PI / 1024 / (54));
+            // Some magic done by 6672                                ^^^^ Arm gear ratio
+
+            return this;
+        }
         
     }
 
@@ -195,7 +209,10 @@ public final class Constants {
     public static final ArmTargets coneMid = new ArmTargets(-67582, -26966);
     public static final ArmTargets coneGround = new ArmTargets(13481, -46766);
 
-    // public static final ArmTargets cubeGound = new ArmTargets(, PI)
+    public static final ArmTargets cubeSubstation = coneSubstation;
+    public static final ArmTargets cubeHigh = coneHigh;
+    public static final ArmTargets cubeMid = new ArmTargets().fromDegrees(-15, 55);
+    public static final ArmTargets cubeGround = new ArmTargets().fromDegrees(45.5, -175);
     // public static final double INTAKE_BASE_POS_CUBE = 45.5*PI/180/(PI/1024/BASE_GEAR_RATIO);
     // public static final double INTAKE_WRIST_POS_CUBE = -175*PI/180/(PI/1024/WRIST_GEAR_RATIO);
     
