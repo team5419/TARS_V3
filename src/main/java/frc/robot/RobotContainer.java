@@ -101,6 +101,13 @@ public class RobotContainer {
         //     )
         // );
 
+        coDriver.b().onTrue(
+            new SequentialCommandGroup(
+                new MoveToPos(m_arm, 2000, 2000),
+                new MoveToPos(m_arm, -2000, -2000)
+            )
+        );
+
 
         
         // coDriver.x().onTrue(
