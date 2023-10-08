@@ -187,7 +187,7 @@ public final class Constants {
 
     public static final ArmTargets stow = new ArmTargets(0, 0);
     public static final ArmTargets substation = new ArmTargets(2933, 10842);
-    public static final ArmTargets high = new ArmTargets(-67421.79 - 2000, -45004.79 + 6000);
+    public static final ArmTargets high = new ArmTargets(-67421.79081481483 - 2000, -45004.799999999996 + 6000); // This looks bad IK but I don't have a choice
     public static final ArmTargets mid = new ArmTargets(-67582, -26966);
     public static final ArmTargets ground = new ArmTargets(12986.98 - 2000, -47616.0 + 8000);
 
@@ -204,11 +204,6 @@ public final class Constants {
     public static final double BASE_MAX_V = 19500; // ticks / 100ms
     public static final double BASE_MAX_A = 48000; // ticks / 100ms / s
     public static final int BASE_CURVE_STR = 2; // smoothness
-
-    // slomo testing
-//    public static final double BASE_MAX_V = 2000;
-//    public static final double BASE_MAX_A = 4000;
-//    public static final int BASE_CURVE_STR = 1;
 
     public static final double WRIST_kF = 0;
     public static final double WRIST_kP = 0.4;
