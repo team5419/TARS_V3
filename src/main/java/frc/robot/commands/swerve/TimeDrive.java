@@ -30,7 +30,7 @@ public class TimeDrive extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        swerve.drive(new Translation2d(5, 0), 0, true,false);
+        swerve.drive(new Translation2d(1, 0), 0, true,false);
     }
 
     // Called once the command ends or is interrupted.

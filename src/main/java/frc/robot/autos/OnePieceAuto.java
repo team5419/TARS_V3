@@ -13,9 +13,11 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.commands.MoveToPos;
 import frc.robot.commands.swerve.TimeDrive;
@@ -57,10 +59,15 @@ public class OnePieceAuto extends SequentialCommandGroup{
         //         swerve);
         addCommands(
             new InstantCommand(() -> swerve.zeroGyro()),
-            // new MoveToPos(arm, Constants.ArmConstants.HIGH_BASE_POS_ALT - 2000, Constants.ArmConstants.HIGH_WRIST_POS_ALT + 6000),
-            // new InstantCommand(() -> intake.set(-0.1)),
-            // new MoveToPos(arm, 0, 0),
-            new TimeDrive(swerve,3.0)
+            new MoveToPos(arm, Constants.ArmConstants.HIGH_BASE_POS_ALT - 2000, Constants.ArmConstants.HIGH_WRIST_POS_ALT + 6000),
+            new WaitCommand(5),
+            new SequentialCommandGroup(
+                new InstantCommand(() -> intake.set(0.6)),
+                new WaitCommand(0.5),
+                new InstantCommand(() -> intake.set(0))
+            ),
+            new MoveToPos(arm, 0, 0),
+            new TimeDrive(swerve,4.5)
         );
         
     }
