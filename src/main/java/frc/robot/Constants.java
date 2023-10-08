@@ -187,9 +187,9 @@ public final class Constants {
 
     public static final ArmTargets stow = new ArmTargets(0, 0);
     public static final ArmTargets substation = new ArmTargets(2933, 10842);
-    public static final ArmTargets high = new ArmTargets(-67421.79 - 2000, 45004.79 + 6000);
+    public static final ArmTargets high = new ArmTargets(-67421.79 - 2000, -45004.79 + 6000);
     public static final ArmTargets mid = new ArmTargets(-67582, -26966);
-    public static final ArmTargets ground = new ArmTargets(12986.98 - 2000, 47616.0 + 10000);
+    public static final ArmTargets ground = new ArmTargets(12986.98 - 2000, -47616.0 + 10000);
 
     public static final int BASE_ID = 42;
     public static final int WRIST_ID = 43;
