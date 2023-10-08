@@ -5,12 +5,12 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
-public class BisepToPos extends CommandBase {
+public class BicepToPos extends CommandBase {
 
     private final Arm arm;
     private double target;
 
-    public BisepToPos(Arm arm, double target) {
+    public BicepToPos(Arm arm, double target) {
         this.arm = arm;
         this.target = target;
         // Use addRequirements() here to declare subsystem dependencies.
