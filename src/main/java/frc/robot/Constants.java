@@ -185,12 +185,20 @@ public final class Constants {
   }
   public static class ArmConstants {
 
-    public static final ArmTargets stow = new ArmTargets(0, 0);
-    public static final ArmTargets substation = new ArmTargets(2933, 10842);
-    public static final ArmTargets high = new ArmTargets(-67421.79081481483 - 2000, -45004.799999999996 + 6000); // This looks bad IK but I don't have a choice
-    public static final ArmTargets mid = new ArmTargets(-67582, -26966);
-    public static final ArmTargets ground = new ArmTargets(12986.98 - 2000, -47616.0 + 8000);
+    // public static final ArmTargets high = new ArmTargets(-67421.79081481483 - 2000, -45004.799999999996 + 6000); // This looks bad IK but I don't have a choice
+    // public static final ArmTargets ground = new ArmTargets(12986.98 - 2000, -47616.0 + 8000);
 
+    
+    public static final ArmTargets stow = new ArmTargets(0, 0);
+    public static final ArmTargets coneSubstation = new ArmTargets(2933, 10842);
+    public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933); // This looks bad IK but I don't have a choice
+    public static final ArmTargets coneMid = new ArmTargets(-67582, -26966);
+    public static final ArmTargets coneGround = new ArmTargets(13481, -46766);
+
+    // public static final ArmTargets cubeGound = new ArmTargets(, PI)
+    // public static final double INTAKE_BASE_POS_CUBE = 45.5*PI/180/(PI/1024/BASE_GEAR_RATIO);
+    // public static final double INTAKE_WRIST_POS_CUBE = -175*PI/180/(PI/1024/WRIST_GEAR_RATIO);
+    
     public static final int BASE_ID = 42;
     public static final int WRIST_ID = 43;
 

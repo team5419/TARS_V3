@@ -1,12 +1,15 @@
 package frc.robot;
 
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
-import frc.robot.commands.*;
+import frc.robot.commands.arm.MoveToPos;
+import frc.robot.commands.arm.TwoStageHigh;
+import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
 import static frc.robot.Constants.ArmConstants.*;
 import static frc.robot.Constants.IntakeConstants.*;
@@ -75,6 +78,8 @@ public class RobotContainer {
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
         // Stow
         driver.a().onTrue(new MoveToPos(m_arm, stow));
+        // Lock Swerve
+        driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
         // Run Rollers in
         driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.1), mIntake));
         // Run rollers out
@@ -83,13 +88,14 @@ public class RobotContainer {
         // Stow
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
         // High
-        coDriver.y().onTrue(new MoveToPos(m_arm, high));
+        // coDriver.y().onTrue(new TwoStageHigh(m_arm, mIntake));
+        coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
         // Mid
-        coDriver.x().onTrue(new MoveToPos(m_arm, mid));
+        coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
         // Ground Intake
-        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, ground));
+        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, coneGround));
         // Substation
-        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, substation));
+        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
         // Custom high
         coDriver.povUp().onTrue(new MoveToPos(m_arm, -67421.79081481483 - 2000, -45004.799999999996 + 6000));
 

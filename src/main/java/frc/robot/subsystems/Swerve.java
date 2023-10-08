@@ -144,10 +144,10 @@ public class Swerve extends SubsystemBase {
         // lock pose to make it hard to move
         setModuleStates(
             new SwerveModuleState[] {
-                new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-                new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-                new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-                new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
             }
         );
     }

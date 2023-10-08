@@ -91,10 +91,10 @@ public class Arm extends SubsystemBase {
         baseTalon.config_kD(0, BASE_kD);
 
         baseTalon.configMotionCruiseVelocity(BASE_MAX_V);
-        baseTalon.configMotionAcceleration(BASE_MAX_A);
+        // baseTalon.configMotionAcceleration(BASE_MAX_A);
         
         // baseTalon.configMotionCruiseVelocity(12000);
-        // baseTalon.configMotionAcceleration(30000);
+        baseTalon.configMotionAcceleration(40000);
 
         baseTalon.configMotionSCurveStrength(BASE_CURVE_STR);
 
@@ -136,6 +136,10 @@ public class Arm extends SubsystemBase {
         // System.out.println(wristTalon.getClosedLoopTarget());
         SmartDashboard.putNumber("Bicep Encoder", baseTalon.getSelectedSensorPosition());
         SmartDashboard.putNumber("Wrist Encoder", wristTalon.getSelectedSensorPosition());
+   }
+
+   public double degreesToTicks(double degrees) {
+        return degrees * PI / 180 / (PI / 1024 / BASE_GEAR_RATIO);
    }
 
     public void passSetpoints(double basePos, double wristPos) {

@@ -19,7 +19,8 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.commands.MoveToPos;
+import frc.robot.commands.arm.MoveToPos;
+import frc.robot.commands.arm.TwoStageHigh;
 import frc.robot.commands.swerve.TimeDrive;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
@@ -60,13 +61,7 @@ public class OnePieceAuto extends SequentialCommandGroup{
         addCommands(
             new InstantCommand(() -> swerve.zeroGyro()),
             new InstantCommand(() -> intake.set(-0.1)),
-            new MoveToPos(arm, Constants.ArmConstants.HIGH_BASE_POS_ALT - 2000, Constants.ArmConstants.HIGH_WRIST_POS_ALT + 6000),
-            new WaitCommand(1),
-            new SequentialCommandGroup(
-                new InstantCommand(() -> intake.set(0.6)),
-                new WaitCommand(0.5),
-                new InstantCommand(() -> intake.set(0))
-            ),
+            new TwoStageHigh(arm, intake),
             new MoveToPos(arm, 0, 0),
             new TimeDrive(swerve, 4.5)
         );

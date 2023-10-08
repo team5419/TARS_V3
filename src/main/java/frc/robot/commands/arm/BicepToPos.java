@@ -1,32 +1,33 @@
-package frc.robot.commands;
+package frc.robot.commands.arm;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Intake;
 
-public class ConstantIntake extends CommandBase {
+public class BicepToPos extends CommandBase {
 
-    private final Intake intake;
+    private final Arm arm;
+    private double target;
 
-    public ConstantIntake(Intake intake) {
-
-        this.intake = intake;
-
+    public BicepToPos(Arm arm, double target) {
+        this.arm = arm;
+        this.target = target;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(intake);
+        addRequirements(arm);
         
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        
+        arm.baseTalon.set(ControlMode.MotionMagic, target);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        intake.set(-0.1);
+        
     }
 
     // Called once the command ends or is interrupted.
@@ -38,8 +39,7 @@ public class ConstantIntake extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        
-        return false;
+        return Math.abs(target - arm.baseTalon.getSelectedSensorPosition()) < 1000;
     }
 
 }
