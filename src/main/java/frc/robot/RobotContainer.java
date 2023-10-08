@@ -94,7 +94,9 @@ public class RobotContainer {
         coDriver.b().onTrue(
             new SequentialCommandGroup(
                 new MoveToPos(m_arm, -2000, -2000),
-                new MoveToPos(m_arm, 2000, 2000)
+                new PrintCommand("EXITED FIRST"),
+                new MoveToPos(m_arm, 4000, 4000),
+                new PrintCommand("EXITED SECOND")
             )
         );
 

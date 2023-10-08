@@ -136,7 +136,7 @@ public final class Constants {
         public double wristTarget;
         public double bicepTarget;
 
-        ArmTargets (double wristTarget, double bicepTarget) {
+        ArmTargets (double bicepTarget, double wristTarget) {
             this.bicepTarget = bicepTarget;
             this.wristTarget = wristTarget;
         }
