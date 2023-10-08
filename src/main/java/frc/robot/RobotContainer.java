@@ -83,7 +83,8 @@ public class RobotContainer {
         // Stow
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
         // High
-        coDriver.y().onTrue(new MoveToPos(m_arm, high));
+        // coDriver.y().onTrue(new MoveToPos(m_arm, high));
+        coDriver.y().onTrue(new MoveToPos(m_arm, Constants.ArmConstants.HIGH_BASE_POS_ALT - 2000 , Constants.ArmConstants.HIGH_WRIST_POS_ALT + 6000));
         // Mid
         coDriver.x().onTrue(new MoveToPos(m_arm, mid));
         // Ground Intake
@@ -91,7 +92,7 @@ public class RobotContainer {
         // Substation
         coDriver.rightBumper().onTrue(new MoveToPos(m_arm, substation));
         // Custom high
-        coDriver.povUp().onTrue(new MoveToPos(m_arm, -63511, -42830));
+        coDriver.povUp().onTrue(new MoveToPos(m_arm, -67421.79081481483 - 2000, -45004.799999999996 + 6000));
 
         // For debugging
         // coDriver.b().onTrue(
