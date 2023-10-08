@@ -88,6 +88,13 @@ public class RobotContainer {
         // Substation
         coDriver.rightBumper().onTrue(new MoveToPos(m_arm, 2933, 10842));
 
+        coDriver.b().onTrue(
+            new SequentialCommandGroup(
+                new MoveToPos(m_arm, 2000, 2000),
+                new MoveToPos(m_arm, -2000, -2000)
+            )
+        );
+
 
         
         // coDriver.x().onTrue(
