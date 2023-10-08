@@ -90,6 +90,8 @@ public class RobotContainer {
         coDriver.leftBumper().onTrue(new MoveToPos(m_arm, ground));
         // Substation
         coDriver.rightBumper().onTrue(new MoveToPos(m_arm, substation));
+        // Custom high
+        coDriver.povUp().onTrue(new MoveToPos(m_arm, -63511, -42830));
 
         // For debugging
         // coDriver.b().onTrue(
@@ -100,15 +102,6 @@ public class RobotContainer {
         //         new PrintCommand("EXITED SECOND")
         //     )
         // );
-
-        // coDriver.b().onTrue(
-        //     new SequentialCommandGroup(
-        //         new MoveToPos(m_arm, 2000, 2000),
-        //         new MoveToPos(m_arm, -2000, -2000)
-        //     )
-        // );
-
-
         
         // coDriver.x().onTrue(
         //     new SequentialCommandGroup(
@@ -159,18 +152,21 @@ public class RobotContainer {
 //             m_arm.setTalonTargets(m_arm.baseTalonTarget + 1000, m_arm.wristTalonTarget);
 //         }));
 
-//         driver.povRight().whileTrue(mIntake.run(() -> {
-//             mIntake.set(-0.2 * INTAKE_PCT);
-//         }));
-//         driver.povRight().onFalse(mIntake.runOnce(() -> {
-//             mIntake.set(0.0);
-//         }));
-//         driver.povLeft().whileTrue(mIntake.run(() -> {
-//             mIntake.set(INTAKE_PCT);
-//         }));
-//         driver.povLeft().onFalse(mIntake.runOnce(() -> {
-//             mIntake.set(-0.075);
-//         }));
+        driver.povRight().whileTrue(mIntake.run(() -> {
+            mIntake.set(-0.2 * INTAKE_PCT);
+        }));
+
+        driver.povRight().onFalse(mIntake.runOnce(() -> {
+            mIntake.set(0.0);
+        }));
+
+        driver.povLeft().whileTrue(mIntake.run(() -> {
+            mIntake.set(INTAKE_PCT);
+        }));
+
+        driver.povLeft().onFalse(mIntake.runOnce(() -> {
+            mIntake.set(-0.075);
+        }));
     
 //         driver.rightTrigger().onTrue(m_arm.runOnce(() -> {
 //             m_arm.setArmCubeIntake();
