@@ -74,30 +74,50 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /* Driver Buttons */
+        //** Driver Buttons **//
+        // Zero gyro
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+
         // Stow
         driver.a().onTrue(new MoveToPos(m_arm, stow));
+
         // Lock Swerve
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
+
         // Run Rollers in
-        driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.1), mIntake));
+        driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.2), mIntake));
+
         // Run rollers out
         driver.rightTrigger().whileTrue(Commands.runEnd(() -> mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS), () -> mIntake.set(0), mIntake));
-        
+
+
+        //** CODRIVER BINDINGS **//
         // Stow
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
+
         // High
-        // coDriver.y().onTrue(new TwoStageHigh(m_arm, mIntake));
         coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
+        coDriver.povUp().onTrue(new MoveToPos(m_arm, cubeHigh));
+
         // Mid
         coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
-        // Ground Intake
-        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, coneGround));
-        // Substation
-        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
+        coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
+
+        // Hybrid
+        coDriver.povDown().onTrue(new MoveToPos(m_arm, hybrid));
+        coDriver.b().onTrue(new MoveToPos(m_arm, hybrid)); //! Not entirely needed, but might reduce confusion for Evan
+
+        // Ground Intakes
+        coDriver.rightTrigger().onTrue(new MoveToPos(m_arm, cubeGround));
+        coDriver.leftTrigger().onTrue(new MoveToPos(m_arm, coneGround));
+
+        // Substations
+        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, cubeSubstation));
+        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
+
+
         // Custom high
-        coDriver.povUp().onTrue(new MoveToPos(m_arm, -67421.79081481483 - 2000, -45004.799999999996 + 6000));
+        // coDriver.povUp().onTrue(new MoveToPos(m_arm, -67421.79081481483 - 2000, -45004.799999999996 + 6000));
 
         // For debugging
         // coDriver.b().onTrue(

@@ -204,6 +204,8 @@ public final class Constants {
 
     
     public static final ArmTargets stow = new ArmTargets(0, 0);
+    public static final ArmTargets hybrid = new ArmTargets().fromDegrees(-10, 70);
+
     public static final ArmTargets coneSubstation = new ArmTargets(2933, 10842);
     public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933); // This looks bad IK but I don't have a choice
     public static final ArmTargets coneMid = new ArmTargets(-67582, -26966);
@@ -212,7 +214,7 @@ public final class Constants {
     public static final ArmTargets cubeSubstation = coneSubstation;
     public static final ArmTargets cubeHigh = coneHigh;
     public static final ArmTargets cubeMid = new ArmTargets().fromDegrees(-15, 55);
-    public static final ArmTargets cubeGround = new ArmTargets().fromDegrees(45.5, -175);
+    public static final ArmTargets cubeGround = new ArmTargets().fromDegrees(50.5, -175);
     // public static final double INTAKE_BASE_POS_CUBE = 45.5*PI/180/(PI/1024/BASE_GEAR_RATIO);
     // public static final double INTAKE_WRIST_POS_CUBE = -175*PI/180/(PI/1024/WRIST_GEAR_RATIO);
     
