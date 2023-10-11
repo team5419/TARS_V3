@@ -1,21 +1,21 @@
-package frc.robot.subsystems;
+    package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+    import com.ctre.phoenix.motorcontrol.*;
+    import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+    import edu.wpi.first.networktables.GenericEntry;
+    import edu.wpi.first.networktables.NetworkTableEntry;
+    import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+    import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+    import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+    import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+    import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.util.Map;
+    import java.util.Map;
 
-import static frc.robot.Constants.ArmConstants.*;
-import static java.lang.Math.*;
+    import static frc.robot.Constants.ArmConstants.*;
+    import static java.lang.Math.*;
 
-public class Arm extends SubsystemBase {
+    public class Arm extends SubsystemBase {
 
     public double baseTalonTarget = 1000;
     public double wristTalonTarget = 0;
@@ -36,7 +36,7 @@ public class Arm extends SubsystemBase {
 
     public GenericEntry midBaseFudgeTab = tab.add("Mid Score Bicep (Degrees)", 0.0)
             .withWidget(BuiltInWidgets.kNumberSlider)
-//            .withProperties(Map.of("min", -30, "max", 30)).getEntry();
+    //            .withProperties(Map.of("min", -30, "max", 30)).getEntry();
             .withProperties(Map.of("min", -5, "max", 5)).getEntry();
     public GenericEntry midWristFudgeTab = tab.add("Mid Score Forearm (Degrees)", 0.0)
             .withWidget(BuiltInWidgets.kNumberSlider)
@@ -45,7 +45,7 @@ public class Arm extends SubsystemBase {
 
     public GenericEntry highBaseFudgeTab = tab.add("High Score Bicep (Degrees)", 0.0)
             .withWidget(BuiltInWidgets.kNumberSlider)
-//            .withProperties(Map.of("min", -30, "max", 30)).getEntry();
+    //            .withProperties(Map.of("min", -30, "max", 30)).getEntry();
             .withProperties(Map.of("min", -5, "max", 5)).getEntry();
     public GenericEntry highWristFudgeTab = tab.add("High Score Forearm (Degrees)", 0.0)
             .withWidget(BuiltInWidgets.kNumberSlider)
@@ -91,10 +91,10 @@ public class Arm extends SubsystemBase {
         baseTalon.config_kD(0, BASE_kD);
 
         baseTalon.configMotionCruiseVelocity(BASE_MAX_V);
-        // baseTalon.configMotionAcceleration(BASE_MAX_A);
+        baseTalon.configMotionAcceleration(BASE_MAX_A);
         
-        // baseTalon.configMotionCruiseVelocity(12000);
-        baseTalon.configMotionAcceleration(40000);
+        // baseTalon.configMotionCruiseVelocity(1000);
+        // baseTalon.configMotionAcceleration(500);
 
         baseTalon.configMotionSCurveStrength(BASE_CURVE_STR);
 
@@ -114,7 +114,9 @@ public class Arm extends SubsystemBase {
 
         wristTalon.configMotionCruiseVelocity(WRIST_MAX_V);
         wristTalon.configMotionAcceleration(WRIST_MAX_A);
-        // wristTalon.configMotionAcceleration(40000);
+
+        // wristTalon.configMotionCruiseVelocity(1000);
+        // wristTalon.configMotionAcceleration(500);
         
         wristTalon.configMotionSCurveStrength(WRIST_CURVE_STR);
 
@@ -131,16 +133,24 @@ public class Arm extends SubsystemBase {
         cubeWristFudgeTab.setDouble(0.0);    
     }
 
-//    @Override
-   public void periodic() {
+    //    @Override
+    public void periodic() {
         // System.out.println(wristTalon.getClosedLoopTarget());
         SmartDashboard.putNumber("Bicep Encoder", baseTalon.getSelectedSensorPosition());
         SmartDashboard.putNumber("Wrist Encoder", wristTalon.getSelectedSensorPosition());
-   }
+    }
 
-   public double degreesToTicksBicep(double degrees) {
+    public double degreesToTicksBicep(double degrees) {
         return degrees * PI / 180 / (PI / 1024 / BASE_GEAR_RATIO);
-   }
+    }
+
+    public double degreesToTicksWrist (double degrees) {
+        return degrees * PI / 180 / (PI / 1024 / WRIST_GEAR_RATIO);
+    }
+
+    public double getBicepVelocity () {
+        return baseTalon.getSelectedSensorVelocity();
+    }
 
     public void passSetpoints(double basePos, double wristPos) {
         // baseTalon.set(TalonFXControlMode.MotionMagic, basePos);
@@ -278,4 +288,4 @@ public class Arm extends SubsystemBase {
         baseTalon.configMotionAcceleration(accelLimit);
     }
 
-}
+    }

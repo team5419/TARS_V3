@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
+import frc.robot.commands.arm.MoveToPosParallel;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.TwoStageHigh;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -43,7 +44,6 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-
     public final Arm m_arm = new Arm(false);
     private final Intake mIntake = new Intake();
 
@@ -91,17 +91,17 @@ public class RobotContainer {
         driver.rightTrigger().whileTrue(Commands.runEnd(() -> mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS), () -> mIntake.set(0), mIntake));
 
 
-        //** CODRIVER BINDINGS **//
+        //** CO DRIVER BINDINGS **//
         // Stow
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
 
         // High
-        coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
-        coDriver.povUp().onTrue(new MoveToPos(m_arm, cubeHigh));
+        coDriver.y().onTrue(new MoveToPosParallel(m_arm, coneHigh));
+        coDriver.povUp().onTrue(new MoveToPosParallel(m_arm, cubeHigh));
 
         // Mid
-        coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
-        coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
+        coDriver.x().onTrue(new MoveToPosParallel(m_arm, coneMid));
+        coDriver.povRight().onTrue(new MoveToPosParallel(m_arm, cubeMid));
 
         // Hybrid
         coDriver.povDown().onTrue(new MoveToPos(m_arm, hybrid));

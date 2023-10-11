@@ -14,7 +14,7 @@ public class WristToPos extends CommandBase {
         this.arm = arm;
         this.target = target;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(arm);
+        // addRequirements(arm);
         
     }
 
