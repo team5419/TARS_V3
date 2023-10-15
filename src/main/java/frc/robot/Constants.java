@@ -19,8 +19,8 @@ public final class Constants {
         public static final COTSFalconSwerveConstants chosenModule =  COTSFalconSwerveConstants.SDSMK4i(COTSFalconSwerveConstants.driveGearRatios.SDSMK4i_L2);
 
         /* Drivetrain Constants */
-        public static final double trackWidth = Units.inchesToMeters(26.5); //TODO: This must be tuned to specific robot
-        public static final double wheelBase = Units.inchesToMeters(26.5); //TODO: This must be tuned to specific robot
+        public static final double trackWidth = Units.inchesToMeters(26.5); 
+        public static final double wheelBase = Units.inchesToMeters(26.5);
         public static final double wheelCircumference = chosenModule.wheelCircumference;
 
         /* Swerve Kinematics 
@@ -135,10 +135,44 @@ public final class Constants {
     public static final class ArmTargets {
         public double wristTarget;
         public double bicepTarget;
+        public double safeZone;
+
+        ArmTargets() {
+            this.bicepTarget = 0;
+            this.wristTarget = 0;
+            this.safeZone = 0;
+        }
 
         ArmTargets (double bicepTarget, double wristTarget) {
             this.bicepTarget = bicepTarget;
             this.wristTarget = wristTarget;
+        }
+
+
+        ArmTargets (double bicepTarget, double wristTarget, double safeZone) {
+            this.bicepTarget = bicepTarget;
+            this.wristTarget = wristTarget;
+            this.safeZone = safeZone;
+        }
+
+        public ArmTargets fromDegrees (double bicepDegrees, double wristDegrees) {
+            this.bicepTarget = bicepDegrees * PI / 180 / (PI / 1024 / (58.286 * 3 / 36 * 20));
+            // Some magic done by 6672                                ^^^^^^^^^^^^^^^^^^^^^^ Arm gear ratio
+            this.wristTarget = wristDegrees * PI / 180 / (PI / 1024 / (54));
+            // Some magic done by 6672                                ^^^^ Arm gear ratio
+            this.safeZone = 0;
+            // Same magic done by 6672
+            return this;
+        }
+
+        public ArmTargets fromDegrees (double bicepDegrees, double wristDegrees, double safeZoneDegrees) {
+            this.bicepTarget = bicepDegrees * PI / 180 / (PI / 1024 / (58.286 * 3 / 36 * 20));
+            // Some magic done by 6672                                ^^^^^^^^^^^^^^^^^^^^^^ Arm gear ratio
+            this.wristTarget = wristDegrees * PI / 180 / (PI / 1024 / (54));
+            // Some magic done by 6672                                ^^^^ Arm gear ratio
+            this.safeZone = safeZoneDegrees * PI / 180 / (PI / 1024 / (58.286 * 3 / 36 * 20));
+            // Same magic done by 6672
+            return this;
         }
         
     }
@@ -183,19 +217,31 @@ public final class Constants {
     public static final double OUTTAKE_VOLTS = 6.3;
     public static final double OUTTAKE_VOLTS_CUBE = 4.2;
   }
+
+//   public static class AutoConstants {
+
+//   }
+
   public static class ArmConstants {
 
     // public static final ArmTargets high = new ArmTargets(-67421.79081481483 - 2000, -45004.799999999996 + 6000); // This looks bad IK but I don't have a choice
     // public static final ArmTargets ground = new ArmTargets(12986.98 - 2000, -47616.0 + 8000);
 
+    public static final double globalSafeZone = 37863;
     
     public static final ArmTargets stow = new ArmTargets(0, 0);
+    
     public static final ArmTargets coneSubstation = new ArmTargets(2933, 10842);
-    public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933); // This looks bad IK but I don't have a choice
-    public static final ArmTargets coneMid = new ArmTargets(-67582, -26966);
-    public static final ArmTargets coneGround = new ArmTargets(13481, -46766);
+    public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933, globalSafeZone);
+    public static final ArmTargets coneMid = new ArmTargets(-67582, -26966, globalSafeZone);
+    public static final ArmTargets coneHybrid = new ArmTargets().fromDegrees(-10, 70);
+    public static final ArmTargets coneGround = new ArmTargets(13481, -46766, globalSafeZone);
 
-    // public static final ArmTargets cubeGound = new ArmTargets(, PI)
+    public static final ArmTargets cubeSubstation = coneSubstation;
+    public static final ArmTargets cubeHigh = coneHigh;
+    public static final ArmTargets cubeMid = new ArmTargets().fromDegrees(-15, 55, globalSafeZone);
+    public static final ArmTargets cubeHybrid = new ArmTargets().fromDegrees(10, 70);
+    public static final ArmTargets cubeGround = new ArmTargets().fromDegrees(50.5, -175, globalSafeZone);
     // public static final double INTAKE_BASE_POS_CUBE = 45.5*PI/180/(PI/1024/BASE_GEAR_RATIO);
     // public static final double INTAKE_WRIST_POS_CUBE = -175*PI/180/(PI/1024/WRIST_GEAR_RATIO);
     

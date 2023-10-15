@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
+import frc.robot.commands.arm.MoveToPosParallel;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.TwoStageHigh;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -43,7 +44,6 @@ public class RobotContainer {
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
-
     public final Arm m_arm = new Arm(false);
     private final Intake mIntake = new Intake();
 
@@ -69,35 +69,56 @@ public class RobotContainer {
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
+     * 
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        /* Driver Buttons */
+        //** Driver Buttons **//
+        // Zero gyro
         driver.y().onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+
         // Stow
         driver.a().onTrue(new MoveToPos(m_arm, stow));
+
         // Lock Swerve
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
+
         // Run Rollers in
-        driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.1), mIntake));
+        driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.2), mIntake));
+
         // Run rollers out
         driver.rightTrigger().whileTrue(Commands.runEnd(() -> mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS), () -> mIntake.set(0), mIntake));
-        
+
+
+        //** CO DRIVER BINDINGS **//
         // Stow
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
+
         // High
-        // coDriver.y().onTrue(new TwoStageHigh(m_arm, mIntake));
         coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
+        coDriver.povUp().onTrue(new MoveToPos(m_arm, cubeHigh));
+
         // Mid
         coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
-        // Ground Intake
-        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, coneGround));
-        // Substation
-        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
+        coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
+
+        // Hybrid
+        coDriver.povDown().onTrue(new MoveToPos(m_arm, cubeHybrid));
+        coDriver.b().onTrue(new MoveToPos(m_arm, coneHybrid));
+
+        // Ground Intakes
+        coDriver.rightTrigger().onTrue(new MoveToPos(m_arm, cubeGround));
+        coDriver.leftTrigger().onTrue(new MoveToPos(m_arm, coneGround));
+
+        // Substations
+        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, cubeSubstation));
+        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
+
+
         // Custom high
-        coDriver.povUp().onTrue(new MoveToPos(m_arm, -67421.79081481483 - 2000, -45004.799999999996 + 6000));
+        // coDriver.povUp().onTrue(new MoveToPos(m_arm, -67421.79081481483 - 2000, -45004.799999999996 + 6000));
 
         // For debugging
         // coDriver.b().onTrue(

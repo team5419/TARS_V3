@@ -14,7 +14,7 @@ public class WristToPos extends CommandBase {
         this.arm = arm;
         this.target = target;
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(arm);
+        // addRequirements(arm);
         
     }
 
@@ -33,7 +33,7 @@ public class WristToPos extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        
+
     }
 
     // Returns true when the command should end.
