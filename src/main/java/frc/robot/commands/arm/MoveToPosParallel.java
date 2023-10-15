@@ -2,6 +2,8 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmTargets;
 import frc.robot.subsystems.Arm;
@@ -50,12 +52,15 @@ public class MoveToPosParallel extends CommandBase {
         
         // If we are going through the safe zone, or ending there, we should fist fold in the wrist so we don't hit ourself
         boolean isGoingToSameSide = Math.signum(bicepTarget) == Math.signum(arm.getBasePos()); // Same sign --> same side; as 0 is upright on both
+
+        // boolean isGoingToSameSide = (bicepTarget <= 0) && (arm.getBaseTalonPosition() <= 0);
+        // System.out.println("GOING TO SAME SIDE: " + Math.signum(arm.getBaseTalonPosition()) + " - " + Math.signum(bicepTarget) + " -- " + isGoingToSameSide + " -------------------------------------------------------------------------");
+
         group = new SequentialCommandGroup( // Run in sequence, to protect the bot
-            new WristToPos(arm, 0).unless(() -> Math.abs(bicepTarget) > Math.abs(safeZone) && isGoingToSameSide), // Should skip if it is ending out of the safe zone and on the same side of the bot
-            new BicepToPos(arm, bicepTarget), // Start the bicep move command, that will need to happen no matter what
+            new WristToPos(arm, 0).unless(() ->(Math.abs(bicepTarget) > Math.abs(safeZone) || Math.abs(arm.getBaseTalonPosition()) > Math.abs(safeZone)) && isGoingToSameSide), // Should skip if it is ending out of the safe zone and on the same side of the bot
             new InstantCommand(() -> hasFinishedFistSet = true) // B.C. the command wont end -- yes I know its bad but I don't have any time
         );
-
+        
         group.schedule();
 
     }
@@ -63,9 +68,12 @@ public class MoveToPosParallel extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if(Math.abs(arm.getBasePos()) > Math.abs(safeZone) && hasFinishedFistSet) { // If we have cleared the safe zone and we have done the above setup
-            new WristToPos(arm, wristTarget).schedule(); // Start the wrist command
-            canExit = true; // Leave this command, as the wrist and bicep will happen anyways
+        if (hasFinishedFistSet) { // If our wrist is safe
+            new BicepToPos(arm, bicepTarget).schedule(); // Start the bicep move command, that will need to happen no matter what
+            if(Math.abs(arm.getBasePos()) > Math.abs(safeZone)) { // If we have cleared the safe zone 
+                new WristToPos(arm, wristTarget).schedule(); // Start the wrist command
+                canExit = true; // Leave this command, as the wrist and bicep will happen anyways
+            }
         }
     }
 

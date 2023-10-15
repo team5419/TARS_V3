@@ -217,6 +217,11 @@ public final class Constants {
     public static final double OUTTAKE_VOLTS = 6.3;
     public static final double OUTTAKE_VOLTS_CUBE = 4.2;
   }
+
+//   public static class AutoConstants {
+
+//   }
+
   public static class ArmConstants {
 
     // public static final ArmTargets high = new ArmTargets(-67421.79081481483 - 2000, -45004.799999999996 + 6000); // This looks bad IK but I don't have a choice
@@ -225,16 +230,17 @@ public final class Constants {
     public static final double globalSafeZone = 37863;
     
     public static final ArmTargets stow = new ArmTargets(0, 0);
-    public static final ArmTargets hybrid = new ArmTargets().fromDegrees(-10, 70);
-
+    
     public static final ArmTargets coneSubstation = new ArmTargets(2933, 10842);
     public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933, globalSafeZone);
     public static final ArmTargets coneMid = new ArmTargets(-67582, -26966, globalSafeZone);
+    public static final ArmTargets coneHybrid = new ArmTargets().fromDegrees(-10, 70);
     public static final ArmTargets coneGround = new ArmTargets(13481, -46766, globalSafeZone);
 
     public static final ArmTargets cubeSubstation = coneSubstation;
     public static final ArmTargets cubeHigh = coneHigh;
-    public static final ArmTargets cubeMid = new ArmTargets().fromDegrees(-15, 55);
+    public static final ArmTargets cubeMid = new ArmTargets().fromDegrees(-15, 55, globalSafeZone);
+    public static final ArmTargets cubeHybrid = new ArmTargets().fromDegrees(10, 70);
     public static final ArmTargets cubeGround = new ArmTargets().fromDegrees(50.5, -175, globalSafeZone);
     // public static final double INTAKE_BASE_POS_CUBE = 45.5*PI/180/(PI/1024/BASE_GEAR_RATIO);
     // public static final double INTAKE_WRIST_POS_CUBE = -175*PI/180/(PI/1024/WRIST_GEAR_RATIO);

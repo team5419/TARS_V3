@@ -69,6 +69,7 @@ public class RobotContainer {
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
+     * 
      * instantiating a {@link GenericHID} or one of its subclasses ({@link
      * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
@@ -96,16 +97,16 @@ public class RobotContainer {
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
 
         // High
-        coDriver.y().onTrue(new MoveToPosParallel(m_arm, coneHigh));
-        coDriver.povUp().onTrue(new MoveToPosParallel(m_arm, cubeHigh));
+        coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
+        coDriver.povUp().onTrue(new MoveToPos(m_arm, cubeHigh));
 
         // Mid
-        coDriver.x().onTrue(new MoveToPosParallel(m_arm, coneMid));
-        coDriver.povRight().onTrue(new MoveToPosParallel(m_arm, cubeMid));
+        coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
+        coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
 
         // Hybrid
-        coDriver.povDown().onTrue(new MoveToPos(m_arm, hybrid));
-        coDriver.b().onTrue(new MoveToPos(m_arm, hybrid)); //! Not entirely needed, but might reduce confusion for Evan
+        coDriver.povDown().onTrue(new MoveToPos(m_arm, cubeHybrid));
+        coDriver.b().onTrue(new MoveToPos(m_arm, coneHybrid));
 
         // Ground Intakes
         coDriver.rightTrigger().onTrue(new MoveToPos(m_arm, cubeGround));
