@@ -78,9 +78,9 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         /** Meters per Second */
-        public static final double maxSpeed = 4; //TODO: This must be tuned to specific robot
+        public static final double maxSpeed = 5;
         /** Radians per Second */
-        public static final double maxAngularVelocity = 6.0; //TODO: This must be tuned to specific robot
+        public static final double maxAngularVelocity = 6.0;
         /** Slow / precision mode values */
         public static final double slowModeSpeedMultiplier = 0.2;
         public static final double slowModeTurnMultiplier = 0.3;
@@ -91,7 +91,7 @@ public final class Constants {
 
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
-        public static final class Mod0 { //TODO: This must be tuned to specific robot
+        public static final class Mod0 {
             public static final int driveMotorID = 11;
             public static final int angleMotorID = 21;
             public static final int canCoderID = 31;
@@ -102,7 +102,7 @@ public final class Constants {
         }
 
         /* Front Right Module - Module 1 */
-        public static final class Mod1 { //TODO: This must be tuned to specific robot
+        public static final class Mod1 { 
             public static final int driveMotorID = 12;
             public static final int angleMotorID = 22;
             public static final int canCoderID = 32;
@@ -112,7 +112,7 @@ public final class Constants {
         }
         
         /* Back Left Module - Module 2 */
-        public static final class Mod2 { //TODO: This must be tuned to specific robot
+        public static final class Mod2 {
             public static final int driveMotorID = 14;
             public static final int angleMotorID = 24;
             public static final int canCoderID = 34;
@@ -122,7 +122,7 @@ public final class Constants {
         }
 
         /* Back Right Module - Module 3 */
-        public static final class Mod3 { //TODO: This must be tuned to specific robot
+        public static final class Mod3 {
             public static final int driveMotorID = 13;
             public static final int angleMotorID = 23;
             public static final int canCoderID = 33;
