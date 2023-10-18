@@ -42,10 +42,6 @@ public class RobotContainer {
     private final int strafeAxis = XboxController.Axis.kLeftX.value;
     private final int rotationAxis = XboxController.Axis.kRightX.value;
 
-    /* Driver Buttons */
-    // private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    // private final JoystickButton slowMode = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     public final Arm m_arm = new Arm(false);
