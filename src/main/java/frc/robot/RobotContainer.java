@@ -1,15 +1,19 @@
 package frc.robot;
 
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
 import frc.robot.commands.arm.MoveToPosParallel;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.TwoStageHigh;
+import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
 import static frc.robot.Constants.ArmConstants.*;
@@ -84,6 +88,20 @@ public class RobotContainer {
 
         // Lock Swerve
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
+
+        // Snap to shoot
+        driver.rightBumper().whileTrue(new SnapTo(s_Swerve, 
+            Rotation2d.fromDegrees(0), 
+            () -> -driver.getRawAxis(translationAxis), 
+            () -> -driver.getRawAxis(strafeAxis)
+        ));
+
+        // Snap to shoot
+        driver.rightBumper().whileTrue(new SnapTo(s_Swerve, 
+            Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? -90 : 90), 
+            () -> -driver.getRawAxis(translationAxis), 
+            () -> -driver.getRawAxis(strafeAxis)
+        ));
 
         // Run Rollers in
         driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.2), mIntake));
