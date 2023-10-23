@@ -13,6 +13,7 @@ import frc.robot.autos.*;
 import frc.robot.commands.arm.MoveToPosParallel;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.TwoStageHigh;
+import frc.robot.commands.swerve.LLAutoPickup;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -46,6 +47,7 @@ public class RobotContainer {
     private final Swerve s_Swerve = new Swerve();
     public final Arm m_arm = new Arm(false);
     private final Intake mIntake = new Intake();
+    private final Vision2 vision2 = new Vision2();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -85,18 +87,23 @@ public class RobotContainer {
         // Lock Swerve
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
 
+        // Auto Pickup?
+        driver.back().whileTrue(new LLAutoPickup(s_Swerve, vision2));
+
         // Snap to shoot
         driver.rightBumper().whileTrue(new SnapTo(s_Swerve, 
             Rotation2d.fromDegrees(0), 
             () -> -driver.getRawAxis(translationAxis), 
-            () -> -driver.getRawAxis(strafeAxis)
+            () -> -driver.getRawAxis(strafeAxis),
+            () -> driver.leftBumper().getAsBoolean()
         ));
-
-        // Snap to shoot
-        driver.rightBumper().whileTrue(new SnapTo(s_Swerve, 
+        
+            // Snap to substation
+        driver.b().whileTrue(new SnapTo(s_Swerve, 
             Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? -90 : 90), 
             () -> -driver.getRawAxis(translationAxis), 
-            () -> -driver.getRawAxis(strafeAxis)
+            () -> -driver.getRawAxis(strafeAxis),
+            () -> driver.leftBumper().getAsBoolean()
         ));
 
         // Run Rollers in

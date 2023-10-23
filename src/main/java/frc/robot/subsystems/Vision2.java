@@ -41,19 +41,8 @@ public class Vision2 extends SubsystemBase {
 	// });
 
 	public Vision2 () {
-		// limelight = NetworkTableInstance.getDefault().getTable("limelight");
+		limelight = NetworkTableInstance.getDefault().getTable("limelight");
 		// limelight.getEntry("pipeline").setNumber(1); // Put us in apriltags mode for now
-
-		// try {
-		// 	aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-		// } catch (Exception e) {
-		// 	System.err.println("Apriltag field positioning could not be initialized. Full trace: " + e);
-		// 	Logger.getInstance().recordOutput("Vision 2", "Apriltag field positioning could not be initialized. Full trace: " + e);
-		// 	System.exit(1000);
-		// }
-
-		// Transform3d robotToCam = new Transform3d(new Translation3d(0, 0, Constants.PhotonConstants.cameraHeight), new Rotation3d(0, 0, 0));
-		// photonEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera, robotToCam);
 
 		// limelightOfflineUpdater.startPeriodic(0.1);
 	}
@@ -63,13 +52,6 @@ public class Vision2 extends SubsystemBase {
 		tx = limelight.getEntry("tx"); // horizontal offset
 		ty = limelight.getEntry("ty"); // horizontal offset
 
-		// if (isPhotonEstimating) {
-		// 	Optional<EstimatedRobotPose> estimatedPose = photonEstimator.update();
-		// 	if(estimatedPose.isPresent()) {
-		// 		EstimatedRobotPose estimation = estimatedPose.get();
-		// 		swerve.addVisionMeasurement(estimation.estimatedPose.toPose2d(), estimation.timestampSeconds, 2);
-		// 	}
-		// }
 
 		// double[] limelightRaw = getBotposeColorRelative(DriverStation.getAlliance() == Alliance.Blue);
 		// double[] limelightRaw = getBotposeColorRelative(true);
@@ -78,9 +60,6 @@ public class Vision2 extends SubsystemBase {
 
 	}
 
-	// public boolean isLimelightAlive () {
-
-	// }
 
 	public boolean limelighSeesTarget() {
 		int in = 0;
