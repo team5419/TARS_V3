@@ -68,7 +68,7 @@ public class LLAutoPickup extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return MathUtil.applyDeadband(LimelightHelpers.getTY(""), 0.01) == 0 && MathUtil.applyDeadband(LimelightHelpers.getTX(""), 0.01) == 0;
+        return vision.isLimelightAlive == false ||  MathUtil.applyDeadband(LimelightHelpers.getTY(""), 0.01) == 0 && MathUtil.applyDeadband(LimelightHelpers.getTX(""), 0.01) == 0;
     }
 
 }
