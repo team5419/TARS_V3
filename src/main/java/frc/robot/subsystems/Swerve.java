@@ -12,6 +12,8 @@ import java.nio.channels.ShutdownChannelGroupException;
 
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -19,9 +21,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -35,6 +40,11 @@ public class Swerve extends SubsystemBase {
     public Pigeon2 gyro;
 
     public boolean isUsingCones = true;
+    private SwerveAutoBuilder autoBuilder = null;
+    private ShuffleboardTab tab;
+    private Field2d field2d;
+
+    private NetworkTableEntry entry;
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -57,6 +67,10 @@ public class Swerve extends SubsystemBase {
         resetModulesToAbsolute();
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
+
+        tab = Shuffleboard.getTab("Swerve");
+        field2d = new Field2d();
+        field2d.setRobotPose(swerveOdometry.getPoseMeters());
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -126,36 +140,54 @@ public class Swerve extends SubsystemBase {
             mod.resetToAbsolute();
         }
     }
-    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+    
+    public Command followTrajectoryCommand(PathPlannerTrajectory trajectory, boolean isFirstPath) {
         return new SequentialCommandGroup(
                 new InstantCommand(() -> {
                     // Reset odometry for the first path you run during auto
                     if(isFirstPath){
-                        this.resetOdometry(traj.getInitialHolonomicPose());
+                        this.resetOdometry(trajectory.getInitialHolonomicPose());
                     }
                 }),
                 new PPSwerveControllerCommand(
-                        traj,
+                        trajectory,
                         this::getPose, // Pose supplier
                         Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
-                        new PIDController(15, 0, 0.01), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                        new PIDController(15, 0, 0.01), // X controller. Tune these values for your robot. Leaving them 0 will only use feed forwards.
                         new PIDController(15, 0, 0.01), // Y controller (usually the same values as X controller)
-                        new PIDController(5, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                        this::setModuleStates,
-                        false, // Module states consumer
+                        new PIDController(5, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feed forwards.
+                        this::setModuleStates, // Module states consumer
+                        true,
                         this // Requires this drive subsystem
                 )
         );
+    }
+
+    public SwerveAutoBuilder getAutoBuilder () {
+        if (autoBuilder == null) {
+            autoBuilder = new SwerveAutoBuilder(
+                this::getPose,
+                this::resetOdometry,
+                Constants.Swerve.swerveKinematics,
+                new PIDConstants(15, 0, 0.01),
+                new PIDConstants(5, 0, 0),
+                this::setModuleStates,
+                Constants.AutoConstants.eventMap,
+                true,
+                this
+            );
+        } 
+        return autoBuilder;
     }
 
     public void lock () {
         // lock pose to make it hard to move
         setModuleStates(
             new SwerveModuleState[] {
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(-45)),
-                new SwerveModuleState(0.1, Rotation2d.fromDegrees(45)),
+                new SwerveModuleState(0.3, Rotation2d.fromDegrees(45)),
+                new SwerveModuleState(0.3, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0.3, Rotation2d.fromDegrees(-45)),
+                new SwerveModuleState(0.3, Rotation2d.fromDegrees(45)),
             }
         );
     }
@@ -164,12 +196,14 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         swerveOdometry.update(getYaw(), getModulePositions());  
 
-        SmartDashboard.putBoolean("Using Cones", isUsingCones);
+        field2d.setRobotPose(swerveOdometry.getPoseMeters());
 
-        for(SwerveModule mod : mSwerveMods){
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
-        }
+        System.out.println(field2d.getRobotPose().getX());
+
+        // for(SwerveModule mod : mSwerveMods){
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
+        // }
     }
 }

@@ -4,11 +4,21 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.autos.Auto;
 import frc.robot.commands.arm.MoveToPos;
 
 /**
@@ -19,13 +29,11 @@ import frc.robot.commands.arm.MoveToPos;
  */
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
-
-  private Command m_autonomousCommand;
-
   private RobotContainer m_robotContainer;
 
-  private ShuffleboardTab tab = Shuffleboard.getTab("Arm");
-
+  private static LinkedHashMap<String, Auto> autoMap = new LinkedHashMap<String, Auto>(); 
+  private static LinkedHashMap<String, Auto> tempMap = new LinkedHashMap<String, Auto>();
+  private static SendableChooser<Auto> chooser;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -34,10 +42,17 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     ctreConfigs = new CTREConfigs();
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
+    chooser = new SendableChooser<Auto>();
+    autoMap.putAll(configurePrebuiltAutos());
+    for (HashMap.Entry<String, Auto> choice : autoMap.entrySet()) {
+      String autoName = choice.getKey().split("[.]")[0];
+      chooser.addOption(autoName, choice.getValue());
+      System.out.println("Added " + autoName);
+    }
+    chooser.setDefaultOption("Do Nothing", new Auto(new InstantCommand(), m_robotContainer.s_Swerve));
+    SmartDashboard.putData("Auto Chooser", chooser);
   }
 
   /**
@@ -66,12 +81,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+    chooser.getSelected().Run();
   }
 
   /** This function is called periodically during autonomous. */
@@ -80,14 +90,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    new MoveToPos(m_robotContainer.m_arm, 0, 0);
+    // Try to avoid arm snapping when enabled
+    new MoveToPos(m_robotContainer.m_arm, m_robotContainer.m_arm.getBasePos(), m_robotContainer.m_arm.getWristPos()); 
+
     // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    // teleop starts running. 
+    chooser.getSelected().end();
   }
 
   /** This function is called periodically during operator control. */
@@ -103,4 +111,18 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  private LinkedHashMap<String, Auto> configurePrebuiltAutos() {
+    File pathplannerDir = new File(Filesystem.getDeployDirectory(),"pathplanner");
+    tempMap.clear();
+    for (File file : pathplannerDir.listFiles()) {
+      String fileName = file.getName();
+      if (!file.isDirectory()) {
+        String[] autoName = fileName.split("[.]");
+        tempMap.put(fileName, new Auto(m_robotContainer.s_Swerve, autoName[0]));
+      }
+
+    }
+    return tempMap;
+  }
 }

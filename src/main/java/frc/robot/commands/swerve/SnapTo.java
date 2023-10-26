@@ -34,7 +34,7 @@ public class SnapTo extends CommandBase {
         this.straif = straif;
         this.slowMode = slowMode;
 
-        controller = new PIDController(0.5, 0, 0);
+        controller = new PIDController(0.7, 0, 0);
         controller.enableContinuousInput(-Math.PI, Math.PI);
 
         // Use addRequirements() here to declare subsystem dependencies.
@@ -59,6 +59,7 @@ public class SnapTo extends CommandBase {
         if (slowMode.getAsBoolean()) {
             translationVal *= Constants.Swerve.slowModeSpeedMultiplier;
             strafeVal *= Constants.Swerve.slowModeSpeedMultiplier;
+            rotationVal *= Constants.Swerve.slowModeTurnMultiplier;
         }
 
         /* Drive */

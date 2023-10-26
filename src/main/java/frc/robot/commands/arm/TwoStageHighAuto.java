@@ -8,8 +8,8 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 
-public class TwoStageHigh extends SequentialCommandGroup {
-    public TwoStageHigh(Arm arm, Intake intake) {
+public class TwoStageHighAuto extends SequentialCommandGroup {
+    public TwoStageHighAuto(Arm arm, Intake intake) {
         addCommands(
             new InstantCommand(() -> intake.set(Constants.IntakeConstants.INTAKE_PCT)),
             new MoveToPos (arm, 0, 0), // Make sure we are safe
