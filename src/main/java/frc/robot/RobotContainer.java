@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.*;
 import frc.robot.commands.arm.MoveToPosParallel;
 import frc.robot.commands.arm.TwoPartHigh;
+import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.swerve.LLAutoPickup;
 import frc.robot.commands.swerve.SnapTo;
@@ -119,26 +120,27 @@ public class RobotContainer {
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
 
         // High
-        // coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
-        // coDriver.povUp().onTrue(new MoveToPos(m_arm, cubeHigh));
-        coDriver.y().onTrue(new TwoPartHigh(m_arm, coneHigh)); //! Currently in beta
-        coDriver.povUp().onTrue(new TwoPartHigh(m_arm, cubeHigh)); //! Currently in beta
+        coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
+        coDriver.povUp().onTrue(new MoveToPos(m_arm, cubeHigh));
+        // coDriver.y().onTrue(new TwoPartHigh(m_arm, coneHigh)); //! Currently in beta
+        // coDriver.povUp().onTrue(new TwoPartHigh(m_arm, cubeHigh)); //! Currently in beta
 
         // Mid
         coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
         coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
+        coDriver.povLeft().onTrue(new MoveToPos(m_arm, cubeMid));
 
         // Hybrid
         coDriver.povDown().onTrue(new MoveToPos(m_arm, cubeHybrid));
         coDriver.b().onTrue(new MoveToPos(m_arm, coneHybrid));
 
         // Ground Intakes
-        coDriver.rightTrigger().onTrue(new MoveToPos(m_arm, cubeGround));
-        coDriver.leftTrigger().onTrue(new MoveToPos(m_arm, coneGround));
+        coDriver.leftTrigger().onTrue(new MoveToPos(m_arm, cubeGround));
+        coDriver.rightTrigger().onTrue(new MoveToPos(m_arm, coneGround));
 
         // Substations
-        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, cubeSubstation));
-        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
+        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, cubeSubstation));
+        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
 
         driver.povRight().whileTrue(Commands.runEnd(
             () -> mIntake.set(-0.2 * INTAKE_PCT), 
@@ -147,6 +149,7 @@ public class RobotContainer {
 
         driver.povLeft().whileTrue(Commands.runEnd(
             () -> mIntake.set(INTAKE_PCT), 
+
             () -> mIntake.set(-0.075)
         ));
 
@@ -173,15 +176,20 @@ public class RobotContainer {
 
     private void setUpEventMap() {
         HashMap<String, Command> map = Constants.AutoConstants.eventMap;
+
         map.put("ArmCubeGround", new MoveToPos(m_arm, cubeGround));
         map.put("ArmStow", new MoveToPos(m_arm, stow));
-        map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
-        map.put("ShootMidCube", new SequentialCommandGroup(
-            new MoveToPos(m_arm, cubeMid), 
-            new WaitCommand(0.2),
-            Commands.runOnce(() -> mIntake.setVolts(OUTTAKE_VOLTS_CUBE)), 
-            new WaitCommand(1),
-            Commands.runOnce(() -> mIntake.set(0))));
         map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.2)));
+        map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
+
+        // map.put("TwoStageHighCube", null)
+
+        map.put("ShootHybridCube", new ShootAuto(true, cubeHybrid, mIntake, m_arm));
+        map.put("ShootMidCube", new ShootAuto(true, cubeMid, mIntake, m_arm));
+        map.put("ShootHighCube", new ShootAuto(true, cubeHigh, mIntake, m_arm));
+
+        map.put("ShootHybridCone", new ShootAuto(false, coneHybrid, mIntake, m_arm));
+        map.put("ShootMidCone", new ShootAuto(false, coneMid, mIntake, m_arm));
+        map.put("ShootHighCone", new ShootAuto(false, coneHigh, mIntake, m_arm));
     }
 }

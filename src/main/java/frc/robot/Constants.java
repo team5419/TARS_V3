@@ -240,7 +240,7 @@ public final class Constants {
     public static final ArmTargets coneSubstation = new ArmTargets(2933, 10842);
     public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933, globalSafeZone);
     public static final ArmTargets coneMid = new ArmTargets(-67582, -26966, globalSafeZone);
-    public static final ArmTargets coneHybrid = new ArmTargets().fromDegrees(-10, 70);
+    public static final ArmTargets coneHybrid = new ArmTargets().fromDegrees(10, 70);
     public static final ArmTargets coneGround = new ArmTargets(13481, -46766, globalSafeZone);
 
     public static final ArmTargets cubeSubstation = coneSubstation;
