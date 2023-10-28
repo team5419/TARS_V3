@@ -1,34 +1,29 @@
 package frc.robot;
 
-import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
-import frc.robot.autos.*;
-import frc.robot.commands.arm.TwoPartHigh;
 import frc.robot.commands.arm.TwoStageHighAuto;
 import frc.robot.commands.auto.ShootAuto;
+import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.swerve.LLAutoPickup;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.tesing.DynamicMotionMagic;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.arm.OptimizedArm;
+
 import static frc.robot.Constants.ArmConstants.*;
 import static frc.robot.Constants.IntakeConstants.*;
 
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -49,7 +44,7 @@ public class RobotContainer {
 
     /* Subsystems */
     public final Swerve s_Swerve = new Swerve();
-    public final OptimizedArm m_arm = new OptimizedArm();
+    public final OptimizedArm m_arm = new OptimizedArm(true);
     public final Intake mIntake = new Intake();
     private final Vision2 vision2 = new Vision2();
 
@@ -166,7 +161,8 @@ public class RobotContainer {
         map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.2)));
         map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
 
-        map.put("TwoStageHighCube", new TwoStageHighAuto(m_arm, mIntake));
+        map.put("TwoStageHighCube", new TwoStageHighChoiced(m_arm, mIntake, true));
+        map.put("TwoStageHighCone", new TwoStageHighChoiced(m_arm, mIntake, false));
 
         map.put("ShootHybridCube", new ShootAuto(true, cubeHybrid, mIntake, m_arm));
         map.put("ShootMidCube", new ShootAuto(true, cubeMid, mIntake, m_arm));

@@ -3,7 +3,7 @@ package frc.robot.commands.auto;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmTargets;
 import frc.robot.commands.arm.WristToPos;
-import frc.robot.subsystems.OptimizedArm;
+import frc.robot.subsystems.arm.OptimizedArm;
 
 public class MoveToPosAuto extends SequentialCommandGroup {
     public MoveToPosAuto(OptimizedArm arm, double bicepTarget, double wristTarget) {

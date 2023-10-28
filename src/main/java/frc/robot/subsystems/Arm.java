@@ -14,8 +14,12 @@ import java.util.Map;
 
 import static frc.robot.Constants.ArmConstants.*;
 import static java.lang.Math.*;
-
+    /**
+     * @deprecated Never use this
+     */
     public class Arm extends SubsystemBase {
+
+        //! THIS IS DEPRECIATED CODE, WILL BE DELETED SOON, AND IS A BAD EXAMPLE
 
         public double baseTalonTarget = 1000;
         public double wristTalonTarget = 0;
@@ -70,7 +74,10 @@ import static java.lang.Math.*;
                 // .withProperties(Map.of("min", -30, "max", 30)).getEntry();
                 .withProperties(Map.of("min", -5, "max", 5)).getEntry();
 
-
+        /**
+         * @deprecated You should never use this. It is old code
+         * @param tuningMode
+         */
         public Arm(boolean tuningMode) {
             baseTalon = new WPI_TalonFX(BASE_ID);
             wristTalon = new WPI_TalonFX(WRIST_ID);

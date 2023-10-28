@@ -4,8 +4,7 @@ package frc.robot.commands.tesing;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.OptimizedArm;
+import frc.robot.subsystems.arm.OptimizedArm;
 
 /**
  * The idea is to test if you can have a dynamic motion magic point. Don't know and currently the wifi is down
@@ -31,7 +30,7 @@ public class DynamicMotionMagic extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        arm.configMotionMagic(true, 2000, 8000, 2);
+        // arm.configMotionMagic(true, 2000, 8000, 2);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmTargets;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.OptimizedArm;
+import frc.robot.subsystems.arm.OptimizedArm;
 
 public class ShootAuto extends SequentialCommandGroup {
     public ShootAuto (boolean isCube, ArmTargets target, Intake intake, OptimizedArm arm) {

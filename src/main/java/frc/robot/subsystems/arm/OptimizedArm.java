@@ -1,6 +1,8 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.arm;
 
 import java.util.HashMap;
+
+import org.opencv.core.Mat;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -25,6 +27,8 @@ public class OptimizedArm extends SubsystemBase {
     protected WPI_TalonFX bicepTalonFollower;
     protected WPI_TalonFX wristTalon;
     private boolean isInBrakeMode;
+
+    public ArmState graphStator; // Really cant find a better name ATM
 
     // Get a tab and a toggle so that we don't have to re-deploy or power-cycle our bot to tune our arm setpoints
     private ShuffleboardTab tab = Shuffleboard.getTab("Optimized Arm");
@@ -55,27 +59,8 @@ public class OptimizedArm extends SubsystemBase {
     });
 
 
-    // class Box {
-    //     double bicepMax;
-    //     double bicepMin;
-        
-    //     double wristMax;
-    //     double wristMin;
-        
-    //     Box(double bicepMin, double bicepMax, double wristMin, double wristMax) {
-    //         this.bicepMin = bicepMin;
-    //         this.bicepMax = bicepMax;
 
-    //         this.wristMin = wristMin;
-    //         this.wristMax = wristMax;
-    //     }
-    // }
-
-    // Box mainBox = new Box(-200.0, 200.0, -270.0, 270.0);
-
-    // protected HashMap<String, double[double[]]> validBoxes = new HashMap<>();
-
-    public OptimizedArm () {
+    public OptimizedArm (boolean isTesting) {
         setupMotors();
         setBrakeMode(true);
 
@@ -84,6 +69,13 @@ public class OptimizedArm extends SubsystemBase {
         }
 
         tuningModeToggle.setBoolean(false);
+
+        graphStator = new ArmState(this);
+
+        if(isTesting) {
+            configMotionMagic(true, Constants.ArmConstants.BASE_MAX_V / 20, Constants.ArmConstants.BASE_MAX_A / 20, Constants.ArmConstants.BASE_CURVE_STR);
+            configMotionMagic(false, Constants.ArmConstants.WRIST_MAX_V / 20, Constants.ArmConstants.WRIST_MAX_A / 20, Constants.ArmConstants.WRIST_CURVE_STR);
+        }
     }
 
     public void setupMotors() {
@@ -91,9 +83,9 @@ public class OptimizedArm extends SubsystemBase {
         bicepTalonFollower = new WPI_TalonFX(Constants.ArmConstants.BASE_FOLLOWER_ID);
         wristTalon = new WPI_TalonFX(Constants.ArmConstants.WRIST_ID);
 
-        // bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
-        // bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
-        // wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
+        bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
+        bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
+        wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
 
         bicepTalon.setSelectedSensorPosition(0);
 
@@ -120,8 +112,12 @@ public class OptimizedArm extends SubsystemBase {
     }
 
     public void periodic () {
-        SmartDashboard.putNumber("Bicep Encoder", getBicepPosition());
-        SmartDashboard.putNumber("Wrist Encoder", getWristPosition());
+        SmartDashboard.putNumber("Bicep Encoder in Degrees", getBicepPositionDegrees());
+        SmartDashboard.putNumber("Wrist Encoder in Degrees", getWristPositionDegrees());
+    }
+
+    public ArmState getGraphStator () {
+        return graphStator;
     }
 
     public void setBicep(ControlMode mode, double setpoint) {
@@ -148,6 +144,14 @@ public class OptimizedArm extends SubsystemBase {
         return wristTalon.getSelectedSensorPosition();
     }
 
+    public double getBicepPositionDegrees() {
+        return ticksToDegreesBicep(getBicepPosition());
+    }
+
+    public double getWristPositionDegrees() {
+        return ticksToDegreesWrist(getWristPosition());
+    }
+
     public boolean isAt(double basePos, double wristPos) {
         return bicepAtTarget(basePos) && wristAtTarget(wristPos);
     }
@@ -166,6 +170,22 @@ public class OptimizedArm extends SubsystemBase {
 
     public double degreesToTicksWrist (double degrees) {
         return degrees * Math.PI / 180 / (Math.PI / 1024 / Constants.ArmConstants.WRIST_GEAR_RATIO);
+    }
+
+        /**
+     * Should be the inverse of "degreesToTicksBicep"
+     * @return the bicep position in degrees
+     */
+    public double ticksToDegreesBicep (double ticks) {
+        return ticks * (Math.PI / 1024 / Constants.ArmConstants.BASE_GEAR_RATIO) * 180 * Math.PI;
+    }
+
+        /**
+     * Should be the inverse of "degreesToTicksWrist"
+     * @return the wrist position in degrees
+     */
+    public double ticksToDegreesWrist (double ticks) {
+        return ticks * (Math.PI / 1024 / Constants.ArmConstants.WRIST_GEAR_RATIO) * 180 * Math.PI;
     }
 
     public double getBicepVelocity () {
