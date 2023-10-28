@@ -7,9 +7,10 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.OptimizedArm;
 
 public class TwoStageHighAuto extends SequentialCommandGroup {
-    public TwoStageHighAuto(Arm arm, Intake intake) {
+    public TwoStageHighAuto(OptimizedArm arm, Intake intake) {
         addCommands(
             new InstantCommand(() -> intake.set(Constants.IntakeConstants.INTAKE_PCT)),
             new MoveToPos (arm, 0, 0), // Make sure we are safe

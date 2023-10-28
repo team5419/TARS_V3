@@ -1,14 +1,11 @@
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmTargets;
-import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.OptimizedArm;
 
 public class MoveToPos extends SequentialCommandGroup {
-    public MoveToPos(Arm arm, double bicepTarget, double wristTarget) {
+    public MoveToPos(OptimizedArm arm, double bicepTarget, double wristTarget) {
         addRequirements(arm);
         addCommands(
             new WristToPos(arm, 0),
@@ -18,7 +15,7 @@ public class MoveToPos extends SequentialCommandGroup {
         
     }
 
-    public MoveToPos(Arm arm, ArmTargets target) {
+    public MoveToPos(OptimizedArm arm, ArmTargets target) {
         addRequirements(arm);
         addCommands(
             new WristToPos(arm, 0),

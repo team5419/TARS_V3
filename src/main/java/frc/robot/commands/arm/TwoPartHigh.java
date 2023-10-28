@@ -7,12 +7,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ArmTargets;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.OptimizedArm;
 
 /**
  * @author Grayson
  */
 public class TwoPartHigh extends SequentialCommandGroup {
-    public TwoPartHigh(Arm arm, ArmTargets target) {
+    public TwoPartHigh(OptimizedArm arm, ArmTargets target) {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(arm);
 

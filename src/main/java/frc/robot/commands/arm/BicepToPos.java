@@ -4,13 +4,14 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.OptimizedArm;
 
 public class BicepToPos extends CommandBase {
 
-    private final Arm arm;
+    private final OptimizedArm arm;
     private double target;
 
-    public BicepToPos(Arm arm, double target) {
+    public BicepToPos(OptimizedArm arm, double target) {
         this.arm = arm;
         this.target = target;
         // Use addRequirements() here to declare subsystem dependencies.
@@ -21,7 +22,7 @@ public class BicepToPos extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        arm.baseTalon.set(ControlMode.MotionMagic, target);
+        arm.setBicep(ControlMode.MotionMagic, target);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -39,7 +40,7 @@ public class BicepToPos extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(target - arm.baseTalon.getSelectedSensorPosition()) < 1000;
+        return Math.abs(target - arm.getBicepPosition()) < 1000;
     }
 
 }

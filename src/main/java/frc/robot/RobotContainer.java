@@ -10,13 +10,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
-import frc.robot.commands.arm.MoveToPosParallel;
 import frc.robot.commands.arm.TwoPartHigh;
+import frc.robot.commands.arm.TwoStageHighAuto;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.swerve.LLAutoPickup;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
+import frc.robot.commands.tesing.DynamicMotionMagic;
 import frc.robot.subsystems.*;
 import static frc.robot.Constants.ArmConstants.*;
 import static frc.robot.Constants.IntakeConstants.*;
@@ -48,7 +49,7 @@ public class RobotContainer {
 
     /* Subsystems */
     public final Swerve s_Swerve = new Swerve();
-    public final Arm m_arm = new Arm(false);
+    public final OptimizedArm m_arm = new OptimizedArm();
     public final Intake mIntake = new Intake();
     private final Vision2 vision2 = new Vision2();
 
@@ -153,24 +154,7 @@ public class RobotContainer {
             () -> mIntake.set(-0.075)
         ));
 
-        // driver.povRight().whileTrue(mIntake.run(() -> {
-        //     mIntake.set(-0.2 * INTAKE_PCT);
-        // }));
-
-        // driver.povRight().onFalse(mIntake.runOnce(() -> {
-        //     mIntake.set(0.0);
-        // }));
-
-
-        // driver.povLeft().whileTrue(mIntake.run(() -> {
-        //     mIntake.set(INTAKE_PCT);
-        // }));
-
-        // driver.povLeft().onFalse(mIntake.runOnce(() -> {
-        //     mIntake.set(-0.075);
-        // }));
-
-
+        driver.back().whileTrue(new DynamicMotionMagic(m_arm));
     
     }
 
@@ -182,7 +166,7 @@ public class RobotContainer {
         map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.2)));
         map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
 
-        // map.put("TwoStageHighCube", null)
+        map.put("TwoStageHighCube", new TwoStageHighAuto(m_arm, mIntake));
 
         map.put("ShootHybridCube", new ShootAuto(true, cubeHybrid, mIntake, m_arm));
         map.put("ShootMidCube", new ShootAuto(true, cubeMid, mIntake, m_arm));
