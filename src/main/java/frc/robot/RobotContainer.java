@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-import frc.robot.commands.arm.TwoStageHighAuto;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
