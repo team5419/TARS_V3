@@ -73,8 +73,14 @@ public class OptimizedArm extends SubsystemBase {
         graphStator = new ArmState(this);
 
         if(isTesting) {
+            // Slow us tf down
             configMotionMagic(true, Constants.ArmConstants.BASE_MAX_V / 20, Constants.ArmConstants.BASE_MAX_A / 20, Constants.ArmConstants.BASE_CURVE_STR);
             configMotionMagic(false, Constants.ArmConstants.WRIST_MAX_V / 20, Constants.ArmConstants.WRIST_MAX_A / 20, Constants.ArmConstants.WRIST_CURVE_STR);
+
+            // Limit our current
+            bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
+            bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
+            wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
         }
     }
 
@@ -82,10 +88,6 @@ public class OptimizedArm extends SubsystemBase {
         bicepTalon = new WPI_TalonFX(Constants.ArmConstants.BASE_ID);
         bicepTalonFollower = new WPI_TalonFX(Constants.ArmConstants.BASE_FOLLOWER_ID);
         wristTalon = new WPI_TalonFX(Constants.ArmConstants.WRIST_ID);
-
-        bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
-        bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
-        wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
 
         bicepTalon.setSelectedSensorPosition(0);
 

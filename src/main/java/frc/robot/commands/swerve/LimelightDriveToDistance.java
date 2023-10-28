@@ -114,7 +114,7 @@ public class LimelightDriveToDistance extends CommandBase {
 			driveSpeed = Math.max(driveSpeed * speedMultiplier, -maxSpeed); // make it actually do something
 		}
 
-		if(!vision.limelighSeesTarget()) {
+		if(!vision.limelightSeesTarget()) {
 			forceExit = true;
 			swerve.lock();
 			return;

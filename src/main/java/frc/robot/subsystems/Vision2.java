@@ -39,7 +39,7 @@ public class Vision2 extends SubsystemBase {
 	}
 
 
-	public boolean limelighSeesTarget() {
+	public boolean limelightSeesTarget() {
 		int in = 0;
 		limelight.getEntry("tv").getInteger(in);
 		return in == 0;

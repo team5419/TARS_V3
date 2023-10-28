@@ -17,6 +17,8 @@ public class OptimizedMove extends SequentialCommandGroup {
     public OptimizedMove(OptimizedArm arm, ArmTargets target) {
         ArmState graphStator = arm.getGraphStator();
 
+        // TODO: Calculate the new accel for both the arm and the cuber so that they arrive at the same time
+
         // If we are in the same sector, then we are good to move wherever
         if (graphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
             addCommands(new ParallelToPos(arm, target));
