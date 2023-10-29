@@ -48,6 +48,8 @@ public class AutoAlign extends CommandBase {
         translationController.reset();
         straifController.reset();
         rotationController.reset();
+
+        vision.enableLEDs();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -66,6 +68,7 @@ public class AutoAlign extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        vision.disableLEDs();
         swerve.lock();
     }
 
