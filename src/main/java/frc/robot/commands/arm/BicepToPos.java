@@ -9,14 +9,22 @@ public class BicepToPos extends CommandBase {
 
     private final OptimizedArm arm;
     private double target;
+    private double epsilon;
 
-    public BicepToPos(OptimizedArm arm, double target) {
+    public BicepToPos(OptimizedArm arm, double target, double epsilon) {
         this.arm = arm;
         this.target = target;
+        this.epsilon = epsilon;
+        
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(arm);
+        // addRequirements(arm);
         
     }
+
+    public BicepToPos(OptimizedArm arm, double target) {
+        this(arm, target, 1000);
+    }
+
 
     // Called when the command is initially scheduled.
     @Override
@@ -39,7 +47,7 @@ public class BicepToPos extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(target - arm.getBicepPosition()) < 1000;
+        return Math.abs(target - arm.getBicepPosition()) < epsilon;
     }
 
 }

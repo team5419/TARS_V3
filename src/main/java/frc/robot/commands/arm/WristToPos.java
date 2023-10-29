@@ -10,13 +10,19 @@ public class WristToPos extends CommandBase {
 
     private final OptimizedArm arm;
     private double target;
+    private double epsilon;
 
-    public WristToPos(OptimizedArm arm, double target) {
+    public WristToPos(OptimizedArm arm, double target, double epsilon) {
         this.arm = arm;
         this.target = target;
+        this.epsilon = epsilon;
         // Use addRequirements() here to declare subsystem dependencies.
         // addRequirements(arm);
         
+    }
+
+    public WristToPos(OptimizedArm arm, double target) {
+        this(arm, target, 1000);
     }
 
     // Called when the command is initially scheduled.
@@ -40,7 +46,7 @@ public class WristToPos extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return Math.abs(target - arm.getWristPosition()) < 1000;
+        return Math.abs(target - arm.getWristPosition()) < epsilon;
     }
 
 }

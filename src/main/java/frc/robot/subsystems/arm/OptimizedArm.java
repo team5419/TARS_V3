@@ -28,59 +28,82 @@ public class OptimizedArm extends SubsystemBase {
     protected WPI_TalonFX wristTalon;
     private boolean isInBrakeMode;
 
-    public ArmState graphStator; // Really cant find a better name ATM
+    public GraphStator graphStator; // Really cant find a better name ATM
 
     // Get a tab and a toggle so that we don't have to re-deploy or power-cycle our bot to tune our arm setpoints
     private ShuffleboardTab tab = Shuffleboard.getTab("Optimized Arm");
     private GenericEntry tuningModeToggle = tab.add("Tuning Mode", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-    private boolean isTesting = !DriverStation.isFMSAttached(); // So we only run this if we are not at comp
+    private boolean isAtComp = DriverStation.isFMSAttached(); // So we only run this if we are not at competition
 
     private Notifier updateTuningMode = new Notifier(() -> {
-
         // If we are driving, we want the arm to always be in brake mode, so we override it
         if(DriverStation.isEnabled()) {
-
             // Make sure the UI is updated
             tuningModeToggle.setBoolean(false);
-
             // Make sure we are in the correct mode
             setBrakeMode(true);
-
             // We don't care any further so skip
             return;
         }
 
-        // Hopefully this reduces can load, but not sure
+        // Hopefully this reduces CAN load, but not sure
         if(isInBrakeMode != !tuningModeToggle.getBoolean(false)) { 
-
             // We negate so that it makes more sense in DS
             setBrakeMode(!tuningModeToggle.getBoolean(false));
         }
     });
 
+    static class MotionMagicConfig {
+        boolean isBicep; 
+        double cruiseVelocity;
+        double acceleration;
+        int sCurveStrength;
 
+        /**
+         * Make a new MotionMagicConfig object
+         * @param isBicep - are we targeting the bicep?
+         * @param cruiseVelocity - max cruse
+         * @param acceleration - max accel
+         * @param sCurveStrength - s curve str, recommend 2
+         */
+        public MotionMagicConfig (boolean isBicep, double cruiseVelocity, double acceleration, int sCurveStrength) {
+            this.isBicep = isBicep; 
+            this.cruiseVelocity = cruiseVelocity;
+            this.acceleration = acceleration;
+            this.sCurveStrength = sCurveStrength;
+        }
+    }
+
+    private MotionMagicConfig bicepBaseConfig = new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR);
+    private MotionMagicConfig wristBaseConfig = new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR);
+  
+    private MotionMagicConfig bicepSlowConfig = new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V / 20, Constants.ArmConstants.BASE_MAX_A / 20, Constants.ArmConstants.BASE_CURVE_STR);
+    private MotionMagicConfig wristSlowConfig = new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / 20, Constants.ArmConstants.WRIST_MAX_A / 20, Constants.ArmConstants.WRIST_CURVE_STR);
 
     public OptimizedArm (boolean isTesting) {
+
         setupMotors();
         setBrakeMode(true);
 
-        if(isTesting) {
+        if(!isAtComp) {
             updateTuningMode.startPeriodic(0.5); // Slow as not to overwhelm our cpu
         }
 
         tuningModeToggle.setBoolean(false);
 
-        graphStator = new ArmState(this);
+        graphStator = new GraphStator(this);
 
         if(isTesting) {
             // Slow us tf down
-            configMotionMagic(true, Constants.ArmConstants.BASE_MAX_V / 20, Constants.ArmConstants.BASE_MAX_A / 20, Constants.ArmConstants.BASE_CURVE_STR);
-            configMotionMagic(false, Constants.ArmConstants.WRIST_MAX_V / 20, Constants.ArmConstants.WRIST_MAX_A / 20, Constants.ArmConstants.WRIST_CURVE_STR);
+            configMotionMagic(bicepSlowConfig);
+            configMotionMagic(wristSlowConfig);
 
             // Limit our current
             bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
             bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
             wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
+        } else {
+            resetMotionMagic();
         }
     }
 
@@ -96,8 +119,6 @@ public class OptimizedArm extends SubsystemBase {
         bicepTalon.config_kI(0, Constants.ArmConstants.BASE_kI);
         bicepTalon.config_kD(0, Constants.ArmConstants.BASE_kD);
 
-        configMotionMagic(true, Constants.ArmConstants.BASE_MAX_V, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR);
-
         bicepTalonFollower.follow(bicepTalon);
         bicepTalonFollower.setInverted(InvertType.FollowMaster);
 
@@ -107,8 +128,6 @@ public class OptimizedArm extends SubsystemBase {
         wristTalon.config_kP(0, Constants.ArmConstants.WRIST_kP);
         wristTalon.config_kI(0, Constants.ArmConstants.WRIST_kI);
         wristTalon.config_kD(0, Constants.ArmConstants.WRIST_kD);
-
-        configMotionMagic(false, Constants.ArmConstants.WRIST_MAX_V, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR);
         
         wristTalon.setInverted(TalonFXInvertType.Clockwise);
     }
@@ -118,8 +137,12 @@ public class OptimizedArm extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Encoder in Degrees", getWristPositionDegrees());
     }
 
-    public ArmState getGraphStator () {
+    public GraphStator getGraphStator () {
         return graphStator;
+    }
+
+    public MotionMagicConfig getBaseConfig(boolean bicep) {
+        return bicep ? bicepBaseConfig : wristBaseConfig;
     }
 
     public void setBicep(ControlMode mode, double setpoint) {
@@ -194,8 +217,8 @@ public class OptimizedArm extends SubsystemBase {
         return bicepTalon.getSelectedSensorVelocity();
     }
 
-    public void configMotionMagic (boolean isBase, double cruiseVelocity, double acceleration, int sCurveStrength) {
-        if(isBase) {
+    public void configMotionMagic (boolean isBicep, double cruiseVelocity, double acceleration, int sCurveStrength) {
+        if(isBicep) {
             bicepTalon.configMotionCruiseVelocity(cruiseVelocity);
             bicepTalon.configMotionAcceleration(acceleration);
             bicepTalon.configMotionSCurveStrength(sCurveStrength);
@@ -206,8 +229,20 @@ public class OptimizedArm extends SubsystemBase {
         }
     }
 
+    public void configMotionMagic (MotionMagicConfig cfg) {
+        if(cfg.isBicep) {
+            bicepTalon.configMotionCruiseVelocity(cfg.cruiseVelocity);
+            bicepTalon.configMotionAcceleration(cfg.acceleration);
+            bicepTalon.configMotionSCurveStrength(cfg.sCurveStrength);
+        } else {
+            wristTalon.configMotionCruiseVelocity(cfg.cruiseVelocity);
+            wristTalon.configMotionAcceleration(cfg.acceleration);
+            wristTalon.configMotionSCurveStrength(cfg.sCurveStrength);
+        }
+    }
+
     public void resetMotionMagic() {
-        configMotionMagic(true, Constants.ArmConstants.BASE_MAX_V, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR);
-        configMotionMagic(false, Constants.ArmConstants.WRIST_MAX_V, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR);
+        configMotionMagic(bicepBaseConfig);
+        configMotionMagic(wristBaseConfig);
     }
 }
