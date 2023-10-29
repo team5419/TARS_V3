@@ -11,9 +11,10 @@ import frc.robot.subsystems.limelight.LimelightHelpers;;
 
 
 /**
+ * Designed for retro-reflective auto align with a limelight
  * @author Grayson 
  */
-public class LLAutoPickup extends CommandBase {
+public class AutoAlign extends CommandBase {
 
     private final Swerve swerve;
     private final Vision2 vision;
@@ -22,9 +23,12 @@ public class LLAutoPickup extends CommandBase {
     private final PIDController straifController;
     private final PIDController rotationController;
 
-    public LLAutoPickup(Swerve swerve, Vision2 vision) {
+    private double epsilon;
+
+    public AutoAlign(Swerve swerve, Vision2 vision, double epsilon) {
         this.swerve = swerve;
         this.vision = vision;
+        this.epsilon = epsilon;
 
         translationController = new PIDController(0.1, 0, 0);
         straifController = new PIDController(0.1, 0, 0);
@@ -62,13 +66,13 @@ public class LLAutoPickup extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        
+        swerve.lock();
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return vision.isLimelightAlive == false ||  MathUtil.applyDeadband(LimelightHelpers.getTY(""), 0.01) == 0 && MathUtil.applyDeadband(LimelightHelpers.getTX(""), 0.01) == 0;
+        return vision.isLimelightAlive == false ||  MathUtil.applyDeadband(LimelightHelpers.getTY(""), epsilon) == 0 && MathUtil.applyDeadband(LimelightHelpers.getTX(""), epsilon) == 0;
     }
 
 }

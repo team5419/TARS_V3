@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
-import frc.robot.commands.swerve.LLAutoPickup;
+import frc.robot.commands.swerve.AutoAlign;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.tesing.DynamicMotionMagic;
@@ -84,8 +84,22 @@ public class RobotContainer {
         // Lock Swerve
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
 
-        // Auto Pickup?
-        driver.back().whileTrue(new LLAutoPickup(s_Swerve, vision2));
+        // Auto align?
+        driver.back().whileTrue(new AutoAlign(s_Swerve, vision2, 0.01));
+
+        // Testing
+        // driver.back().whileTrue(new DynamicMotionMagic(m_arm));
+
+        driver.povRight().whileTrue(Commands.runEnd(
+            () -> mIntake.set(-0.2 * INTAKE_PCT), 
+            () -> mIntake.set(0)
+        ));
+
+        driver.povLeft().whileTrue(Commands.runEnd(
+            () -> mIntake.set(INTAKE_PCT), 
+
+            () -> mIntake.set(-0.075)
+        ));
 
         // Snap to shoot
         driver.rightBumper().whileTrue(new SnapTo(s_Swerve, 
@@ -95,7 +109,7 @@ public class RobotContainer {
             () -> driver.leftBumper().getAsBoolean()
         ));
         
-            // Snap to substation
+        // Snap to substation
         driver.b().whileTrue(new SnapTo(s_Swerve, 
             Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? -90 : 90), 
             () -> -driver.getRawAxis(translationAxis), 
@@ -135,21 +149,7 @@ public class RobotContainer {
 
         // Substations
         coDriver.leftBumper().onTrue(new MoveToPos(m_arm, cubeSubstation));
-        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
-
-        driver.povRight().whileTrue(Commands.runEnd(
-            () -> mIntake.set(-0.2 * INTAKE_PCT), 
-            () -> mIntake.set(0)
-        ));
-
-        driver.povLeft().whileTrue(Commands.runEnd(
-            () -> mIntake.set(INTAKE_PCT), 
-
-            () -> mIntake.set(-0.075)
-        ));
-
-        driver.back().whileTrue(new DynamicMotionMagic(m_arm));
-    
+        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));    
     }
 
     private void setUpEventMap() {
