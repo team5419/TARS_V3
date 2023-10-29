@@ -45,7 +45,7 @@ public class RobotContainer {
     public final Swerve s_Swerve = new Swerve();
     public final OptimizedArm m_arm = new OptimizedArm(true);
     public final Intake mIntake = new Intake();
-    private final Vision2 vision2 = new Vision2();
+    private final Vision2 vision2 = new Vision2(s_Swerve);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
