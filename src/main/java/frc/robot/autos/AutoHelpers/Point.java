@@ -29,6 +29,9 @@ public class Point {
         rotation = _rotation;
         passthrough  = _passthrough;
     }
+    public Point(double _x, double _y, double _rotation){
+        this(_x, _y, _rotation, false);
+    }
 
     
 }

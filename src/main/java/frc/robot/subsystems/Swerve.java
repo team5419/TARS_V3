@@ -191,6 +191,20 @@ public class Swerve extends SubsystemBase {
             }
         );
     }
+    public void stop(){
+        //stop moving  -- untested
+        setModuleStates(
+            new SwerveModuleState[]{
+                new SwerveModuleState(0.0,getYaw()),
+                new SwerveModuleState(0.0,getYaw()),
+                new SwerveModuleState(0.0,getYaw()),
+                new SwerveModuleState(0.0,getYaw())
+            }
+        );
+    }
+    public double getRotationDegrees(){
+        return getPose().getRotation().getDegrees();
+    }
     
     @Override
     public void periodic(){

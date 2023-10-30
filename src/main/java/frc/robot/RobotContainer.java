@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
+import frc.robot.commands.swerve.AutoAlign;
 import frc.robot.commands.swerve.LLAutoPickup;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -30,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
+
+ //!! WHY ARE WE USING COMMAND CONTROLLERS THEY ARE HORRIBLE -- AMMEL !!
 public class RobotContainer {
     /* Controllers */
     // private final Joystick driver = new Joystick(0);
@@ -149,7 +152,7 @@ public class RobotContainer {
         ));
 
         driver.back().whileTrue(new DynamicMotionMagic(m_arm));
-    
+        driver.povUp().onTrue(new AutoAlign(s_Swerve, m_arm,10));
     }
 
     private void setUpEventMap() {
