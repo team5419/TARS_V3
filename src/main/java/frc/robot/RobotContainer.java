@@ -48,7 +48,7 @@ public class RobotContainer {
     public final Swerve s_Swerve = new Swerve();
     public final OptimizedArm m_arm = new OptimizedArm(true);
     public final Intake mIntake = new Intake();
-    private final Vision2 vision2 = new Vision2();
+    private final Vision2 vision2 = new Vision2(s_Swerve);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -87,8 +87,22 @@ public class RobotContainer {
         // Lock Swerve
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
 
-        // Auto Pickup?
-        driver.back().whileTrue(new LLAutoPickup(s_Swerve, vision2));
+        // Auto align?
+        driver.back().whileTrue(new AutoAlign(s_Swerve, vision2, 0.01));
+
+        // Testing
+        // driver.back().whileTrue(new DynamicMotionMagic(m_arm));
+
+        driver.povRight().whileTrue(Commands.runEnd(
+            () -> mIntake.set(-0.2 * INTAKE_PCT), 
+            () -> mIntake.set(0)
+        ));
+
+        driver.povLeft().whileTrue(Commands.runEnd(
+            () -> mIntake.set(INTAKE_PCT), 
+
+            () -> mIntake.set(-0.075)
+        ));
 
         // Snap to shoot
         driver.rightBumper().whileTrue(new SnapTo(s_Swerve, 
@@ -98,7 +112,7 @@ public class RobotContainer {
             () -> driver.leftBumper().getAsBoolean()
         ));
         
-            // Snap to substation
+        // Snap to substation
         driver.b().whileTrue(new SnapTo(s_Swerve, 
             Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? -90 : 90), 
             () -> -driver.getRawAxis(translationAxis), 

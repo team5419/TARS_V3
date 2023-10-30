@@ -1,13 +1,10 @@
 package frc.robot.commands.arm;
 
-
-import edu.wpi.first.hal.FRCNetComm.tResourceType;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmTargets;
-import frc.robot.subsystems.arm.ArmState;
-import frc.robot.subsystems.arm.ArmState.SectorState;
-import frc.robot.subsystems.arm.ArmState.Waypoint;
+import frc.robot.subsystems.arm.GraphStator;
+import frc.robot.subsystems.arm.GraphStator.Waypoint;
 import frc.robot.subsystems.arm.OptimizedArm;
 
 /**
@@ -15,28 +12,45 @@ import frc.robot.subsystems.arm.OptimizedArm;
  */
 public class OptimizedMove extends SequentialCommandGroup {
     public OptimizedMove(OptimizedArm arm, ArmTargets target) {
-        ArmState graphStator = arm.getGraphStator();
-
-        // TODO: Calculate the new accel for both the arm and the cuber so that they arrive at the same time
-
-        // If we are in the same sector, then we are good to move wherever
-        if (graphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
-            addCommands(new ParallelToPos(arm, target));
-            return;
-        }
+        // Get our stator, to calculate all the things that we need
+        GraphStator graphStator = arm.getGraphStator();
 
         // "trace" our path trough our imaginary graph to find all of our waypoints
         Waypoint[] waypoints = graphStator.tracePath(
-            graphStator.newWaypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), // Starting
-            graphStator.newWaypoint(arm.ticksToDegreesBicep(target.bicepTarget), arm.ticksToDegreesWrist(target.wristTarget)) // Ending
+            new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), // Starting
+            new Waypoint(arm.ticksToDegreesBicep(target.bicepTarget), arm.ticksToDegreesWrist(target.wristTarget)) // Ending
         );
 
-        for (Waypoint waypoint : waypoints) {
-            // Really hoping that you can call addCommands more than once
-            if(waypoint != null) addCommands(new ParallelToPos(arm, waypoint));
-        }
+        // If we are in the same sector, then we are good to move wherever
+        if (graphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
+            addCommands(
+                new RetimeArm(arm, target), // Make them arrive at the same time (not entirely needed)
+                new ParallelToPos(arm, target, true), // Execute move
+                new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
+            );
 
-        // ! a lot of degrees/encoder conversion problems (maybe?)
+        // If there is only one intermediary waypoint, then only schedule one
+        } else if (waypoints.length == 1) {
+            addCommands(
+                new RetimeArm(arm, waypoints[0]),
+                new ParallelToPos(arm, waypoints[0], false),
+                new RetimeArm(arm, target),
+                new ParallelToPos(arm, target, true),
+                new InstantCommand(() -> arm.resetMotionMagic())
+            );
+
+        // If there is not one, that means that there has to be two, so we schedule appropriately
+        } else {
+            addCommands(
+                new RetimeArm(arm, waypoints[0]), // Make sure the bicep and wrist arrive at the same time
+                new ParallelToPos(arm, waypoints[0], false), // Execute the move, then repeat
+                new RetimeArm(arm, waypoints[1]),
+                new ParallelToPos(arm, waypoints[1], false),
+                new RetimeArm(arm, target),
+                new ParallelToPos(arm, target, true), // We tell the arm that its the last move so that we can be more precise
+                new InstantCommand(() -> arm.resetMotionMagic()) // Reset all of our speed adjustments
+            );
+        }
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(arm);

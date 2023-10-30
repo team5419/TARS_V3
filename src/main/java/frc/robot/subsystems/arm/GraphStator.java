@@ -3,8 +3,9 @@ package frc.robot.subsystems.arm;
 import java.util.HashMap;
 
 import frc.robot.Constants.ArmTargets;
+import frc.robot.subsystems.arm.OptimizedArm.MotionMagicConfig;
 
-public class ArmState {
+public class GraphStator {
     class Sector {
         double bicepMin;
         double bicepMax;
@@ -32,7 +33,7 @@ public class ArmState {
 
     HashMap<SectorState, Sector> sectorLookup = new HashMap<SectorState, Sector>();
 
-    public class Waypoint {
+    public static class Waypoint {
         public double bicep; // x
         public double wrist; // y
 
@@ -51,7 +52,7 @@ public class ArmState {
      *     A
      *  D     c
      */
-    public ArmState (OptimizedArm arm) {
+    public GraphStator (OptimizedArm arm) {
         sectorLookup.put(SectorState.A, new Sector(-45, 45, -270, 270));
         sectorLookup.put(SectorState.B, new Sector(45, 150, 70, 270));
         sectorLookup.put(SectorState.C, new Sector(-45, -150, 70, 270));
@@ -126,19 +127,63 @@ public class ArmState {
         }
     }
 
-    public Waypoint[] tracePath(Waypoint currentWaypoint, Waypoint targetWaypoint) {
-        Waypoint[] tempList = new Waypoint[2];
-
-        if (getSectorStateFromCoords(currentWaypoint) == SectorState.A) { // If we are in a, it can only be one point
+    public Waypoint[] tracePath(Waypoint startWaypoint, Waypoint targetWaypoint) {
+        if (getSectorStateFromCoords(startWaypoint) == SectorState.A) { // If we are in a, it can only be one point
             return new Waypoint[] { getNextWaypoint(SectorState.A, targetWaypoint) };
 
         } else if (getSectorStateFromCoords(targetWaypoint) == SectorState.A) { // If we are ending in a, in can also only be one point
-            return new Waypoint[] { getNextWaypoint(getSectorStateFromCoords(currentWaypoint), targetWaypoint) };
+            return new Waypoint[] { getNextWaypoint(getSectorStateFromCoords(startWaypoint), targetWaypoint) };
 
-        } else { // If neither of those, that means we need two points to go to and fro
-            tempList[0] = getNextWaypoint(getSectorStateFromCoords(currentWaypoint), new Waypoint(0, 0));
-            tempList[1] = getNextWaypoint(getSectorStateFromCoords(tempList[0]), targetWaypoint);
-            return tempList;
+        } else { // If neither of those, that means we need two points to make our path
+            return new Waypoint[] { 
+                getNextWaypoint(getSectorStateFromCoords(startWaypoint), new Waypoint(0, 0)), // From wherever to a
+                getNextWaypoint(getSectorStateFromCoords(new Waypoint(0, 0)), targetWaypoint) // From a to destination
+            };
         }
+    }
+
+    /**
+     * Returns a new motion magic config for the single part that needs to slow down
+     * @param start - the staring waypoint
+     * @param end - the ending waypoint
+     * @return - a single motion magic config, to be passed into OptimizedArm.configMotionMagic
+     */
+    public MotionMagicConfig calculateNewMotionMagic(Waypoint start, Waypoint end) {
+        double bicepDiff = Math.abs(start.bicep - end.bicep);
+        double wristDiff = Math.abs(start.wrist - end.wrist);
+        
+        double ratio = bicepDiff / wristDiff;
+
+        if(ratio < 0.0001) { // Prevent incredibly small ratios
+            return arm.getBaseConfig(true); // change nothing, but have to return something
+        }
+
+        if(ratio > 1) {
+            MotionMagicConfig base = arm.getBaseConfig(true);
+            return new MotionMagicConfig(true, base.cruiseVelocity / ratio, base.acceleration, base.sCurveStrength);
+        } else if (ratio < 1) {
+            MotionMagicConfig base = arm.getBaseConfig(false);
+            return new MotionMagicConfig(false, base.cruiseVelocity * ratio, base.acceleration, base.sCurveStrength);
+        } else {
+            return arm.getBaseConfig(true); // change nothing, but have to return something
+        }
+        
+        /**
+         * bicep --> 100
+         * wrist --> 50
+         * 
+         * ratio --> 2
+         * 
+         * would mean divide bicep by 2 (slow it down to match)
+         * 
+         * ---------------------------------------------------------------
+         * 
+         * bicep --> 50
+         * wrist --> 100
+         * 
+         * ratio --> 0.5
+         * 
+         * would mean multiply wrist by 0.5 (slow it down to match)
+         */
     }
 }
