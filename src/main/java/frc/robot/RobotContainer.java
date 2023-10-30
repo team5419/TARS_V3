@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
-import frc.robot.commands.swerve.AutoAlign;
-import frc.robot.commands.swerve.LLAutoPickup;
+import frc.robot.commands.swerve.AutoAlignGrayson;
+import frc.robot.commands.swerve.AutoAlignPenn;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.tesing.DynamicMotionMagic;
@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  */
 
  //!! WHY ARE WE USING COMMAND CONTROLLERS THEY ARE HORRIBLE -- AMMEL !!
+ //!! YOU didn't WANT TO CHANGE IT SO I LEFT IT -- G !!
 public class RobotContainer {
     /* Controllers */
     // private final Joystick driver = new Joystick(0);
@@ -88,7 +89,8 @@ public class RobotContainer {
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
 
         // Auto align?
-        driver.back().whileTrue(new AutoAlign(s_Swerve, vision2, 0.01));
+        driver.back().whileTrue(new AutoAlignGrayson(s_Swerve, vision2, 0.01));
+        driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,10));
 
         // Testing
         // driver.back().whileTrue(new DynamicMotionMagic(m_arm));
@@ -153,20 +155,6 @@ public class RobotContainer {
         // Substations
         coDriver.leftBumper().onTrue(new MoveToPos(m_arm, cubeSubstation));
         coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
-
-        driver.povRight().whileTrue(Commands.runEnd(
-            () -> mIntake.set(-0.2 * INTAKE_PCT), 
-            () -> mIntake.set(0)
-        ));
-
-        driver.povLeft().whileTrue(Commands.runEnd(
-            () -> mIntake.set(INTAKE_PCT), 
-
-            () -> mIntake.set(-0.075)
-        ));
-
-        driver.back().whileTrue(new DynamicMotionMagic(m_arm));
-        driver.povUp().onTrue(new AutoAlign(s_Swerve, m_arm,10));
     }
 
     private void setUpEventMap() {

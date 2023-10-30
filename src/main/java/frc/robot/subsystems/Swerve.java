@@ -199,16 +199,9 @@ public class Swerve extends SubsystemBase {
         );
     }
     public void stop(){
-        //stop moving  -- untested
-        setModuleStates(
-            new SwerveModuleState[]{
-                new SwerveModuleState(0.0,getYaw()),
-                new SwerveModuleState(0.0,getYaw()),
-                new SwerveModuleState(0.0,getYaw()),
-                new SwerveModuleState(0.0,getYaw())
-            }
-        );
+        drive(new Translation2d(0, 0), 0, false, false);
     }
+
     public double getRotationDegrees(){
         return getPose().getRotation().getDegrees();
     }
@@ -217,8 +210,6 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         // swerveOdometry.update(getYaw(), getModulePositions());  
         estimator.update(getYaw(), getModulePositions());  
-
-        // System.out.println(field2d.getRobotPose().getX());
 
         // for(SwerveModule mod : mSwerveMods){
         //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());

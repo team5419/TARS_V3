@@ -90,12 +90,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    // Try to avoid arm snapping when enabled
-    new MoveToPos(m_robotContainer.m_arm, m_robotContainer.m_arm.getBicepPosition(), m_robotContainer.m_arm.getWristPosition()); 
-
     // This makes sure that the autonomous stops running when
     // teleop starts running. 
     chooser.getSelected().end();
+
+    // Try to avoid arm snapping when enabled
+    new MoveToPos(m_robotContainer.m_arm, m_robotContainer.m_arm.getBicepPosition(), m_robotContainer.m_arm.getWristPosition()); 
   }
 
   /** This function is called periodically during operator control. */

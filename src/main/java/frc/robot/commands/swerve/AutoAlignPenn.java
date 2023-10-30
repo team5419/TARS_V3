@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author Ammel
  */
-public class AutoAlign extends CommandBase {
+public class AutoAlignPenn extends CommandBase {
 
   private final Swerve swerve;
   private final OptimizedArm arm;
@@ -43,7 +43,7 @@ public class AutoAlign extends CommandBase {
   private Timer timer;
   private double timeLimit;
 
-  public AutoAlign(Swerve swerve, OptimizedArm arm, double timeLimit) {
+  public AutoAlignPenn(Swerve swerve, OptimizedArm arm, double timeLimit) {
     this.swerve = swerve;
     this.arm = arm;
     this.path = directPath();

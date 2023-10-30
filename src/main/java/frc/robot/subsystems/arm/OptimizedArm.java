@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.fasterxml.jackson.databind.deser.impl.ExternalTypeHandler.Builder;
 
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -35,7 +36,9 @@ public class OptimizedArm extends SubsystemBase {
     private GenericEntry tuningModeToggle = tab.add("Tuning Mode", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     private boolean isAtComp = DriverStation.isFMSAttached(); // So we only run this if we are not at competition
 
-    private Notifier updateTuningMode = new Notifier(() -> {
+    private GenericEntry resetArmPosButton = tab.add("Reset Arm Pose", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+
+    private Notifier updateDSInputs = new Notifier(() -> {
         // If we are driving, we want the arm to always be in brake mode, so we override it
         if(DriverStation.isEnabled()) {
             // Make sure the UI is updated
@@ -86,7 +89,7 @@ public class OptimizedArm extends SubsystemBase {
         setBrakeMode(true);
 
         if(!isAtComp) {
-            updateTuningMode.startPeriodic(0.5); // Slow as not to overwhelm our cpu
+            updateDSInputs.startPeriodic(0.5); // Slow as not to overwhelm our cpu
         }
 
         tuningModeToggle.setBoolean(false);
@@ -244,5 +247,19 @@ public class OptimizedArm extends SubsystemBase {
     public void resetMotionMagic() {
         configMotionMagic(bicepBaseConfig);
         configMotionMagic(wristBaseConfig);
+    }
+
+    public void resetBicepPose() {
+        bicepTalon.setSelectedSensorPosition(0);
+        bicepTalonFollower.setSelectedSensorPosition(0);
+    }
+
+    public void resetWristPose() {
+        wristTalon.setSelectedSensorPosition(0);
+    }
+
+    public void resetArmPose() {
+        resetBicepPose();
+        resetWristPose();
     }
 }

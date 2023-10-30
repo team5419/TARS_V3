@@ -50,7 +50,7 @@ public class GraphStator {
      * 
      *  E     B
      *     A
-     *  D     c
+     *  D     C
      */
     public GraphStator (OptimizedArm arm) {
         sectorLookup.put(SectorState.A, new Sector(-45, 45, -270, 270));
