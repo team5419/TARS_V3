@@ -3,9 +3,12 @@ package frc.robot.commands.arm;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmTargets;
+import frc.robot.subsystems.arm.ArmState;
+import frc.robot.subsystems.arm.ArmWaypoints;
 import frc.robot.subsystems.arm.GraphStator;
-import frc.robot.subsystems.arm.GraphStator.Waypoint;
+import frc.robot.subsystems.arm.GraphStatorOLD;
 import frc.robot.subsystems.arm.OptimizedArm;
+import frc.robot.subsystems.arm.Waypoint;
 
 /**
  * @author Grayson
@@ -13,16 +16,16 @@ import frc.robot.subsystems.arm.OptimizedArm;
 public class OptimizedMove extends SequentialCommandGroup {
     public OptimizedMove(OptimizedArm arm, ArmTargets target) {
         // Get our stator, to calculate all the things that we need
-        GraphStator graphStator = arm.getGraphStator();
+        // GraphStatorOLD graphStator = arm.getGraphStator();
 
         // "trace" our path trough our imaginary graph to find all of our waypoints
-        Waypoint[] waypoints = graphStator.tracePath(
-            new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), // Starting
-            new Waypoint(arm.ticksToDegreesBicep(target.bicepTarget), arm.ticksToDegreesWrist(target.wristTarget)) // Ending
+        ArmWaypoints[] waypoints = GraphStator.tracePath(
+            new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()),
+            target
         );
 
         // If we are in the same sector, then we are good to move wherever
-        if (graphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
+        if (GraphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
             addCommands(
                 new RetimeArm(arm, target), // Make them arrive at the same time (not entirely needed)
                 new ParallelToPos(arm, target, true), // Execute move

@@ -29,8 +29,6 @@ public class OptimizedArm extends SubsystemBase {
     protected WPI_TalonFX wristTalon;
     private boolean isInBrakeMode;
 
-    public GraphStator graphStator; // Really cant find a better name ATM
-
     // Get a tab and a toggle so that we don't have to re-deploy or power-cycle our bot to tune our arm setpoints
     private ShuffleboardTab tab = Shuffleboard.getTab("Optimized Arm");
     private GenericEntry tuningModeToggle = tab.add("Tuning Mode", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
@@ -94,7 +92,7 @@ public class OptimizedArm extends SubsystemBase {
 
         tuningModeToggle.setBoolean(false);
 
-        graphStator = new GraphStator(this);
+        // graphStator = new GraphStator();
 
         if(isTesting) {
             // Slow us tf down
@@ -140,9 +138,6 @@ public class OptimizedArm extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Encoder in Degrees", getWristPositionDegrees());
     }
 
-    public GraphStator getGraphStator () {
-        return graphStator;
-    }
 
     public MotionMagicConfig getBaseConfig(boolean bicep) {
         return bicep ? bicepBaseConfig : wristBaseConfig;
@@ -204,7 +199,7 @@ public class OptimizedArm extends SubsystemBase {
      * Should be the inverse of "degreesToTicksBicep"
      * @return the bicep position in degrees
      */
-    public double ticksToDegreesBicep (double ticks) {
+    public static double ticksToDegreesBicep (double ticks) {
         return ticks * (Math.PI / 1024 / Constants.ArmConstants.BASE_GEAR_RATIO) * 180 * Math.PI;
     }
 
@@ -212,7 +207,7 @@ public class OptimizedArm extends SubsystemBase {
      * Should be the inverse of "degreesToTicksWrist"
      * @return the wrist position in degrees
      */
-    public double ticksToDegreesWrist (double ticks) {
+    public static double ticksToDegreesWrist (double ticks) {
         return ticks * (Math.PI / 1024 / Constants.ArmConstants.WRIST_GEAR_RATIO) * 180 * Math.PI;
     }
 

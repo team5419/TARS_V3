@@ -2,8 +2,10 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ArmTargets;
+import frc.robot.subsystems.arm.ArmWaypoints;
+import frc.robot.subsystems.arm.GraphStator;
 import frc.robot.subsystems.arm.OptimizedArm;
-import frc.robot.subsystems.arm.GraphStator.Waypoint;
+import frc.robot.subsystems.arm.Waypoint;
 
 /**
  * @author 
@@ -12,7 +14,7 @@ public class RetimeArm extends CommandBase {
 
     private final OptimizedArm arm;
     private ArmTargets target;
-    private Waypoint targetWaypoint;
+    private ArmWaypoints targetWaypoint;
 
     public RetimeArm(OptimizedArm arm, ArmTargets target) {
         this.arm = arm;        
@@ -20,20 +22,20 @@ public class RetimeArm extends CommandBase {
         this.targetWaypoint = null;
     }
 
-        public RetimeArm(OptimizedArm arm, Waypoint target) {
+    public RetimeArm(OptimizedArm arm, ArmWaypoints targetWaypoint) {
         this.arm = arm;        
         this.target = null;
-        this.targetWaypoint = target;
+        this.targetWaypoint = targetWaypoint;
     }
 
     @Override
     public void initialize() {
-        Waypoint starWaypoint = new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees());
+        Waypoint startWaypoint = new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees());
         if(target == null) {
-            arm.configMotionMagic(arm.graphStator.calculateNewMotionMagic(starWaypoint, targetWaypoint));
+            arm.configMotionMagic(GraphStator.calculateNewMotionMagic(startWaypoint, new Waypoint(targetWaypoint.point.bicep, targetWaypoint.point.wrist), arm));
         } else {
-            Waypoint endWaypoint = new Waypoint(arm.ticksToDegreesBicep(target.bicepTarget), arm.ticksToDegreesWrist(target.wristTarget));
-            arm.configMotionMagic(arm.graphStator.calculateNewMotionMagic(starWaypoint, endWaypoint));
+            Waypoint endWaypoint = new Waypoint(OptimizedArm.ticksToDegreesBicep(target.bicepTarget), OptimizedArm.ticksToDegreesWrist(target.wristTarget));
+            arm.configMotionMagic(GraphStator.calculateNewMotionMagic(startWaypoint, endWaypoint, arm));
         }
     }
 

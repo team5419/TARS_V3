@@ -17,6 +17,7 @@ import static java.lang.Math.*;
     /**
      * @deprecated Never use this
      */
+    @Deprecated
     public class Arm extends SubsystemBase {
 
         //! THIS IS DEPRECIATED CODE, WILL BE DELETED SOON, AND IS A BAD EXAMPLE
@@ -78,6 +79,7 @@ import static java.lang.Math.*;
          * @deprecated You should never use this. It is old code
          * @param tuningMode
          */
+        @Deprecated
         public Arm(boolean tuningMode) {
             baseTalon = new WPI_TalonFX(BASE_ID);
             wristTalon = new WPI_TalonFX(WRIST_ID);
