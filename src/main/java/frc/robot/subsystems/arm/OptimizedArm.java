@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.opencv.core.Mat;
 
+import com.ctre.phoenix.Util;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.math.Conversions;
 import frc.robot.Constants;
 
 public class OptimizedArm extends SubsystemBase {
@@ -134,6 +136,9 @@ public class OptimizedArm extends SubsystemBase {
     }
 
     public void periodic () {
+        SmartDashboard.putNumber("Bicep Encoder", getBicepPosition());
+        SmartDashboard.putNumber("Wrist Encoder", getWristPosition());
+
         SmartDashboard.putNumber("Bicep Encoder in Degrees", getBicepPositionDegrees());
         SmartDashboard.putNumber("Wrist Encoder in Degrees", getWristPositionDegrees());
     }
@@ -200,15 +205,17 @@ public class OptimizedArm extends SubsystemBase {
      * @return the bicep position in degrees
      */
     public static double ticksToDegreesBicep (double ticks) {
-        return ticks * (Math.PI / 1024 / Constants.ArmConstants.BASE_GEAR_RATIO) * 180 * Math.PI;
+        // return ticks * (Math.PI / 1024 / Constants.ArmConstants.BASE_GEAR_RATIO) * 180 * Math.PI;
+        return Conversions.falconToDegrees(ticks, Constants.ArmConstants.BASE_GEAR_RATIO);
     }
 
-        /**
+    /**
      * Should be the inverse of "degreesToTicksWrist"
      * @return the wrist position in degrees
      */
     public static double ticksToDegreesWrist (double ticks) {
-        return ticks * (Math.PI / 1024 / Constants.ArmConstants.WRIST_GEAR_RATIO) * 180 * Math.PI;
+        return Conversions.falconToDegrees(ticks, Constants.ArmConstants.WRIST_GEAR_RATIO);
+        
     }
 
     public double getBicepVelocity () {

@@ -24,6 +24,11 @@ public class OptimizedMove extends SequentialCommandGroup {
             target
         );
 
+        if(waypoints[0] == null) { // This is only true if moving into invalid space
+            System.err.println("[OPTIMIZED MOVE] Invalid position requested, abandoning move");
+            return;
+        }
+
         // If we are in the same sector, then we are good to move wherever
         if (GraphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
             addCommands(
@@ -32,7 +37,7 @@ public class OptimizedMove extends SequentialCommandGroup {
                 new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
             );
 
-        // If there is only one intermediary waypoint, then only schedule one
+        // If there is only one intermediary waypoint
         } else if (waypoints.length == 1) {
             addCommands(
                 new RetimeArm(arm, waypoints[0]),
@@ -42,7 +47,7 @@ public class OptimizedMove extends SequentialCommandGroup {
                 new InstantCommand(() -> arm.resetMotionMagic())
             );
 
-        // If there is not one, that means that there has to be two, so we schedule appropriately
+        // If there is not one, the only other return value can be two, so we add the two
         } else {
             addCommands(
                 new RetimeArm(arm, waypoints[0]), // Make sure the bicep and wrist arrive at the same time

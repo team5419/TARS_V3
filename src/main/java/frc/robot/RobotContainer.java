@@ -13,6 +13,7 @@ import frc.robot.commands.swerve.AutoAlignGrayson;
 import frc.robot.commands.swerve.AutoAlignPenn;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
+import frc.robot.commands.tesing.ArmTester;
 import frc.robot.commands.tesing.DynamicMotionMagic;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.arm.OptimizedArm;
@@ -93,7 +94,7 @@ public class RobotContainer {
         driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,10));
 
         // Testing
-        // driver.back().whileTrue(new DynamicMotionMagic(m_arm));
+        driver.povDown().whileTrue(new ArmTester(m_arm, coneHigh));
 
         driver.povRight().whileTrue(Commands.runEnd(
             () -> mIntake.set(-0.2 * INTAKE_PCT), 
