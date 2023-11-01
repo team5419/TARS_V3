@@ -40,10 +40,12 @@ public class OptimizedArm extends SubsystemBase {
     private Notifier updateDSInputs = new Notifier(() -> {
         // If we are driving, we want the arm to always be in brake mode, so we override it
         if(DriverStation.isEnabled()) {
-            // Make sure the UI is updated
-            tuningModeToggle.setBoolean(false);
+            // if were already in brake mode, then skip
+            if (isInBrakeMode) return;
             // Make sure we are in the correct mode
             setBrakeMode(true);
+            // Make sure the UI is updated
+            tuningModeToggle.setBoolean(false);
             // We don't care any further so skip
             return;
         }
@@ -66,7 +68,7 @@ public class OptimizedArm extends SubsystemBase {
          * @param isBicep - are we targeting the bicep?
          * @param cruiseVelocity - max cruse
          * @param acceleration - max accel
-         * @param sCurveStrength - s curve str, recommend 2
+         * @param sCurveStrength - s curve strength, recommend 2
          */
         public MotionMagicConfig (boolean isBicep, double cruiseVelocity, double acceleration, int sCurveStrength) {
             this.isBicep = isBicep; 
