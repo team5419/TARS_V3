@@ -6,7 +6,6 @@ import frc.robot.Constants.ArmTargets;
 import frc.robot.subsystems.arm.ArmState;
 import frc.robot.subsystems.arm.ArmWaypoints;
 import frc.robot.subsystems.arm.GraphStator;
-import frc.robot.subsystems.arm.GraphStatorOLD;
 import frc.robot.subsystems.arm.OptimizedArm;
 import frc.robot.subsystems.arm.Waypoint;
 
@@ -15,9 +14,6 @@ import frc.robot.subsystems.arm.Waypoint;
  */
 public class OptimizedMove extends SequentialCommandGroup {
     public OptimizedMove(OptimizedArm arm, ArmTargets target) {
-        // Get our stator, to calculate all the things that we need
-        // GraphStatorOLD graphStator = arm.getGraphStator();
-
         // "trace" our path trough our imaginary graph to find all of our waypoints
         ArmWaypoints[] waypoints = GraphStator.tracePath(
             new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()),

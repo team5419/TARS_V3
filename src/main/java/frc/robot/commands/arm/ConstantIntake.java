@@ -1,7 +1,6 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Intake;
 
 public class ConstantIntake extends CommandBase {

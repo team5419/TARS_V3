@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
+import frc.robot.commands.arm.ResetArmPose;
 
 public class OptimizedArm extends SubsystemBase {
     // Our thee motors
@@ -35,8 +36,6 @@ public class OptimizedArm extends SubsystemBase {
     private ShuffleboardTab tab = Shuffleboard.getTab("Optimized Arm");
     private GenericEntry tuningModeToggle = tab.add("Tuning Mode", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     private boolean isAtComp = DriverStation.isFMSAttached(); // So we only run this if we are not at competition
-
-    private GenericEntry resetArmPosButton = tab.add("Reset Arm Pose", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
     private Notifier updateDSInputs = new Notifier(() -> {
         // If we are driving, we want the arm to always be in brake mode, so we override it
@@ -108,6 +107,10 @@ public class OptimizedArm extends SubsystemBase {
         } else {
             resetMotionMagic();
         }
+
+        tab.add("Reset Arm Pose", new ResetArmPose(this));
+        // if ^^^^ doesn't work
+        // SmartDashboard.putData("Reset Arm Pose", new ResetArmPose(this));
     }
 
     public void setupMotors() {
