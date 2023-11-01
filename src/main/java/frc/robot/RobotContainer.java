@@ -21,6 +21,7 @@ import frc.robot.subsystems.arm.OptimizedArm;
 import static frc.robot.Constants.ArmConstants.*;
 import static frc.robot.Constants.IntakeConstants.*;
 
+import java.sql.Driver;
 import java.util.HashMap;
 
 import edu.wpi.first.wpilibj2.command.*;
@@ -69,6 +70,9 @@ public class RobotContainer {
 
         // Configure the button bindings
         configureButtonBindings();
+
+        // Make driver station stop repeating that we are missing a controller
+        DriverStation.silenceJoystickConnectionWarning(true);
     }
 
     /**
