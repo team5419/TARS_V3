@@ -1,16 +1,19 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
-import frc.robot.commands.swerve.AutoAlignGrayson;
-import frc.robot.commands.swerve.AutoAlignPenn;
+import frc.robot.commands.arm.OptimizedMove;
+import frc.robot.commands.arm.ParallelToPos;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.tesing.ArmTester;
@@ -23,6 +26,7 @@ import static frc.robot.Constants.IntakeConstants.*;
 
 import java.sql.Driver;
 import java.util.HashMap;
+import java.util.Map;
 
 import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -51,7 +55,17 @@ public class RobotContainer {
     public final Swerve s_Swerve = new Swerve();
     public final OptimizedArm m_arm = new OptimizedArm(true);
     public final Intake mIntake = new Intake();
-    private final Vision2 vision2 = new Vision2(s_Swerve);
+    // private final Vision2 vision2 = new Vision2(s_Swerve);
+
+    public GenericEntry bicepTuningEntry = Shuffleboard.getTab("Tuning").add("Bicep dest", 0.0)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", -150, "max", 150))
+        .getEntry();
+
+    public GenericEntry wristTuningEntry = Shuffleboard.getTab("Tuning").add("Wrist dest", 0.0)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", -215, "max", 215))
+        .getEntry();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -94,11 +108,12 @@ public class RobotContainer {
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
 
         // Auto align?
-        driver.back().whileTrue(new AutoAlignGrayson(s_Swerve, vision2, 0.01));
-        driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,10));
+        // driver.back().whileTrue(new AutoAlignGrayson(s_Swerve, vision2, 0.01));
+        // driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,10));
 
         // Testing
-        driver.povDown().whileTrue(new ArmTester(m_arm, coneHigh));
+        driver.povDown().whileTrue(new ArmTester(m_arm, bicepTuningEntry, wristTuningEntry));
+        // driver.povLeft().onTrue(new ParallelToPos(m_arm, coneGround, false));
 
         driver.povRight().whileTrue(Commands.runEnd(
             () -> mIntake.set(-0.2 * INTAKE_PCT), 
@@ -145,9 +160,9 @@ public class RobotContainer {
         // coDriver.povUp().onTrue(new TwoPartHigh(m_arm, cubeHigh)); //! Currently in beta
 
         // Mid
-        coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
+        coDriver.x().onTrue(new OptimizedMove(m_arm, coneMid));
         coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
-        coDriver.povLeft().onTrue(new MoveToPos(m_arm, cubeMid));
+        coDriver.povLeft().onTrue(new OptimizedMove(m_arm, cubeMid));
 
         // Hybrid
         coDriver.povDown().onTrue(new MoveToPos(m_arm, cubeHybrid));

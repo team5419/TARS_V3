@@ -37,6 +37,8 @@ public class OptimizedArm extends SubsystemBase {
     private GenericEntry tuningModeToggle = tab.add("Tuning Mode", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
     private boolean isAtComp = DriverStation.isFMSAttached(); // So we only run this if we are not at competition
 
+    public boolean isTesting = false;
+
     private Notifier updateDSInputs = new Notifier(() -> {
         // If we are driving, we want the arm to always be in brake mode, so we override it
         if(DriverStation.isEnabled()) {
@@ -81,8 +83,8 @@ public class OptimizedArm extends SubsystemBase {
     private MotionMagicConfig bicepBaseConfig = new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR);
     private MotionMagicConfig wristBaseConfig = new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR);
   
-    private MotionMagicConfig bicepSlowConfig = new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V / 20, Constants.ArmConstants.BASE_MAX_A / 20, Constants.ArmConstants.BASE_CURVE_STR);
-    private MotionMagicConfig wristSlowConfig = new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / 20, Constants.ArmConstants.WRIST_MAX_A / 20, Constants.ArmConstants.WRIST_CURVE_STR);
+    private MotionMagicConfig bicepSlowConfig = new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V / 10, Constants.ArmConstants.BASE_MAX_A / 10, Constants.ArmConstants.BASE_CURVE_STR);
+    private MotionMagicConfig wristSlowConfig = new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / 10, Constants.ArmConstants.WRIST_MAX_A / 10, Constants.ArmConstants.WRIST_CURVE_STR);
 
     public OptimizedArm (boolean isTesting) {
 
@@ -113,6 +115,8 @@ public class OptimizedArm extends SubsystemBase {
         tab.add("Reset Arm Pose", new ResetArmPose(this));
         // if ^^^^ doesn't work
         // SmartDashboard.putData("Reset Arm Pose", new ResetArmPose(this));
+
+        this.isTesting = isTesting;
     }
 
     public void setupMotors() {
@@ -251,9 +255,15 @@ public class OptimizedArm extends SubsystemBase {
         }
     }
 
+    public void configMotionMagic (MotionMagicConfig[] cfgs) {
+        for(MotionMagicConfig cfg : cfgs) {
+            configMotionMagic(cfg);
+        }
+    }
+
     public void resetMotionMagic() {
-        configMotionMagic(bicepBaseConfig);
-        configMotionMagic(wristBaseConfig);
+        configMotionMagic(isTesting ? bicepSlowConfig : bicepBaseConfig);
+        configMotionMagic(isTesting ? wristSlowConfig : wristBaseConfig);
     }
 
     public void resetBicepPose() {
@@ -268,5 +278,10 @@ public class OptimizedArm extends SubsystemBase {
     public void resetArmPose() {
         resetBicepPose();
         resetWristPose();
+    }
+
+    public void stop() {
+        setBicep(ControlMode.Velocity, 0);
+        setWrist(ControlMode.Velocity, 0);
     }
 }

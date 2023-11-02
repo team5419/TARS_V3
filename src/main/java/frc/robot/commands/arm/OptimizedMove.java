@@ -14,11 +14,23 @@ import frc.robot.subsystems.arm.Waypoint;
  */
 public class OptimizedMove extends SequentialCommandGroup {
     public OptimizedMove(OptimizedArm arm, ArmTargets target) {
+        arm.stop(); // Stop the arm
+        arm.resetMotionMagic(); // Reset the motion magic
+
         // "trace" our path trough our imaginary graph to find all of our waypoints
         ArmWaypoints[] waypoints = GraphStator.tracePath(
             new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()),
             target
         );
+
+        if(waypoints.length == 0) { // If we are in the same sector
+             addCommands(
+                new RetimeArm(arm, target), // Make them arrive at the same time (not entirely needed)
+                new ParallelToPos(arm, target, true), // Execute move
+                new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
+            );
+            return;
+        }
 
         if(waypoints[0] == null) { // This is only true if moving into invalid space
             System.err.println("[OPTIMIZED MOVE] Invalid position requested, abandoning move");
@@ -26,15 +38,15 @@ public class OptimizedMove extends SequentialCommandGroup {
         }
 
         // If we are in the same sector, then we are good to move wherever
-        if (GraphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
-            addCommands(
-                new RetimeArm(arm, target), // Make them arrive at the same time (not entirely needed)
-                new ParallelToPos(arm, target, true), // Execute move
-                new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
-            );
+        // if (GraphStator.isInSameSector(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees(), target)) {
+        //     addCommands(
+        //         new RetimeArm(arm, target), // Make them arrive at the same time (not entirely needed)
+        //         new ParallelToPos(arm, target, true), // Execute move
+        //         new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
+        //     );
 
         // If there is only one intermediary waypoint
-        } else if (waypoints.length == 1) {
+        if (waypoints.length == 1) {
             addCommands(
                 new RetimeArm(arm, waypoints[0]),
                 new ParallelToPos(arm, waypoints[0], false),

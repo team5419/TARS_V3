@@ -141,19 +141,19 @@ public final class Constants {
         public double bicepTarget;
         public double safeZone;
 
-        ArmTargets() {
+        public ArmTargets() {
             this.bicepTarget = 0;
             this.wristTarget = 0;
             this.safeZone = 0;
         }
 
-        ArmTargets (double bicepTarget, double wristTarget) {
+        public ArmTargets (double bicepTarget, double wristTarget) {
             this.bicepTarget = bicepTarget;
             this.wristTarget = wristTarget;
         }
 
 
-        ArmTargets (double bicepTarget, double wristTarget, double safeZone) {
+        public ArmTargets (double bicepTarget, double wristTarget, double safeZone) {
             this.bicepTarget = bicepTarget;
             this.wristTarget = wristTarget;
             this.safeZone = safeZone;
@@ -178,6 +178,8 @@ public final class Constants {
             // Same magic done by 6672
             return this;
         }
+
+        // public ArmTargets toDegrees ()
         
     }
 
@@ -271,7 +273,7 @@ public final class Constants {
     public static final double WRIST_kD = 0;
 
     public static final double WRIST_MAX_V = 19500;
-    public static final double WRIST_MAX_A = 52000; // could be up to 102400 with good enough intake
+    public static final double WRIST_MAX_A = 48000.0; // could be up to 102400 with good enough intake
     public static final int WRIST_CURVE_STR = 2;
 
     // slomo testing

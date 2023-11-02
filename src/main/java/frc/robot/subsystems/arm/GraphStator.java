@@ -1,6 +1,11 @@
 package frc.robot.subsystems.arm;
 
+import org.opencv.ml.ANN_MLP;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
+import frc.lib.math.Conversions;
+import frc.lib.util.COTSFalconSwerveConstants.driveGearRatios;
+import frc.robot.Constants;
 import frc.robot.Constants.ArmTargets;
 import frc.robot.subsystems.arm.OptimizedArm.MotionMagicConfig;
 
@@ -15,8 +20,8 @@ public enum GraphStator {
   // We're missing states
   NOSTATE(LegalState.ILLEGAL, new ArmState(0, 0), new ArmState(0, 0), null),
   A(LegalState.LEGAL,
-    new ArmState(-45, -270),
-    new ArmState(45, 270),
+    new ArmState(-150, -70),
+    new ArmState(150, 70),
     // This is brute force, we'd like to dynamically calculate this in the future
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null}, // A to NOSTATE, can be null if you want to error
@@ -24,51 +29,68 @@ public enum GraphStator {
         new ArmWaypoints[] {ArmWaypoints.QUAD_B}, // A to B
         new ArmWaypoints[] {ArmWaypoints.QUAD_E}, // A to C
         new ArmWaypoints[] {ArmWaypoints.QUAD_D}, // A to D
-        new ArmWaypoints[] {ArmWaypoints.QUAD_C} // A to E
+        new ArmWaypoints[] {ArmWaypoints.QUAD_C}, // A to E
+        new ArmWaypoints[] {ArmWaypoints.QUAD_F}
     }),
   B(LegalState.LEGAL,
-    new ArmState(45, 70),
-    new ArmState(150, 270),
+    new ArmState(65, 70),
+    new ArmState(150, 215),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null}, // To to nostate,
         new ArmWaypoints[] {ArmWaypoints.QUAD_A}, // To a
         new ArmWaypoints[] {}, // b (self)
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_C}, // c
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_D}, // d
-        new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_E} // e
+        new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_E}, // e
+        new ArmWaypoints[] {ArmWaypoints.QUAD_B, ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_F} // f
     }),
   C(LegalState.LEGAL,
-    new ArmState(-45, 70),
-    new ArmState(-150, 270),
+    new ArmState(70, -215),
+    new ArmState(150, -70),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_B},
         new ArmWaypoints[] {}, // SELF
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_D},
-        new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_E}
+        new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_E},
+        new ArmWaypoints[] {ArmWaypoints.QUAD_C, ArmWaypoints.QUAD_F}
     }),
   D(LegalState.LEGAL,
-    new ArmState(-45, -70),
-    new ArmState(150, -270),
+  new ArmState(-150, -215),
+  new ArmState(-70, -70),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_B},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_C},
         new ArmWaypoints[] {},
-        new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_E}
+        new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_E},
+        new ArmWaypoints[] {ArmWaypoints.QUAD_E, ArmWaypoints.QUAD_F}
     }),
   E(LegalState.LEGAL,
-    new ArmState(45, -70),
-    new ArmState(150, -270),
+    new ArmState(-150, 70),
+    new ArmState(-70, 215),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_B},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_C},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_D},
-        new ArmWaypoints[] {}
+        new ArmWaypoints[] {},
+        new ArmWaypoints[] {ArmWaypoints.QUAD_E, ArmWaypoints.QUAD_F}
+    }),
+    F(LegalState.LEGAL,
+    new ArmState(15, 70),
+    new ArmState(55, 185),
+    new ArmWaypoints[][] {
+      new ArmWaypoints[] {null},
+      new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A},
+      new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_B},
+      new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_C},
+      new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_D},
+      new ArmWaypoints[] {ArmWaypoints.QUAD_E}, // Right next to it
+      new ArmWaypoints[] {} // To self
     });
 
   final ArmState min, max;
@@ -89,8 +111,7 @@ public enum GraphStator {
     // } else {
     //    return bicep > min.bicep && bicep < max.bicep &&  wrist > min.wrist && wrist < max.wrist;
     // }
-    return this != NOSTATE && bicep > min.bicep && bicep <= max.bicep && wrist > min.wrist
-        && wrist <= max.wrist;
+    return (this != NOSTATE) && (bicep > min.bicep && bicep <= max.bicep) && (wrist > min.wrist && wrist <= max.wrist);
   }
 
   public static GraphStator getSectorStateFromCoords(double bicep, double wrist) {
@@ -123,24 +144,16 @@ public enum GraphStator {
   }
 
   public static ArmWaypoints[] tracePath(ArmState startWaypoint, ArmTargets targetWaypoint) {
-    return getSectorStateFromCoords(startWaypoint)
-        .pathTo[getSectorStateFromCoords(targetWaypoint.bicepTarget, targetWaypoint.wristTarget).ordinal()];
-  }
+    // System.out.println(getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget)).legalState);
 
-//   public static ArmWaypoints getFirstWaypoint(ArmSectors start, ArmState target) {
-//     // switch (start) {
-//     //   case SectorState.A:
-//     // }
-//     if ((start == A && getSectorStateFromCoords(target) == B) || (start == B && getSectorStateFromCoords(target) == A)) {
-//       return ArmWaypoints.QUAD_B;
-//     } else if ((start == A && getSectorStateFromCoords(target) == C) || (start == C && getSectorStateFromCoords(target) == A)) {
-//       return ArmWaypoints.QUAD_C;
-//     } else if ((start == A && getSectorStateFromCoords(target) == D) || (start == D && getSectorStateFromCoords(target) == A)) {
-//       return ArmWaypoints.QUAD_D;
-//     } else { // To and fro with E
-//       return ArmWaypoints.QUAD_E;
-//     }
-//   }
+    GraphStator start = getSectorStateFromCoords(startWaypoint);
+    GraphStator end = getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget));
+
+
+    // return start.pathTo[end.ordinal()];
+    System.out.println(end.legalState);
+    return start.pathTo[end.ordinal()];
+  }
 
   /**
    * Returns a new motion magic config for the single part that needs to slow down
@@ -148,25 +161,32 @@ public enum GraphStator {
    * @param end - the ending waypoint
    * @return - a single motion magic config, to be passed into OptimizedArm.configMotionMagic
    */
-  public static MotionMagicConfig calculateNewMotionMagic(Waypoint start, Waypoint end, OptimizedArm arm) {
-    double bicepDiff = Math.abs(start.bicep - end.bicep);
-    double wristDiff = Math.abs(start.wrist - end.wrist);
+  public static MotionMagicConfig[] calculateNewMotionMagic(Waypoint start, Waypoint end, OptimizedArm arm) {
+    double bicepDiff = Conversions.degreesToFalcon(Math.abs(start.bicep - end.bicep), Constants.ArmConstants.BASE_GEAR_RATIO);
+    double wristDiff = Conversions.degreesToFalcon(Math.abs(start.wrist - end.wrist), Constants.ArmConstants.WRIST_GEAR_RATIO);
+
+    double slowDownEvenMore = arm.isTesting ? 0.1 : 1;
     
     double ratio = bicepDiff / wristDiff;
 
     if(ratio < 0.0001) { // Prevent incredibly small ratios
-        return arm.getBaseConfig(true); // change nothing, but have to return something
+        return new MotionMagicConfig[] { arm.getBaseConfig(true), arm.getBaseConfig(false) }; // change nothing, but have to return something
+    }
+    
+    if(ratio < 1) {
+      return new MotionMagicConfig[] {
+        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * ratio * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR), 
+        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR)
+      };
+    } else if (ratio > 1) {
+      return new MotionMagicConfig[] {
+        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / ratio * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR),
+        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR)
+      };
+    } else {
+        return new MotionMagicConfig[] { arm.getBaseConfig(true), arm.getBaseConfig(false) }; // change nothing, but have to return something
     }
 
-    if(ratio > 1) {
-        MotionMagicConfig base = arm.getBaseConfig(true);
-        return new MotionMagicConfig(true, base.cruiseVelocity / ratio, base.acceleration, base.sCurveStrength);
-    } else if (ratio < 1) {
-        MotionMagicConfig base = arm.getBaseConfig(false);
-        return new MotionMagicConfig(false, base.cruiseVelocity * ratio, base.acceleration, base.sCurveStrength);
-    } else {
-        return arm.getBaseConfig(true); // change nothing, but have to return something
-    }
     
     /**
      * bicep --> 100
