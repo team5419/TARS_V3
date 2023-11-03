@@ -13,6 +13,7 @@ import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.OptimizedMove;
+import frc.robot.commands.arm.OptimizedMoveWrapper;
 import frc.robot.commands.arm.ParallelToPos;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -53,7 +54,7 @@ public class RobotContainer {
 
     /* Subsystems */
     public final Swerve s_Swerve = new Swerve();
-    public final OptimizedArm m_arm = new OptimizedArm(false);
+    public final OptimizedArm m_arm = new OptimizedArm(true);
     public final Intake mIntake = new Intake();
     // private final Vision2 vision2 = new Vision2(s_Swerve);
 
@@ -160,9 +161,9 @@ public class RobotContainer {
         // coDriver.povUp().onTrue(new TwoPartHigh(m_arm, cubeHigh)); //! Currently in beta
 
         // Mid
-        coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
+        // coDriver.x().onTrue(new OptimizedMove(m_arm, coneMid));
         coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
-        coDriver.povLeft().onTrue(new MoveToPos(m_arm, cubeMid));
+        coDriver.povLeft().onTrue(new OptimizedMoveWrapper(m_arm, cubeMid));
 
         // Hybrid
         coDriver.povDown().onTrue(new MoveToPos(m_arm, cubeHybrid));

@@ -18,8 +18,17 @@ public enum GraphStator {
    */
   // We're missing states
   NOSTATE(LegalState.ILLEGAL, new ArmState(0, 0), new ArmState(0, 0), null),
+  // new ArmWaypoints[][] {
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //   }
   A(LegalState.LEGAL,
-    new ArmState(-150, -70),
+    new ArmState(-150, -80),
     new ArmState(150, 70),
     // This is brute force, we'd like to dynamically calculate this in the future
     new ArmWaypoints[][] {
@@ -68,7 +77,7 @@ public enum GraphStator {
         new ArmWaypoints[] {ArmWaypoints.QUAD_E, ArmWaypoints.QUAD_F}
     }),
   E(LegalState.LEGAL,
-    new ArmState(-150, 70),
+    new ArmState(-150, 80),
     new ArmState(-70, 215),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null},
@@ -110,15 +119,12 @@ public enum GraphStator {
     // } else {
     //    return bicep > min.bicep && bicep < max.bicep &&  wrist > min.wrist && wrist < max.wrist;
     // }
-    return //(this.legalState != LegalState.ILLEGAL) && 
-           (bicep > min.bicep && bicep <= max.bicep) && 
-           (wrist > min.wrist && wrist <= max.wrist);
+    return (this != NOSTATE) && (bicep > min.bicep && bicep <= max.bicep) && (wrist > min.wrist && wrist <= max.wrist);
   }
 
   public static GraphStator getSectorStateFromCoords(double bicep, double wrist) {
     for (GraphStator sector : GraphStator.values()) {
       if (sector.inSector(bicep, wrist)) {
-        System.out.println("RETUNING" + sector.name());
         return sector;
       }
     }
@@ -147,8 +153,6 @@ public enum GraphStator {
 
   public static ArmWaypoints[] tracePath(ArmState startWaypoint, ArmTargets targetWaypoint) {
     // System.out.println(getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget)).legalState);
-
-    System.out.println("START POINT -------------------------------------- " + startWaypoint.bicep);
 
     GraphStator start = getSectorStateFromCoords(startWaypoint);
     GraphStator end = getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget));
