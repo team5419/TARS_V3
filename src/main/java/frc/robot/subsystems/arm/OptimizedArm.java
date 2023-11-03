@@ -201,11 +201,11 @@ public class OptimizedArm extends SubsystemBase {
         return (Math.abs(wristTalon.getSelectedSensorPosition() - target) < Constants.ArmConstants.BASE_ERROR_THRESHOLD);
     }
 
-    public double degreesToTicksBicep(double degrees) {
+    public static double degreesToTicksBicep(double degrees) {
         return degrees * Math.PI / 180 / (Math.PI / 1024 / Constants.ArmConstants.BASE_GEAR_RATIO);
     }
 
-    public double degreesToTicksWrist (double degrees) {
+    public static double degreesToTicksWrist (double degrees) {
         return degrees * Math.PI / 180 / (Math.PI / 1024 / Constants.ArmConstants.WRIST_GEAR_RATIO);
     }
 

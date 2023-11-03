@@ -10,4 +10,9 @@ public class ResetArmPose extends SequentialCommandGroup {
             new InstantCommand(() -> arm.resetArmPose())
         );
     }
+
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
+    }
 }

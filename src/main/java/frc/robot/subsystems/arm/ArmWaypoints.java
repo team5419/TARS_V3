@@ -3,10 +3,10 @@ package frc.robot.subsystems.arm;
 public enum ArmWaypoints {
   QUAD_A(0, 0),
   QUAD_B(45, 70),
-  QUAD_C(-45, 70),
+  QUAD_C(45, -70),
   QUAD_D(-45, -55),
-  QUAD_E(45, -70),
-  QUAD_F(15, 60);
+  QUAD_E(-45, 65), // Could want to modify this to allow high shots to clear the post without hitting
+  QUAD_F(25, -55);
 
   public ArmState point;
   ArmWaypoints(double bicep, double wrist) {

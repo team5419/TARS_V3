@@ -12,10 +12,9 @@ import frc.robot.subsystems.arm.OptimizedArm.MotionMagicConfig;
 public enum GraphStator {
   /**
    * Arranged like this
-   *
-   *  E     B
-   *     A
-   *  D     C
+   *    E       B
+   *        A
+   *    D     F C
    */
   // We're missing states
   NOSTATE(LegalState.ILLEGAL, new ArmState(0, 0), new ArmState(0, 0), null),
@@ -28,12 +27,12 @@ public enum GraphStator {
         new ArmWaypoints[] {}, // A to A
         new ArmWaypoints[] {ArmWaypoints.QUAD_B}, // A to B
         new ArmWaypoints[] {ArmWaypoints.QUAD_E}, // A to C
-        new ArmWaypoints[] {ArmWaypoints.QUAD_D}, // A to D
+        new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_D}, // A to D
         new ArmWaypoints[] {ArmWaypoints.QUAD_C}, // A to E
         new ArmWaypoints[] {ArmWaypoints.QUAD_F}
     }),
   B(LegalState.LEGAL,
-    new ArmState(65, 70),
+    new ArmState(65, 80),
     new ArmState(150, 215),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null}, // To to nostate,
@@ -46,7 +45,7 @@ public enum GraphStator {
     }),
   C(LegalState.LEGAL,
     new ArmState(70, -215),
-    new ArmState(150, -70),
+    new ArmState(150, -80),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A},
@@ -58,7 +57,7 @@ public enum GraphStator {
     }),
   D(LegalState.LEGAL,
   new ArmState(-150, -215),
-  new ArmState(-70, -70),
+  new ArmState(-70, -80),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null},
         new ArmWaypoints[] {ArmWaypoints.QUAD_A},
@@ -80,16 +79,16 @@ public enum GraphStator {
         new ArmWaypoints[] {},
         new ArmWaypoints[] {ArmWaypoints.QUAD_E, ArmWaypoints.QUAD_F}
     }),
-    F(LegalState.LEGAL,
-    new ArmState(15, 70),
-    new ArmState(55, 185),
+  F(LegalState.LEGAL,
+    new ArmState(23, -190),
+    new ArmState(70, -70),
     new ArmWaypoints[][] {
       new ArmWaypoints[] {null},
       new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A},
       new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_B},
       new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_C},
-      new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_D},
-      new ArmWaypoints[] {ArmWaypoints.QUAD_E}, // Right next to it
+      new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_D},
+      new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_A, ArmWaypoints.QUAD_E},
       new ArmWaypoints[] {} // To self
     });
 
@@ -111,12 +110,15 @@ public enum GraphStator {
     // } else {
     //    return bicep > min.bicep && bicep < max.bicep &&  wrist > min.wrist && wrist < max.wrist;
     // }
-    return (this != NOSTATE) && (bicep > min.bicep && bicep <= max.bicep) && (wrist > min.wrist && wrist <= max.wrist);
+    return //(this.legalState != LegalState.ILLEGAL) && 
+           (bicep > min.bicep && bicep <= max.bicep) && 
+           (wrist > min.wrist && wrist <= max.wrist);
   }
 
   public static GraphStator getSectorStateFromCoords(double bicep, double wrist) {
     for (GraphStator sector : GraphStator.values()) {
       if (sector.inSector(bicep, wrist)) {
+        System.out.println("RETUNING" + sector.name());
         return sector;
       }
     }
@@ -146,12 +148,11 @@ public enum GraphStator {
   public static ArmWaypoints[] tracePath(ArmState startWaypoint, ArmTargets targetWaypoint) {
     // System.out.println(getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget)).legalState);
 
+    System.out.println("START POINT -------------------------------------- " + startWaypoint.bicep);
+
     GraphStator start = getSectorStateFromCoords(startWaypoint);
     GraphStator end = getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget));
 
-
-    // return start.pathTo[end.ordinal()];
-    System.out.println(end.legalState);
     return start.pathTo[end.ordinal()];
   }
 
