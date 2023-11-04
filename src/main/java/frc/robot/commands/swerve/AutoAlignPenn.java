@@ -39,7 +39,8 @@ public class AutoAlignPenn extends CommandBase {
 
   private final Swerve swerve;
   private final OptimizedArm arm;
-  private final boolean custom = true;
+  //test true one more time, just to see with points being made correct
+  private final boolean custom = false;
   private final SubsystemlessVision vision = new SubsystemlessVision();
   private CustomPath path;
   private final PIDController horizontalController;
@@ -85,6 +86,7 @@ public class AutoAlignPenn extends CommandBase {
     tab.addBoolean("custom", () -> {return custom;});
     tab.addDouble("tx", () -> {return vision.getTX();});
     tab.addDouble("ty", () -> {return vision.getTY();});
+    tab.addDouble("DTT", () -> {return distanceToTarget;});
 
   }
   @Override
@@ -93,19 +95,20 @@ public class AutoAlignPenn extends CommandBase {
     timer.start();
   }
 
-  //ty and tx determined by path!!!!!
   @Override
   public void execute() {
-    System.out.println("EXECUTING");
     vision.updateEntries();
-         path = directPath();
+    path = directPath();
     if(custom){
         customClosedLoopPathCalculation();
     } else{
-        System.out.println("CUSTOM");
-        currentCommand = closedLoopPathCalculation();
-        currentCommand.schedule();
+      customTwo();
     }
+    // else{
+    //     System.out.println("CUSTOM");
+    //     currentCommand = closedLoopPathCalculation();
+    //     currentCommand.schedule();
+    // }
     distanceToTarget =
       Util.getDistance(vision.getHorizontalDistance(), vision.getVertical());
   }
@@ -118,8 +121,15 @@ public class AutoAlignPenn extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    System.out.println(vision.isAlive());
-    System.out.println(distanceToTarget);
+    if(!vision.isAlive()){
+      System.out.println("VISION NOT ALIVE");
+    }
+    if(distanceToTarget < epsilonDistance){
+      System.out.println("DISTANCE TO TARGET LITTLE");
+    }
+    if(timer.get() > timeLimit){
+      System.out.println("TIME LIMIT EXCEEDED");
+    }
     return (
       !vision.isAlive() ||
       distanceToTarget < epsilonDistance ||
@@ -170,6 +180,7 @@ public class AutoAlignPenn extends CommandBase {
       (swerve.getRotationDegrees() - current.rotation) < 5
     ) {
       target = path.next();
+      System.out.println("NEXT POINT IN PATH");
     } else {
       target = current;
     }
@@ -194,12 +205,12 @@ public class AutoAlignPenn extends CommandBase {
     System.out.println("TARGET X " +target.x);
   }
 
-  private CustomPath customPath() {
-    Point[] pointsArray = { new Point(0, 0, 0), new Point(0, 0, 0) };
-    List<Point> points = new ArrayList<>();
-    points.addAll(Arrays.asList(pointsArray));
-    return new CustomPath(points);
-  }
+  // private CustomPath customPath() {
+  //   Point[] pointsArray = { new Point(0, 0, 0), new Point(0, 0, 0) };
+  //   List<Point> points = new ArrayList<>();
+  //   points.addAll(Arrays.asList(pointsArray));
+  //   return new CustomPath(points);
+  // }
 
   private CustomPath directPath() {
     List<Point> points = new ArrayList<>();
@@ -209,4 +220,34 @@ public class AutoAlignPenn extends CommandBase {
     );
     return new CustomPath(points);
   }
+private Point getTarget(){
+    return new Point(vision.getHorizontalDistance(), vision.getVertical(), 0);
 }
+public void customTwo(){
+   Point target = getTarget();
+   System.out.println(target);
+
+    newHorizontal = horizontalController.calculate(
+      0.0,
+      target.x
+    );
+    newVertical = veritcalController.calculate(
+      0.0, 
+      target.y
+    );
+    newRotation = rotationController.calculate(
+      swerve.getRotationDegrees(),
+      target.rotation
+    );
+    swerve.drive(
+      new Translation2d(newHorizontal, newVertical),
+      newRotation,
+      false,
+      false
+    );
+}
+}
+
+
+//Get Position of Tag In Robot Space
+//Drive To Tag Position

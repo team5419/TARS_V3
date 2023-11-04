@@ -32,5 +32,9 @@
     "straif",
     "wpiblue",
     "wpired"
-  ]
+  ],
+  "editor.tokenColorCustomizations": {
+    "comments": "",
+    "textMateRules": []
+  }
 }

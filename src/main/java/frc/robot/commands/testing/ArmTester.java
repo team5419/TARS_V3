@@ -1,4 +1,4 @@
-package frc.robot.commands.tesing;
+package frc.robot.commands.testing;
 
 import static java.lang.Math.abs;
 

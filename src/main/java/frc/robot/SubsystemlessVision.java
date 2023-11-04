@@ -1,5 +1,8 @@
 package frc.robot;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 /*
@@ -55,6 +58,9 @@ public class SubsystemlessVision {
   }
 
   public double[] getTargetInRobotSpace() {
+    System.out.println(Arrays.asList(limelight.getEntry("targetpose_robotspace")
+    .getDoubleArray(new double[6])));
+    
     return limelight
       .getEntry("targetpose_robotspace")
       .getDoubleArray(new double[6]);

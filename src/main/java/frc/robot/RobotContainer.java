@@ -17,8 +17,8 @@ import frc.robot.commands.arm.ParallelToPos;
 import frc.robot.commands.swerve.AutoAlignPenn;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
-import frc.robot.commands.tesing.ArmTester;
-import frc.robot.commands.tesing.DynamicMotionMagic;
+import frc.robot.commands.testing.ArmTester;
+import frc.robot.commands.testing.DynamicMotionMagic;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.arm.OptimizedArm;
 
