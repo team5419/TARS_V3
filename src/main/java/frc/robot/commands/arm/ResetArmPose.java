@@ -1,14 +1,28 @@
 package frc.robot.commands.arm;
 
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.arm.OptimizedArm;
 
-public class ResetArmPose extends SequentialCommandGroup {
+public class ResetArmPose extends CommandBase {
+
+    private OptimizedArm arm;
+
     public ResetArmPose (OptimizedArm arm) {
-        addCommands(
-            new InstantCommand(() -> arm.resetArmPose())
-        );
+        this.arm = arm;
+    }
+
+    public void initialize() {
+        arm.resetArmPose();
+
+        if(arm.getCurrentCommand() != null) {
+            arm.getCurrentCommand().cancel();
+        }
+    }
+
+    public boolean isFinished() {
+        return true;
     }
 
     @Override

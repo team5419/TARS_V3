@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "TwoStageHighCone"
+          "ShootMidCone"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -69,8 +69,7 @@
       "isStopPoint": true,
       "stopEvent": {
         "names": [
-          "ShootMidCube",
-          "ArmStow"
+          "ShootCube"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -119,16 +118,17 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "ShootHybridCube"
+          "ShootCube",
+          "ArmStow"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "deadline",
+        "waitBehavior": "none",
         "waitTime": 0.5
       }
     }
   ],
-  "maxVelocity": 5.0,
-  "maxAcceleration": 4.0,
+  "maxVelocity": 3.0,
+  "maxAcceleration": 2.5,
   "isReversed": null,
   "markers": [
     {
@@ -148,23 +148,39 @@
     {
       "position": 2.2,
       "names": [
-        "event",
-        "ArmCubeGround"
+        "ArmCubeGround",
+        "RunIntake"
       ]
     },
     {
       "position": 3.1,
       "names": [
-        "event",
         "ArmStow",
         "ConstantIntakeStart"
       ]
     },
     {
-      "position": 3.8,
+      "position": 1.7454545454545427,
       "names": [
-        "event",
-        "ShootHighCone"
+        "ArmToMidCube"
+      ]
+    },
+    {
+      "position": 2.0909090909090873,
+      "names": [
+        "ArmStow"
+      ]
+    },
+    {
+      "position": 3.7636363636363517,
+      "names": [
+        "ArmToHybridCube"
+      ]
+    },
+    {
+      "position": 0.01,
+      "names": [
+        "ArmStow"
       ]
     }
   ]

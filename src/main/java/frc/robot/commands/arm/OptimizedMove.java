@@ -13,22 +13,26 @@ import frc.robot.subsystems.arm.OptimizedArm;
  * @author Grayson
  */
 public class OptimizedMove extends SequentialCommandGroup {
-    public OptimizedMove(OptimizedArm arm, ArmTargets target, ArmWaypoints[] waypoints) {
+    public OptimizedMove(OptimizedArm arm, ArmTargets target) { //, ArmWaypoints[] waypoints) {
 
         arm.stop(); // Stop the arm
         arm.resetMotionMagic(); // Reset the motion magic
 
-        if(waypoints[0] == null) { // This is only true if moving into invalid space
+        ArmWaypoints[] waypoints = GraphStator.tracePath(
+            new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), 
+            target
+        );
+
+        if(waypoints.length != 0 && waypoints[0] == null) { // This is only true if moving into invalid space
             System.err.println("[OPTIMIZED MOVE] Invalid position requested, abandoning move");
             return;
         }
         
         for (ArmWaypoints point : waypoints) {
-
             addCommands(
                 new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(point.point.bicep, point.point.wrist))),
                 new PrintCommand("GOING TO " + point.name()),
-                new RetimeArm(arm, point),
+                new RetimeArm(arm, point, false),
                 new ParallelToPos(arm, point, false)
             );
         }
@@ -36,7 +40,7 @@ public class OptimizedMove extends SequentialCommandGroup {
         addCommands(
             new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()))),
             new PrintCommand("GOING TO " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees())).name()),
-            new RetimeArm(arm, target), // Make them arrive at the same time (not entirely needed)
+            new RetimeArm(arm, target, true), // Make them arrive at the same time (not entirely needed)
             new ParallelToPos(arm, target, true), // Execute move
             new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
         );

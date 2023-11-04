@@ -45,7 +45,7 @@ public class ArmTester extends CommandBase {
 
         if(waypoints.length == 0) {
             System.out.println("In same sector");
-            GraphStator.calculateNewMotionMagic(new Waypoint(0, 0), new Waypoint(bicep.getDouble(0), wrist.getDouble(0)), arm);
+            // GraphStator.calculateNewMotionMagic(new Waypoint(0, 0), new Waypoint(bicep.getDouble(0), wrist.getDouble(0)), arm);
             return;
         }
 
@@ -58,7 +58,7 @@ public class ArmTester extends CommandBase {
 
         for (ArmWaypoints waypoint : waypoints) {
             System.out.println(waypoint.point.bicep +  " " + waypoint.point.wrist + " INTERMEDIATE POINT");
-            GraphStator.calculateNewMotionMagic(new Waypoint(0, 0), new Waypoint(waypoint.point.bicep, waypoint.point.wrist), arm);
+            // GraphStator.calculateNewMotionMagic(new Waypoint(0, 0), new Waypoint(waypoint.point.bicep, waypoint.point.wrist), arm);
         }
 
     }

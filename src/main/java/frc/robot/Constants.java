@@ -263,17 +263,24 @@ public final class Constants {
     public static final double BASE_kI = 0;
     public static final double BASE_kD = 0;
 
-    public static final double BASE_MAX_V = 19500; // ticks / 100ms
-    public static final double BASE_MAX_A = 48000; // ticks / 100ms / s
-    public static final int BASE_CURVE_STR = 2; // smoothness
+    // public static final double BASE_MAX_V = 19500; // ticks / 100ms
+    // public static final double BASE_MAX_A = 48000; // ticks / 100ms / s
+    // public static final int BASE_CURVE_STR = 2; // smoothness
 
     public static final double WRIST_kF = 0;
     public static final double WRIST_kP = 0.4;
     public static final double WRIST_kI = 0;
     public static final double WRIST_kD = 0;
 
+    // public static final double WRIST_MAX_V = 19500;
+    // public static final double WRIST_MAX_A = 48000.0; // could be up to 102400 with good enough intake
+    // public static final int WRIST_CURVE_STR = 2;
+
+    public static final double BASE_MAX_V = 19500; // ticks / 100ms
+    public static final double BASE_MAX_A = 48000; // ticks / 100ms / s
+    public static final int BASE_CURVE_STR = 2; // smoothness
     public static final double WRIST_MAX_V = 19500;
-    public static final double WRIST_MAX_A = 48000.0; // could be up to 102400 with good enough intake
+    public static final double WRIST_MAX_A = 48000; // could be up to 102400 with good enough intake
     public static final int WRIST_CURVE_STR = 2;
 
     // slomo testing
