@@ -14,6 +14,7 @@ import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.OptimizedMove;
 import frc.robot.commands.arm.ParallelToPos;
+import frc.robot.commands.swerve.AutoAlignPenn;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.tesing.ArmTester;
@@ -109,7 +110,7 @@ public class RobotContainer {
 
         // Auto align?
         // driver.back().whileTrue(new AutoAlignGrayson(s_Swerve, vision2, 0.01));
-        // driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,10));
+        driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,100000));
 
         // Testing
         driver.povDown().whileTrue(new ArmTester(m_arm, bicepTuningEntry, wristTuningEntry));

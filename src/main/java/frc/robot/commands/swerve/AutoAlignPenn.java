@@ -11,6 +11,8 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -37,9 +39,9 @@ public class AutoAlignPenn extends CommandBase {
 
   private final Swerve swerve;
   private final OptimizedArm arm;
-  private final boolean custom = false;
+  private final boolean custom = true;
   private final SubsystemlessVision vision = new SubsystemlessVision();
-  private final CustomPath path;
+  private CustomPath path;
   private final PIDController horizontalController;
   private final PIDController veritcalController;
   private final ProfiledPIDController rotationController;
@@ -47,8 +49,15 @@ public class AutoAlignPenn extends CommandBase {
   private double distanceToTarget;
   private Timer timer;
   private double timeLimit;
+  private ShuffleboardTab tab = Shuffleboard.getTab("AUTOALIGN - PENN");
+  private Command currentCommand;
+
+  private double newHorizontal = 5.0;
+  private double newVertical = 5.0;
+  private double newRotation = 5.0;
 
   public AutoAlignPenn(Swerve swerve, OptimizedArm arm, double timeLimit) {
+    configTab();
     this.swerve = swerve;
     this.arm = arm;
     this.path = directPath();
@@ -69,11 +78,17 @@ public class AutoAlignPenn extends CommandBase {
     addRequirements(swerve, arm);
   }
 
+  public void configTab(){
+    tab.addDouble("newHorizontal", () -> {return newHorizontal;});
+    tab.addDouble("newVertical", () -> {return newVertical;});
+    tab.addDouble("newRotation", () -> {return newRotation;});
+    tab.addBoolean("custom", () -> {return custom;});
+    tab.addDouble("tx", () -> {return vision.getTX();});
+    tab.addDouble("ty", () -> {return vision.getTY();});
+
+  }
   @Override
   public void initialize() {
-    if(!custom){
-        closedLoopPathCalculation().schedule();
-    }
     timer.reset();
     timer.start();
   }
@@ -81,13 +96,18 @@ public class AutoAlignPenn extends CommandBase {
   //ty and tx determined by path!!!!!
   @Override
   public void execute() {
+    System.out.println("EXECUTING");
     vision.updateEntries();
+         path = directPath();
     if(custom){
         customClosedLoopPathCalculation();
+    } else{
+        System.out.println("CUSTOM");
+        currentCommand = closedLoopPathCalculation();
+        currentCommand.schedule();
     }
     distanceToTarget =
       Util.getDistance(vision.getHorizontalDistance(), vision.getVertical());
-    //FINISH 0-AUTONOMOUS VIDEO FOR CLOSEDLOOPPATHCALCULATION NOT CUSTOM -- delete comment when seen
   }
 
   @Override
@@ -98,8 +118,10 @@ public class AutoAlignPenn extends CommandBase {
 
   @Override
   public boolean isFinished() {
+    System.out.println(vision.isAlive());
+    System.out.println(distanceToTarget);
     return (
-      vision.isAlive() ||
+      !vision.isAlive() ||
       distanceToTarget < epsilonDistance ||
       timer.get() > timeLimit
     );
@@ -136,13 +158,9 @@ public class AutoAlignPenn extends CommandBase {
       swerve::setModuleStates,
       swerve
     );
-    return new SequentialCommandGroup(
-                new InstantCommand(() -> swerve.resetOdometry(trajectory.getInitialPose())),
-                swerveControllerCommand,
-                new InstantCommand(() -> swerve.stop()));
+    return swerveControllerCommand;
   }
 
-  //Custom Implementation (I had a lot of time on this flight ...)
   private void customClosedLoopPathCalculation() {
     Point target;
     Point current = path.current();
@@ -156,12 +174,12 @@ public class AutoAlignPenn extends CommandBase {
       target = current;
     }
     //possibly swapped
-    double newHorizontal = horizontalController.calculate(
+    newHorizontal = horizontalController.calculate(
       vision.getTX(),
       target.x
     );
-    double newVertical = veritcalController.calculate(vision.getTY(), target.y);
-    double newRotation = rotationController.calculate(
+    newVertical = veritcalController.calculate(vision.getTY(), target.y);
+    newRotation = rotationController.calculate(
       swerve.getRotationDegrees(),
       target.rotation
     );
@@ -172,6 +190,8 @@ public class AutoAlignPenn extends CommandBase {
       false,
       false
     );
+    System.out.println("Target Y " +target.y);
+    System.out.println("TARGET X " +target.x);
   }
 
   private CustomPath customPath() {
@@ -184,7 +204,6 @@ public class AutoAlignPenn extends CommandBase {
   private CustomPath directPath() {
     List<Point> points = new ArrayList<>();
     //not sure if array indexes are correct
-    points.add(new Point(0, 0, 0));
     points.add(
       new Point(vision.getHorizontalDistance(), vision.getVertical(), 0)
     );

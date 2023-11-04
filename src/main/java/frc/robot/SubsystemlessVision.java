@@ -17,16 +17,21 @@ public class SubsystemlessVision {
   private final NetworkTable limelight = NetworkTableInstance
     .getDefault()
     .getTable("limelight");
-  private NetworkTableEntry validTarget, tx, ty;
+  private NetworkTableEntry validTarget;
+  private NetworkTableEntry tx;
+  private NetworkTableEntry ty;
   private ShuffleboardTab tab = Shuffleboard.getTab("limelight");
   private boolean alive = true;
   private Notifier limelightStatusNotifier = new Notifier(() -> {
-    LimelightResults current = LimelightHelpers.getLatestResults("");
+    LimelightResults current = LimelightHelpers.getLatestResults("limelight");
     alive = current != null;
   });
 
   public SubsystemlessVision() {
     limelightStatusNotifier.startPeriodic(0.25);
+    updateEntries();
+    tab.addDouble("LLX" + Math.random(), () -> tx.getDouble(-100000000));
+    tab.addDouble("LLY" + Math.random(), () -> ty.getDouble(-100000000));
   }
 
   // call in 'some' periodic
@@ -34,8 +39,7 @@ public class SubsystemlessVision {
     tx = limelight.getEntry("tx");
     ty = limelight.getEntry("ty");
     //DEFAULT VALUE
-    tab.addDouble("LLX", () -> tx.getDouble(-100000000));
-    tab.addDouble("LLY", () -> ty.getDouble(-100000000));
+
   }
 
   public boolean isAlive() {
