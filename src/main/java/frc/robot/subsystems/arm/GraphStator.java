@@ -182,7 +182,7 @@ public enum GraphStator {
     double bicepDiff = Conversions.degreesToFalcon(Math.abs(start.bicep - end.bicep), Constants.ArmConstants.BASE_GEAR_RATIO);
     double wristDiff = Conversions.degreesToFalcon(Math.abs(start.wrist - end.wrist), Constants.ArmConstants.WRIST_GEAR_RATIO);
 
-    double slowDownEvenMore = arm.isTesting ? 0.1 : 0.4;
+    double slowDownEvenMore = arm.isTesting ? 0.1 : 0.5;
     
     double ratio = bicepDiff / wristDiff;
 
@@ -192,13 +192,13 @@ public enum GraphStator {
     
     if(ratio < 1) {
       return new MotionMagicConfig[] {
-        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * ratio * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, isLastMove ? Constants.ArmConstants.BASE_CURVE_STR : 0), 
-        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, isLastMove ? Constants.ArmConstants.WRIST_CURVE_STR : 0)
+        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * ratio * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, 3), 
+        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, 3)
       };
     } else if (ratio > 1) {
       return new MotionMagicConfig[] {
-        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / ratio * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, isLastMove ? Constants.ArmConstants.WRIST_CURVE_STR : 0),
-        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, isLastMove ? Constants.ArmConstants.BASE_CURVE_STR : 0)
+        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / ratio * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, 3),
+        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, 3)
       };
     } else {
         return new MotionMagicConfig[] { arm.getBaseConfig(true), arm.getBaseConfig(false) }; // change nothing, but have to return something

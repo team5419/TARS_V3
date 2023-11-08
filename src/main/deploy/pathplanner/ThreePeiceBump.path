@@ -132,7 +132,7 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.3,
+      "position": 0.0,
       "names": [
         "ArmCubeGround",
         "RunIntake"
@@ -175,12 +175,6 @@
       "position": 3.7636363636363517,
       "names": [
         "ArmToHybridCube"
-      ]
-    },
-    {
-      "position": 0.01,
-      "names": [
-        "ArmStow"
       ]
     }
   ]

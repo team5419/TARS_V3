@@ -8,24 +8,21 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.commands.auto.ShootAuto;
-import frc.robot.commands.auto.TwoStageHighChoiced;
+import frc.robot.commands.lights.AnimateLights;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.OptimizedMove;
+import frc.robot.commands.arm.TwoPartHigh;
 import frc.robot.commands.arm.OnTheFlyCommand;
-import frc.robot.commands.arm.ParallelToPos;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commands.tesing.ArmTester;
-import frc.robot.commands.tesing.DynamicMotionMagic;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.arm.OptimizedArm;
 
 import static frc.robot.Constants.ArmConstants.*;
 import static frc.robot.Constants.IntakeConstants.*;
 
-import java.sql.Driver;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,8 +48,9 @@ public class RobotContainer {
 
     /* Subsystems */
     public final Swerve s_Swerve = new Swerve();
-    public final OptimizedArm m_arm = new OptimizedArm(false);
+    public final OptimizedArm m_arm = new OptimizedArm(true);
     public final Intake mIntake = new Intake();
+    public final Lights leds = new Lights(52);
     // private final Vision2 vision2 = new Vision2(s_Swerve);
 
     public GenericEntry bicepTuningEntry = Shuffleboard.getTab("Tuning").add("Bicep dest", 0.0)
@@ -73,9 +71,12 @@ public class RobotContainer {
                 () -> -driver.getRawAxis(translationAxis), 
                 () -> -driver.getRawAxis(strafeAxis), 
                 () -> -driver.getRawAxis(rotationAxis), 
-                () -> driver.leftBumper().getAsBoolean()
+                () -> driver.leftBumper().getAsBoolean()    
             )
         );
+
+        // Make our leds led
+        leds.setDefaultCommand(new AnimateLights(leds, s_Swerve, mIntake));
 
         // Set up our events for our autos
         setUpEventMap();
@@ -141,7 +142,13 @@ public class RobotContainer {
         ));
 
         // Run Rollers in
-        driver.leftTrigger().whileTrue(Commands.runEnd(() -> mIntake.set(Constants.IntakeConstants.INTAKE_PCT), () -> mIntake.set(-0.2), mIntake));
+        driver.leftTrigger().whileTrue(Commands.runEnd(() -> {
+            mIntake.set(Constants.IntakeConstants.INTAKE_PCT);
+            s_Swerve.isIntakeActive = true;    
+        }, () -> {
+            mIntake.set(-0.2);
+            s_Swerve.isIntakeActive = false;
+        }, mIntake));
 
         // Run rollers out
         driver.rightTrigger().whileTrue(Commands.runEnd(() -> mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS), () -> mIntake.set(0), mIntake));
@@ -149,13 +156,13 @@ public class RobotContainer {
 
         //** CO DRIVER BINDINGS **//
         // Stow
-        coDriver.a().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, stow)));
+        coDriver.a().onTrue(new MoveToPos(m_arm, stow));
 
         // High
-        coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
-        coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh)));
-        // coDriver.y().onTrue(new TwoPartHigh(m_arm, coneHigh)); //! Currently in beta
-        // coDriver.povUp().onTrue(new TwoPartHigh(m_arm, cubeHigh)); //! Currently in beta
+        // coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
+        // coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh)));
+        coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, coneHigh, true, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
+        coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, cubeHigh, false, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
 
         // Mid
         // coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
@@ -169,19 +176,21 @@ public class RobotContainer {
         coDriver.b().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid)));
 
         // Ground Intakes
-        coDriver.leftTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround)));
-        coDriver.rightTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround)));
+        coDriver.leftTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
+        coDriver.rightTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
 
         // Substations
-        coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeSubstation)));
-        coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneSubstation)));
+        coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
+        coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
+
+        coDriver.back().onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = !s_Swerve.isUsingCones));
     }
 
     private void setUpEventMap() {
         HashMap<String, Command> map = Constants.AutoConstants.eventMap;
 
         map.put("ArmCubeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround)));
-        map.put("ArmStow", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, stow), m_arm));
+        map.put("ArmStow", new MoveToPos(m_arm, stow));
         map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.4)));
         map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
 

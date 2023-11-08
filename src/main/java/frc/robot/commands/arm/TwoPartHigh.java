@@ -1,6 +1,7 @@
 package frc.robot.commands.arm;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
 import javax.swing.GroupLayout.SequentialGroup;
 
@@ -34,50 +35,28 @@ public class TwoPartHigh extends SequentialCommandGroup {
 
         ArmWaypoints[] waypoints = GraphStator.tracePath(
             new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()),
-            target
+            customIntermediaryTarget
         );
 
-        // if(waypoints.length == 0) {
-        //     addCommands(
-        //         new RetimeArm(arm, customIntermediaryTarget),
-        //         new ParallelToPos(arm, customIntermediaryTarget, false),
-        //         new RetimeArm(arm, target),
-        //         new ParallelToPos(arm, target, true)
-        //     );
-        // } else if (waypoints[0] == null) {
-        //     System.out.println("[TWO PART HIGH] - Invalid position requested, abandoning request");
-        //     return;
-        // } else if (waypoints.length == 1) {
-        //     addCommands(
-        //         new RetimeArm(arm, waypoints[0]),
-        //         new ParallelToPos(arm, waypoints[0], false),
-        //         new RetimeArm(arm, customIntermediaryTarget),
-        //         new ParallelToPos(arm, customIntermediaryTarget, false),
-        //         new RetimeArm(arm, target),
-        //         new ParallelToPos(arm, target, true)
-        //     );
-        // } else {
-        //     addCommands(
-        //         new RetimeArm(arm, waypoints[0]),
-        //         new ParallelToPos(arm, waypoints[0], false),
-        //         new RetimeArm(arm, waypoints[1]),
-        //         new ParallelToPos(arm, waypoints[1], false),
-        //         new RetimeArm(arm, customIntermediaryTarget),
-        //         new ParallelToPos(arm, customIntermediaryTarget, false),
-        //         new RetimeArm(arm, ArmWaypoints.QUAD_E),
-        //         new ParallelToPos(arm, ArmWaypoints.QUAD_E, true),
-        //         new RetimeArm(arm, target),
-        //         new ParallelToPos(arm, target, true)
-        //     );
-        // }
+        if(waypoints.length != 0 && waypoints[0] == null) {
+            System.out.println("[TWO PART HIGH] - Invalid position requested, abandoning request");
+            return;
+        }
 
-        // addCommands(
-        //     new WaitUntilCommand(shootSupplier),
-        //     new WaitCommand(0.5),
-        //     new RetimeArm(arm, customIntermediaryTarget),
-        //     new ParallelToPos(arm, customIntermediaryTarget, false),
-        //     new RetimeArm(arm, Constants.ArmConstants.stow),
-        //     new ParallelToPos(arm, Constants.ArmConstants.stow, true)
-        // );
+        for (ArmWaypoints point : waypoints) {
+            addCommands(
+                new RetimeArm(arm, point, false),
+                new ParallelToPos(arm, point, false)
+            );
+        }
+
+        addCommands(
+            new WaitUntilCommand(shootSupplier),
+            new WaitCommand(0.5),
+            new RetimeArm(arm, customIntermediaryTarget, false),
+            new ParallelToPos(arm, customIntermediaryTarget, false),
+            new RetimeArm(arm, Constants.ArmConstants.stow, true),
+            new ParallelToPos(arm, Constants.ArmConstants.stow, true)
+        );
     }
 }

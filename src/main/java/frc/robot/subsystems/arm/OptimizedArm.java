@@ -287,4 +287,8 @@ public class OptimizedArm extends SubsystemBase {
         setBicep(ControlMode.Velocity, 0);
         setWrist(ControlMode.Velocity, 0);
     }
+
+    public void slowWrist() {
+        configMotionMagic(new MotionMagicConfig(false, 8000, 8000, 2));
+    }
 }

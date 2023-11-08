@@ -3,6 +3,7 @@ package frc.robot.commands.arm;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmTargets;
 import frc.robot.subsystems.arm.ArmState;
 import frc.robot.subsystems.arm.ArmWaypoints;
@@ -17,6 +18,7 @@ public class OptimizedMove extends SequentialCommandGroup {
 
         arm.stop(); // Stop the arm
         arm.resetMotionMagic(); // Reset the motion magic
+        // arm.slowWrist();
 
         ArmWaypoints[] waypoints = GraphStator.tracePath(
             new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), 
@@ -30,16 +32,16 @@ public class OptimizedMove extends SequentialCommandGroup {
         
         for (ArmWaypoints point : waypoints) {
             addCommands(
-                new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(point.point.bicep, point.point.wrist))),
-                new PrintCommand("GOING TO " + point.name()),
+                // new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(point.point.bicep, point.point.wrist))),
+                // new PrintCommand("GOING TO " + point.name()),
                 new RetimeArm(arm, point, false),
                 new ParallelToPos(arm, point, false)
             );
         }
         
         addCommands(
-            new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()))),
-            new PrintCommand("GOING TO " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees())).name()),
+            // new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()))),
+            // new PrintCommand("GOING TO " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees())).name()),
             new RetimeArm(arm, target, true), // Make them arrive at the same time (not entirely needed)
             new ParallelToPos(arm, target, true), // Execute move
             new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments

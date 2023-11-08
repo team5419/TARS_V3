@@ -46,6 +46,8 @@ public class Swerve extends SubsystemBase {
     public boolean isUsingCones = true;
     private SwerveAutoBuilder autoBuilder = null;
 
+    public boolean isIntakeActive = false;
+
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.configFactoryDefault();

@@ -55,4 +55,16 @@ public class Intake extends SubsystemBase {
     public double getSpeed() {
         return intakeMotor.getSelectedSensorVelocity();
     }
+
+    public void periodic() {
+        if(intakeMotor.getStatorCurrent() > 40 && intakeMotor.getSelectedSensorVelocity() <= 0.2) {
+            isStalling = true;
+        } else {
+            isStalling = false;
+        }
+    }
+
+    public boolean getIsStalling() {
+        return isStalling;
+    }
 }
