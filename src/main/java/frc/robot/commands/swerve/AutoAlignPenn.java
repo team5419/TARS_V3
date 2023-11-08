@@ -44,7 +44,7 @@ public class AutoAlignPenn extends CommandBase {
   private final SubsystemlessVision vision = new SubsystemlessVision();
   private CustomPath path;
   private final PIDController horizontalController;
-  private final PIDController veritcalController;
+  private final PIDController verticalController;
   private final ProfiledPIDController rotationController;
   private final double epsilonDistance = 1;
   private double distanceToTarget;
@@ -63,8 +63,7 @@ public class AutoAlignPenn extends CommandBase {
     this.arm = arm;
     this.path = directPath();
     this.horizontalController = new PIDController(0.1, 0, 0); //untuned
-    this.veritcalController = new PIDController(0.1, 0, 0); //untuned
-
+    this.verticalController = new PIDController(0.1, 0, 0); //untuned
     this.rotationController =
       new ProfiledPIDController(
         Constants.AutoConstants.kPThetaController,
@@ -189,7 +188,7 @@ public class AutoAlignPenn extends CommandBase {
       vision.getTX(),
       target.x
     );
-    newVertical = veritcalController.calculate(vision.getTY(), target.y);
+    newVertical = verticalController.calculate(vision.getTY(), target.y);
     newRotation = rotationController.calculate(
       swerve.getRotationDegrees(),
       target.rotation
@@ -221,7 +220,7 @@ public class AutoAlignPenn extends CommandBase {
     return new CustomPath(points);
   }
 private Point getTarget(){
-    return new Point(vision.getHorizontalDistance(), vision.getVertical(), 0);
+    return new Point(vision.getHorizontalDistance(), vision.getVertical(), Rotation2d.fromDegrees(180).getRadians());
 }
 public void customTwo(){
    Point target = getTarget();
@@ -231,16 +230,16 @@ public void customTwo(){
       0.0,
       target.x
     );
-    newVertical = veritcalController.calculate(
+    newVertical = verticalController.calculate(
       0.0, 
       target.y
     );
     newRotation = rotationController.calculate(
-      swerve.getRotationDegrees(),
+      swerve.getRotationRadians(),
       target.rotation
     );
     swerve.drive(
-      new Translation2d(newHorizontal, newVertical),
+      new Translation2d(newHorizontal*5, -newVertical*5),
       newRotation,
       false,
       false

@@ -14,6 +14,7 @@ import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.OptimizedMove;
 import frc.robot.commands.arm.ParallelToPos;
+import frc.robot.commands.swerve.AutoAlignGrayson;
 import frc.robot.commands.swerve.AutoAlignPenn;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -56,7 +57,7 @@ public class RobotContainer {
     public final Swerve s_Swerve = new Swerve();
     public final OptimizedArm m_arm = new OptimizedArm(false);
     public final Intake mIntake = new Intake();
-    // private final Vision2 vision2 = new Vision2(s_Swerve);
+    private final Vision2 vision2 = new Vision2(s_Swerve);
 
     public GenericEntry bicepTuningEntry = Shuffleboard.getTab("Tuning").add("Bicep dest", 0.0)
         .withWidget(BuiltInWidgets.kNumberSlider)
@@ -109,8 +110,8 @@ public class RobotContainer {
         driver.x().onTrue(Commands.runOnce(() -> s_Swerve.lock()));
 
         // Auto align?
-        // driver.back().whileTrue(new AutoAlignGrayson(s_Swerve, vision2, 0.01));
-        driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,100000));
+        driver.back().whileTrue(new AutoAlignGrayson(s_Swerve, vision2, 0.15));
+        // driver.povUp().onTrue(new AutoAlignPenn(s_Swerve, m_arm,100000));
 
         // Testing
         driver.povDown().whileTrue(new ArmTester(m_arm, bicepTuningEntry, wristTuningEntry));

@@ -23,25 +23,41 @@ public class SubsystemlessVision {
   private NetworkTableEntry validTarget;
   private NetworkTableEntry tx;
   private NetworkTableEntry ty;
-  private ShuffleboardTab tab = Shuffleboard.getTab("limelight");
+  private ShuffleboardTab tab = Shuffleboard.getTab("ll");
   private boolean alive = true;
+  private double[] rbootpose_array = new double[6];
   private Notifier limelightStatusNotifier = new Notifier(() -> {
     LimelightResults current = LimelightHelpers.getLatestResults("limelight");
     alive = current != null;
   });
 
   public SubsystemlessVision() {
+    configLL();
     limelightStatusNotifier.startPeriodic(0.25);
     updateEntries();
-    tab.addDouble("LLX" + Math.random(), () -> tx.getDouble(-100000000));
-    tab.addDouble("LLY" + Math.random(), () -> ty.getDouble(-100000000));
+    tab.addDouble("0", () -> rbootpose_array[0]);
+    tab.addDouble("1", () -> rbootpose_array[1]);
+    tab.addDouble("2", () -> rbootpose_array[2]);
+    tab.addDouble("3", () -> rbootpose_array[3]);
+    tab.addDouble("4", () -> rbootpose_array[4]);
+    tab.addDouble("5", () -> rbootpose_array[5]);
+
+
+  }
+  public void configLL(){
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
   }
 
   // call in 'some' periodic
   public void updateEntries() {
     tx = limelight.getEntry("tx");
     ty = limelight.getEntry("ty");
+        rbootpose_array = limelight.getEntry("targetpose_robotspace")
+    .getDoubleArray(new double[6]);
     //DEFAULT VALUE
+
+
 
   }
 
@@ -58,8 +74,9 @@ public class SubsystemlessVision {
   }
 
   public double[] getTargetInRobotSpace() {
-    System.out.println(Arrays.asList(limelight.getEntry("targetpose_robotspace")
-    .getDoubleArray(new double[6])));
+
+    rbootpose_array = limelight.getEntry("targetpose_robotspace")
+    .getDoubleArray(new double[6]);
     
     return limelight
       .getEntry("targetpose_robotspace")
@@ -84,9 +101,9 @@ public class SubsystemlessVision {
     return limelight.getEntry("ty").getDouble(0.0);
   }
   public double getHorizontalDistance(){
-    return getTargetInRobotSpace()[1];
+    return rbootpose_array[0];
   }
     public double getVertical(){
-    return getTargetInRobotSpace()[2];
+    return rbootpose_array[2];
   }
 }

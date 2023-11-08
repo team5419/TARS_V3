@@ -205,6 +205,9 @@ public class Swerve extends SubsystemBase {
     public double getRotationDegrees(){
         return getPose().getRotation().getDegrees();
     }
+    public double getRotationRadians(){
+        return getPose().getRotation().getRadians();
+    }
     
     @Override
     public void periodic(){
