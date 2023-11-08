@@ -13,6 +13,7 @@ import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.auto.TwoStageHighChoiced;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.OptimizedMove;
+import frc.robot.commands.arm.OnTheFlyCommand;
 import frc.robot.commands.arm.ParallelToPos;
 import frc.robot.commands.swerve.AutoAlignGrayson;
 import frc.robot.commands.swerve.AutoAlignPenn;
@@ -39,9 +40,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-
- //!! WHY ARE WE USING COMMAND CONTROLLERS THEY ARE HORRIBLE -- AMMEL !!
- //!! YOU didn't WANT TO CHANGE IT SO I LEFT IT -- G !!
 public class RobotContainer {
     /* Controllers */
     // private final Joystick driver = new Joystick(0);
@@ -153,42 +151,56 @@ public class RobotContainer {
 
         //** CO DRIVER BINDINGS **//
         // Stow
-        coDriver.a().onTrue(new MoveToPos(m_arm, stow));
+        coDriver.a().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, stow)));
 
         // High
-        coDriver.y().onTrue(new MoveToPos(m_arm, coneHigh));
-        coDriver.povUp().onTrue(new MoveToPos(m_arm, cubeHigh));
+        coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
+        coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh)));
         // coDriver.y().onTrue(new TwoPartHigh(m_arm, coneHigh)); //! Currently in beta
         // coDriver.povUp().onTrue(new TwoPartHigh(m_arm, cubeHigh)); //! Currently in beta
 
         // Mid
-        coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
+        // coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
+        coDriver.x().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneMid), m_arm));
         coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
-        coDriver.povLeft().onTrue(new MoveToPos(m_arm, cubeMid));
+        coDriver.povLeft().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
+        // coDriver.povLeft().onTrue(new MoveToPos(m_arm, cubeMid));
 
         // Hybrid
-        coDriver.povDown().onTrue(new MoveToPos(m_arm, cubeHybrid));
-        coDriver.b().onTrue(new MoveToPos(m_arm, coneHybrid));
+        coDriver.povDown().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid)));
+        coDriver.b().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid)));
 
         // Ground Intakes
-        coDriver.leftTrigger().onTrue(new MoveToPos(m_arm, cubeGround));
-        coDriver.rightTrigger().onTrue(new MoveToPos(m_arm, coneGround));
+        coDriver.leftTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround)));
+        coDriver.rightTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround)));
 
         // Substations
-        coDriver.leftBumper().onTrue(new MoveToPos(m_arm, cubeSubstation));
-        coDriver.rightBumper().onTrue(new MoveToPos(m_arm, coneSubstation));
+        coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeSubstation)));
+        coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneSubstation)));
     }
 
     private void setUpEventMap() {
         HashMap<String, Command> map = Constants.AutoConstants.eventMap;
 
-        map.put("ArmCubeGround", new MoveToPos(m_arm, cubeGround));
-        map.put("ArmStow", new MoveToPos(m_arm, stow));
-        map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.2)));
+        map.put("ArmCubeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround)));
+        map.put("ArmStow", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, stow), m_arm));
+        map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.4)));
         map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
 
-        map.put("TwoStageHighCube", new TwoStageHighChoiced(m_arm, mIntake, true));
-        map.put("TwoStageHighCone", new TwoStageHighChoiced(m_arm, mIntake, false));
+        map.put("ShootCone", new SequentialCommandGroup(
+            new InstantCommand(() -> mIntake.set(OUTTAKE_VOLTS)),
+            new WaitCommand(0.2),
+            new InstantCommand(() -> mIntake.set(0))
+        ));
+
+        map.put("ShootCube", new SequentialCommandGroup(
+            new InstantCommand(() -> mIntake.set(OUTTAKE_VOLTS)),
+            new WaitCommand(0.2),
+            new InstantCommand(() -> mIntake.set(0))
+        ));
+
+        // map.put("TwoStageHighCube", new TwoStageHighChoiced(m_arm, mIntake, true));
+        // map.put("TwoStageHighCone", new TwoStageHighChoiced(m_arm, mIntake, false));
 
         map.put("ShootHybridCube", new ShootAuto(true, cubeHybrid, mIntake, m_arm));
         map.put("ShootMidCube", new ShootAuto(true, cubeMid, mIntake, m_arm));
@@ -197,5 +209,14 @@ public class RobotContainer {
         map.put("ShootHybridCone", new ShootAuto(false, coneHybrid, mIntake, m_arm));
         map.put("ShootMidCone", new ShootAuto(false, coneMid, mIntake, m_arm));
         map.put("ShootHighCone", new ShootAuto(false, coneHigh, mIntake, m_arm));
+
+
+        map.put("ArmToHybridCone", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid), m_arm));
+        map.put("ArmToMidCone", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneMid), m_arm));
+        map.put("ArmToHighCone", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
+
+        map.put("ArmToHybridCube", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid), m_arm));
+        map.put("ArmToMidCube", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
+        map.put("ArmToHighCube", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh), m_arm));
     }
 }

@@ -5,7 +5,7 @@ public enum ArmWaypoints {
   QUAD_B(45, 70),
   QUAD_C(45, -70),
   QUAD_D(-45, -55),
-  QUAD_E(-45, 65), // Could want to modify this to allow high shots to clear the post without hitting
+  QUAD_E(-45, 55), // Could want to modify this to allow high shots to clear the post without hitting
   QUAD_F(25, -55);
 
   public ArmState point;

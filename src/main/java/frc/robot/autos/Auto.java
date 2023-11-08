@@ -52,7 +52,7 @@ public class Auto {
         this.swerve = swerve;
         this.autoName = autoName;
 
-        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(autoName, new PathConstraints(5, 2.5));
+        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(autoName, new PathConstraints(3, 2.5));
 
         compiledAuto = swerve.getAutoBuilder().fullAuto(pathGroup);
         compiledAuto = compiledAuto.beforeStarting(() -> start()).andThen(Commands.runOnce(() -> end()));

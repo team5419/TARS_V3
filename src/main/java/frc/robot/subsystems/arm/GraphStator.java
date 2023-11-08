@@ -17,17 +17,37 @@ public enum GraphStator {
    *    D     F C
    */
   // We're missing states
-  NOSTATE(LegalState.ILLEGAL, new ArmState(0, 0), new ArmState(0, 0), null),
+  NOSTATE(LegalState.ILLEGAL, new ArmState(0, 0), new ArmState(0, 0), 
+  // new ArmWaypoints[][] {
+  //       new ArmWaypoints[] {null}, // A to NOSTATE, can be null if you want to error
+  //       new ArmWaypoints[] {null}, // A to A
+  //       new ArmWaypoints[] {null}, // A to B
+  //       new ArmWaypoints[] {null}, // A to C
+  //       new ArmWaypoints[] {null}, // A to D
+  //       new ArmWaypoints[] {null}, // A to E
+  //       new ArmWaypoints[] {null}
+  // }
+  null),
+
+  // new ArmWaypoints[][] {
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //       new ArmWaypoints[] {null},
+  //   }
   A(LegalState.LEGAL,
-    new ArmState(-150, -70),
-    new ArmState(150, 70),
+    new ArmState(-150, -80),
+    new ArmState(150, 80),
     // This is brute force, we'd like to dynamically calculate this in the future
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null}, // A to NOSTATE, can be null if you want to error
         new ArmWaypoints[] {}, // A to A
         new ArmWaypoints[] {ArmWaypoints.QUAD_B}, // A to B
         new ArmWaypoints[] {ArmWaypoints.QUAD_E}, // A to C
-        new ArmWaypoints[] {ArmWaypoints.QUAD_F, ArmWaypoints.QUAD_D}, // A to D
+        new ArmWaypoints[] {ArmWaypoints.QUAD_D}, // A to D
         new ArmWaypoints[] {ArmWaypoints.QUAD_C}, // A to E
         new ArmWaypoints[] {ArmWaypoints.QUAD_F}
     }),
@@ -68,7 +88,7 @@ public enum GraphStator {
         new ArmWaypoints[] {ArmWaypoints.QUAD_E, ArmWaypoints.QUAD_F}
     }),
   E(LegalState.LEGAL,
-    new ArmState(-150, 70),
+    new ArmState(-150, 80),
     new ArmState(-70, 215),
     new ArmWaypoints[][] {
         new ArmWaypoints[] {null},
@@ -110,15 +130,12 @@ public enum GraphStator {
     // } else {
     //    return bicep > min.bicep && bicep < max.bicep &&  wrist > min.wrist && wrist < max.wrist;
     // }
-    return //(this.legalState != LegalState.ILLEGAL) && 
-           (bicep > min.bicep && bicep <= max.bicep) && 
-           (wrist > min.wrist && wrist <= max.wrist);
+    return (this != NOSTATE) && (bicep > min.bicep && bicep <= max.bicep) && (wrist > min.wrist && wrist <= max.wrist);
   }
 
   public static GraphStator getSectorStateFromCoords(double bicep, double wrist) {
     for (GraphStator sector : GraphStator.values()) {
       if (sector.inSector(bicep, wrist)) {
-        System.out.println("RETUNING" + sector.name());
         return sector;
       }
     }
@@ -148,10 +165,9 @@ public enum GraphStator {
   public static ArmWaypoints[] tracePath(ArmState startWaypoint, ArmTargets targetWaypoint) {
     // System.out.println(getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget)).legalState);
 
-    System.out.println("START POINT -------------------------------------- " + startWaypoint.bicep);
-
     GraphStator start = getSectorStateFromCoords(startWaypoint);
     GraphStator end = getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget));
+
 
     return start.pathTo[end.ordinal()];
   }
@@ -162,11 +178,11 @@ public enum GraphStator {
    * @param end - the ending waypoint
    * @return - a single motion magic config, to be passed into OptimizedArm.configMotionMagic
    */
-  public static MotionMagicConfig[] calculateNewMotionMagic(Waypoint start, Waypoint end, OptimizedArm arm) {
+  public static MotionMagicConfig[] calculateNewMotionMagic(Waypoint start, Waypoint end, OptimizedArm arm, boolean isLastMove) {
     double bicepDiff = Conversions.degreesToFalcon(Math.abs(start.bicep - end.bicep), Constants.ArmConstants.BASE_GEAR_RATIO);
     double wristDiff = Conversions.degreesToFalcon(Math.abs(start.wrist - end.wrist), Constants.ArmConstants.WRIST_GEAR_RATIO);
 
-    double slowDownEvenMore = arm.isTesting ? 0.1 : 1;
+    double slowDownEvenMore = arm.isTesting ? 0.1 : 0.4;
     
     double ratio = bicepDiff / wristDiff;
 
@@ -176,13 +192,13 @@ public enum GraphStator {
     
     if(ratio < 1) {
       return new MotionMagicConfig[] {
-        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * ratio * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR), 
-        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR)
+        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * ratio * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, isLastMove ? Constants.ArmConstants.BASE_CURVE_STR : 0), 
+        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, isLastMove ? Constants.ArmConstants.WRIST_CURVE_STR : 0)
       };
     } else if (ratio > 1) {
       return new MotionMagicConfig[] {
-        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / ratio * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, Constants.ArmConstants.WRIST_CURVE_STR),
-        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, Constants.ArmConstants.BASE_CURVE_STR)
+        new MotionMagicConfig(false, Constants.ArmConstants.WRIST_MAX_V / ratio * slowDownEvenMore, Constants.ArmConstants.WRIST_MAX_A, isLastMove ? Constants.ArmConstants.WRIST_CURVE_STR : 0),
+        new MotionMagicConfig(true, Constants.ArmConstants.BASE_MAX_V * slowDownEvenMore, Constants.ArmConstants.BASE_MAX_A, isLastMove ? Constants.ArmConstants.BASE_CURVE_STR : 0)
       };
     } else {
         return new MotionMagicConfig[] { arm.getBaseConfig(true), arm.getBaseConfig(false) }; // change nothing, but have to return something

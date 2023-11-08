@@ -110,11 +110,14 @@ public class OptimizedArm extends SubsystemBase {
             wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 20, 0.1));
         } else {
             resetMotionMagic();
+
+            bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 30, 0.1));
+            bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 30, 0.1));
+            wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 30, 0.1));
         }
 
         tab.add("Reset Arm Pose", new ResetArmPose(this));
-        // if ^^^^ doesn't work
-        // SmartDashboard.putData("Reset Arm Pose", new ResetArmPose(this));
+        tab.add("Commands", this);
 
         this.isTesting = isTesting;
     }

@@ -19,8 +19,8 @@ public class ParallelToPos extends ParallelCommandGroup {
         // addRequirements(arm);
 
         addCommands(
-            new BicepToPos(arm, OptimizedArm.degreesToTicksBicep(target.point.bicep), isLastMove ? 1000 : 4000),
-            new WristToPos(arm, OptimizedArm.degreesToTicksWrist(target.point.wrist), isLastMove ? 1000 : 4000)
+            new BicepToPos(arm, OptimizedArm.degreesToTicksBicep(target.point.bicep), isLastMove ? 1000 : 2000),
+            new WristToPos(arm, OptimizedArm.degreesToTicksWrist(target.point.wrist), isLastMove ? 1000 : 2000)
         );
     }
 
@@ -34,8 +34,8 @@ public class ParallelToPos extends ParallelCommandGroup {
         // addRequirements(arm);
 
         addCommands(
-            new BicepToPos(arm, target.bicepTarget, isLastMove ? 1000 : 4000),
-            new WristToPos(arm, target.wristTarget, isLastMove ? 1000 : 4000)
+            new BicepToPos(arm, target.bicepTarget, isLastMove ? 1000 : 2000),
+            new WristToPos(arm, target.wristTarget, isLastMove ? 1000 : 2000)
         );
     }
 }

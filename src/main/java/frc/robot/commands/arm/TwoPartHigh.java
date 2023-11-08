@@ -37,47 +37,47 @@ public class TwoPartHigh extends SequentialCommandGroup {
             target
         );
 
-        if(waypoints.length == 0) {
-            addCommands(
-                new RetimeArm(arm, customIntermediaryTarget),
-                new ParallelToPos(arm, customIntermediaryTarget, false),
-                new RetimeArm(arm, target),
-                new ParallelToPos(arm, target, true)
-            );
-        } else if (waypoints[0] == null) {
-            System.out.println("[TWO PART HIGH] - Invalid position requested, abandoning request");
-            return;
-        } else if (waypoints.length == 1) {
-            addCommands(
-                new RetimeArm(arm, waypoints[0]),
-                new ParallelToPos(arm, waypoints[0], false),
-                new RetimeArm(arm, customIntermediaryTarget),
-                new ParallelToPos(arm, customIntermediaryTarget, false),
-                new RetimeArm(arm, target),
-                new ParallelToPos(arm, target, true)
-            );
-        } else {
-            addCommands(
-                new RetimeArm(arm, waypoints[0]),
-                new ParallelToPos(arm, waypoints[0], false),
-                new RetimeArm(arm, waypoints[1]),
-                new ParallelToPos(arm, waypoints[1], false),
-                new RetimeArm(arm, customIntermediaryTarget),
-                new ParallelToPos(arm, customIntermediaryTarget, false),
-                new RetimeArm(arm, ArmWaypoints.QUAD_E),
-                new ParallelToPos(arm, ArmWaypoints.QUAD_E, true),
-                new RetimeArm(arm, target),
-                new ParallelToPos(arm, target, true)
-            );
-        }
+        // if(waypoints.length == 0) {
+        //     addCommands(
+        //         new RetimeArm(arm, customIntermediaryTarget),
+        //         new ParallelToPos(arm, customIntermediaryTarget, false),
+        //         new RetimeArm(arm, target),
+        //         new ParallelToPos(arm, target, true)
+        //     );
+        // } else if (waypoints[0] == null) {
+        //     System.out.println("[TWO PART HIGH] - Invalid position requested, abandoning request");
+        //     return;
+        // } else if (waypoints.length == 1) {
+        //     addCommands(
+        //         new RetimeArm(arm, waypoints[0]),
+        //         new ParallelToPos(arm, waypoints[0], false),
+        //         new RetimeArm(arm, customIntermediaryTarget),
+        //         new ParallelToPos(arm, customIntermediaryTarget, false),
+        //         new RetimeArm(arm, target),
+        //         new ParallelToPos(arm, target, true)
+        //     );
+        // } else {
+        //     addCommands(
+        //         new RetimeArm(arm, waypoints[0]),
+        //         new ParallelToPos(arm, waypoints[0], false),
+        //         new RetimeArm(arm, waypoints[1]),
+        //         new ParallelToPos(arm, waypoints[1], false),
+        //         new RetimeArm(arm, customIntermediaryTarget),
+        //         new ParallelToPos(arm, customIntermediaryTarget, false),
+        //         new RetimeArm(arm, ArmWaypoints.QUAD_E),
+        //         new ParallelToPos(arm, ArmWaypoints.QUAD_E, true),
+        //         new RetimeArm(arm, target),
+        //         new ParallelToPos(arm, target, true)
+        //     );
+        // }
 
-        addCommands(
-            new WaitUntilCommand(shootSupplier),
-            new WaitCommand(0.5),
-            new RetimeArm(arm, customIntermediaryTarget),
-            new ParallelToPos(arm, customIntermediaryTarget, false),
-            new RetimeArm(arm, Constants.ArmConstants.stow),
-            new ParallelToPos(arm, Constants.ArmConstants.stow, true)
-        );
+        // addCommands(
+        //     new WaitUntilCommand(shootSupplier),
+        //     new WaitCommand(0.5),
+        //     new RetimeArm(arm, customIntermediaryTarget),
+        //     new ParallelToPos(arm, customIntermediaryTarget, false),
+        //     new RetimeArm(arm, Constants.ArmConstants.stow),
+        //     new ParallelToPos(arm, Constants.ArmConstants.stow, true)
+        // );
     }
 }
