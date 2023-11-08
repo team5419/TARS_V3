@@ -161,10 +161,10 @@ public class RobotContainer {
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
 
         // High
-        // coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
-        // coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh)));
-        coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, coneHigh, true, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
-        coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, cubeHigh, false, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
+        coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
+        coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh)));
+        // coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, coneHigh, true, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
+        // coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, cubeHigh, false, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
 
         // Mid
         // coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
