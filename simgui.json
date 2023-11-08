@@ -1,0 +1,9 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Optimized Arm/Reset Arm Pose": "Command",
+      "/SmartDashboard/Auto Chooser": "String Chooser"
+    }
+  }
+}

@@ -12,6 +12,9 @@ public class CustomPath {
     }
     //this cant be best way...
     public Point next(){
+        if(index == points.size()){
+            return null;
+        }
         Point rPoint = points.get(index);
         index++;
         return rPoint;
