@@ -25,12 +25,15 @@ public class Point {
 
     public Point(double _x, double _y, double _rotation, boolean _passthrough){
         x = _x;
-        x = _y;
+        y = _y;
         rotation = _rotation;
         passthrough  = _passthrough;
     }
     public Point(double _x, double _y, double _rotation){
         this(_x, _y, _rotation, false);
+    }
+    public String toString(){
+        return "X: " + this.x + " Y: " + this.y + " R: " + this.rotation;
     }
 
     
