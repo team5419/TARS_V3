@@ -16,7 +16,7 @@ import frc.robot.subsystems.limelight.LimelightHelpers;;
  * Designed for retro-reflective auto align with a limelight
  * @author Grayson 
  */
-public class AutoAlignGrayson extends CommandBase {
+public class AutoAlign extends CommandBase {
 
     private final Swerve swerve;
     private final Vision2 vision;
@@ -27,7 +27,7 @@ public class AutoAlignGrayson extends CommandBase {
 
     private double epsilon;
 
-    public AutoAlignGrayson(Swerve swerve, Vision2 vision, double epsilon) {
+    public AutoAlign(Swerve swerve, Vision2 vision, double epsilon) {
         this.swerve = swerve;
         this.vision = vision;
         this.epsilon = epsilon;
