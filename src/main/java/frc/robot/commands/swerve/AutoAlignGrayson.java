@@ -32,9 +32,9 @@ public class AutoAlignGrayson extends CommandBase {
         this.vision = vision;
         this.epsilon = epsilon;
 
-        translationController = new PIDController(0.2, 0, 0);
-        straifController = new PIDController(0.2, 0, 0);
-        rotationController = new PIDController(1, 0, 0);
+        translationController = new PIDController(0.1, 0, 0);
+        straifController = new PIDController(0.1, 0, 0);
+        rotationController = new PIDController(1.2, 0, 0);
 
         translationController.setSetpoint(0);
         straifController.setSetpoint(0);
@@ -63,12 +63,14 @@ public class AutoAlignGrayson extends CommandBase {
         double tx = LimelightHelpers.getTX("");
         double ty = LimelightHelpers.getTY("");
 
-        double newTranslation = -translationController.calculate(ty);
-        double newStraif = translationController.calculate(tx);
+        double newTranslation = translationController.calculate(ty);
+        double newStraif = -translationController.calculate(tx);
         double newRotation = rotationController.calculate(swerve.getPose().getRotation().getRadians());
+
         newTranslation = MathUtil.applyDeadband(newTranslation, 0.1);
         newStraif = MathUtil.applyDeadband(newStraif, 0.1);
-        newRotation = 0;
+        newRotation = MathUtil.applyDeadband(newRotation, 0.1);
+
         swerve.drive(new Translation2d(newTranslation, newStraif), newRotation, false, false);
     }
 

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.lights.AnimateLights;
+import frc.robot.commands.arm.ArmThrow;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.OptimizedMove;
 import frc.robot.commands.arm.TwoPartHigh;
@@ -50,7 +51,7 @@ public class RobotContainer {
 
     /* Subsystems */
     public final Swerve s_Swerve = new Swerve();
-    public final OptimizedArm m_arm = new OptimizedArm(true);
+    public final OptimizedArm m_arm = new OptimizedArm(false);
     public final Intake mIntake = new Intake();
     public final Lights leds = new Lights(52);
     private final Vision2 vision2 = new Vision2(s_Swerve);
@@ -137,7 +138,7 @@ public class RobotContainer {
         
         // Snap to substation
         driver.b().whileTrue(new SnapTo(s_Swerve, 
-            Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? -90 : 90), 
+            Rotation2d.fromDegrees(DriverStation.getAlliance() == Alliance.Red ? 90 : -90), 
             () -> -driver.getRawAxis(translationAxis), 
             () -> -driver.getRawAxis(strafeAxis),
             () -> driver.leftBumper().getAsBoolean()
@@ -162,7 +163,7 @@ public class RobotContainer {
 
         // High
         coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
-        coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh)));
+        coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh), m_arm));
         // coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, coneHigh, true, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
         // coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, cubeHigh, false, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
 
@@ -185,7 +186,11 @@ public class RobotContainer {
         coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
         coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
 
+        // Change LEDS
         coDriver.back().onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = !s_Swerve.isUsingCones));
+
+        // Fling
+        coDriver.rightStick().onTrue(new OnTheFlyCommand(() -> new ArmThrow(m_arm, mIntake, coneHigh), mIntake, m_arm));
     }
 
     private void setUpEventMap() {
