@@ -13,9 +13,9 @@ public class ShootAuto extends SequentialCommandGroup {
         addCommands(
             Commands.runOnce(() -> intake.set(Constants.IntakeConstants.INTAKE_PCT)),
             new MoveToPosAuto(arm, target),
-            new WaitCommand(0.2),
+            new WaitCommand(0.15),
             Commands.runOnce(() -> intake.setVolts(isCube ? Constants.IntakeConstants.OUTTAKE_VOLTS_CUBE : Constants.IntakeConstants.OUTTAKE_VOLTS)), 
-            new WaitCommand(0.2),
+            new WaitCommand(0.25),
             Commands.runOnce(() -> intake.set(0))
         );
     }

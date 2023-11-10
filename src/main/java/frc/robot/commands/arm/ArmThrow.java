@@ -16,9 +16,9 @@ public class ArmThrow extends ParallelCommandGroup {
             new SequentialCommandGroup(
                 // new WaitCommand(0.2), // Delay the shot
                 new WaitUntilCommand(() -> {
-                    return arm.isAt(OptimizedArm.degreesToTicksBicep(80), OptimizedArm.degreesToTicksWrist(90));
+                    return arm.isAt(OptimizedArm.degreesToTicksBicep(-90), OptimizedArm.degreesToTicksWrist(-100));
                 }),
-                new InstantCommand(() -> intake.set(50)), // Shoot
+                new InstantCommand(() -> intake.set(100)), // Shoot
                 new WaitCommand(0.5), // Wait a sec
                 new InstantCommand(() -> intake.set(0)) // Stop moving
             )

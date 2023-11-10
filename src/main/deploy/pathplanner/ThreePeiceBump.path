@@ -110,6 +110,33 @@
         "x": 3.4953025182157527,
         "y": 0.5896950230204459
       },
+      "nextControl": {
+        "x": 3.4953025182157527,
+        "y": 0.5896950230204459
+      },
+      "holonomicAngle": 0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "ShootCube"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0.5
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 5.38497289760537,
+        "y": 0.8527931949480937
+      },
+      "prevControl": {
+        "x": 4.482433432951973,
+        "y": 0.838579975032292
+      },
       "nextControl": null,
       "holonomicAngle": 0,
       "isReversal": false,
@@ -117,13 +144,10 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "ShootCube",
-          "ArmStow"
-        ],
-        "executionBehavior": "sequential",
+        "names": [],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
-        "waitTime": 0.5
+        "waitTime": 0
       }
     }
   ],
@@ -175,6 +199,12 @@
       "position": 3.7636363636363517,
       "names": [
         "ArmToHybridCube"
+      ]
+    },
+    {
+      "position": 4.636363636363621,
+      "names": [
+        "ArmStow"
       ]
     }
   ]

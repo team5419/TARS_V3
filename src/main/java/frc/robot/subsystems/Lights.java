@@ -75,7 +75,7 @@ public class Lights extends SubsystemBase {
 
     public void tick() {
         if(DriverStation.isEStopped()) {
-            strobe(255, 0, 0, 0.1);
+            strobe(255, 255, 255, 1);
             return;
         }
 

@@ -5,6 +5,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
@@ -26,6 +27,8 @@ public class AutoAlign extends CommandBase {
     private final PIDController rotationController;
 
     private double epsilon;
+    private Timer timer = null;
+    private double maxTime = 0;
 
     public AutoAlign(Swerve swerve, Vision2 vision, double epsilon) {
         this.swerve = swerve;
@@ -41,8 +44,31 @@ public class AutoAlign extends CommandBase {
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
         rotationController.setSetpoint(0.0);
 
+        maxTime = -1;
+
         // Use addRequirements() here to declare subsystem dependencies.
         
+        addRequirements(swerve);
+    }
+
+    public AutoAlign(Swerve swerve, Vision2 vision, double epsilon, double time) {
+        this.swerve = swerve;
+        this.vision = vision;
+        this.epsilon = epsilon;
+
+        translationController = new PIDController(0.1, 0, 0);
+        straifController = new PIDController(0.1, 0, 0);
+        rotationController = new PIDController(1.2, 0, 0);
+
+        translationController.setSetpoint(0);
+        straifController.setSetpoint(0);
+        rotationController.enableContinuousInput(-Math.PI, Math.PI);
+        rotationController.setSetpoint(0.0);
+
+        timer = new Timer();
+        this.maxTime = time;
+        
+        // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(swerve);
     }
 
@@ -53,13 +79,17 @@ public class AutoAlign extends CommandBase {
         translationController.reset();
         straifController.reset();
         rotationController.reset(); // Should probably add a velocity
-
+        if(maxTime != -1) {
+            timer.reset();
+            timer.start();
+        }
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-                vision.enableLEDs();
+        vision.enableLEDs();
+
         double tx = LimelightHelpers.getTX("");
         double ty = LimelightHelpers.getTY("");
 
@@ -84,7 +114,7 @@ public class AutoAlign extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return maxTime != -1 && (timer.get() > maxTime); //|| (LimelightHelpers.getTX("") < epsilon && LimelightHelpers.getTY("") < epsilon));
         // return  MathUtil.applyDeadband(LimelightHelpers.getTY(""), epsilon) == 0 && MathUtil.applyDeadband(LimelightHelpers.getTX(""), epsilon) == 0;
     }
 

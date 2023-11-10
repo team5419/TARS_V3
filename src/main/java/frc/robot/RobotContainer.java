@@ -169,9 +169,8 @@ public class RobotContainer {
         // Mid
         // coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
         coDriver.x().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneMid), m_arm));
-        coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
+        coDriver.povRight().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
         coDriver.povLeft().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
-        // coDriver.povLeft().onTrue(new MoveToPos(m_arm, cubeMid));
 
         // Hybrid
         coDriver.povDown().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid)));
@@ -195,7 +194,11 @@ public class RobotContainer {
     private void setUpEventMap() {
         HashMap<String, Command> map = Constants.AutoConstants.eventMap;
 
+        map.put("TimedAutoAlign", new AutoAlign(s_Swerve, vision2, 0.2, 1.1));
+        
         map.put("ArmCubeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround)));
+        map.put("ArmConeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround)));
+
         map.put("ArmStow", new MoveToPos(m_arm, stow));
         map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.4)));
         map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
