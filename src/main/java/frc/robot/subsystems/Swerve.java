@@ -36,12 +36,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
+import frc.robot.commands.swerve.Detector;
 
 public class Swerve extends SubsystemBase {
     // public SwerveDriveOdometry swerveOdometry;
     public SwerveDrivePoseEstimator estimator;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
+    public Detector detector;
 
     public boolean isUsingCones = true;
     private SwerveAutoBuilder autoBuilder = null;
@@ -215,7 +217,7 @@ public class Swerve extends SubsystemBase {
     public void periodic(){
         // swerveOdometry.update(getYaw(), getModulePositions());  
         estimator.update(getYaw(), getModulePositions());  
-
+        detector.updateEntries();
         // for(SwerveModule mod : mSwerveMods){
         //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
         //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
