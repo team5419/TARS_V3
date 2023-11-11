@@ -18,6 +18,7 @@ import frc.robot.commands.arm.OnTheFlyCommand;
 import frc.robot.commands.arm.ParallelToPos;
 import frc.robot.commands.swerve.AutoAlign;
 import frc.robot.commands.swerve.AutoAlignPenn;
+import frc.robot.commands.swerve.AutoBalance;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.subsystems.*;
@@ -111,6 +112,8 @@ public class RobotContainer {
 
         // Auto align
         driver.back().whileTrue(new AutoAlign(s_Swerve, vision2, 0.15));
+
+        driver.povUp().whileTrue(new AutoBalance(s_Swerve));
 
         // Testing
         // driver.povDown().whileTrue(new ArmTester(m_arm, bicepTuningEntry, wristTuningEntry));

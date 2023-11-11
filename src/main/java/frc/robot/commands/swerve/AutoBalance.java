@@ -21,10 +21,10 @@ public class AutoBalance extends CommandBase {
     private final Swerve swerve;
     private Pigeon2 gyro;
 
-    LinearFilter filter = LinearFilter.highPass(0.1, 0.2);
+    LinearFilter filter = LinearFilter.highPass(2, 0.2);
     double calculatedRoll;
     double threshold = 1;
-    double angleEpsilon = 1;
+    double angleEpsilon;
 
     enum State {
         GENERAL,
@@ -37,8 +37,8 @@ public class AutoBalance extends CommandBase {
     GenericEntry rollLoggerCalculated = Shuffleboard.getTab("Auto Balance").add("Filtered Roll", 0.0).withWidget(BuiltInWidgets.kGraph).getEntry();
     GenericEntry rollState = Shuffleboard.getTab("Auto Balance").add("State", State.GENERAL.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
     
-    GenericEntry thresholdEntry = Shuffleboard.getTab("Auto Balance").add("Roll", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
-    GenericEntry angleEpsilonEntry = Shuffleboard.getTab("Auto Balance").add("Filtered Roll", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+    GenericEntry thresholdEntry = Shuffleboard.getTab("Auto Balance").add("Threshold", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+    GenericEntry angleEpsilonEntry = Shuffleboard.getTab("Auto Balance").add("Angle Epsilon", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
 
     public AutoBalance(Swerve swerve) {
         this.swerve = swerve;
@@ -55,8 +55,9 @@ public class AutoBalance extends CommandBase {
 
         filter.reset();
 
-        threshold = thresholdEntry.getDouble(1);
-        angleEpsilon = angleEpsilonEntry.getDouble(1);
+        // threshold = thresholdEntry.getDouble(10);
+        threshold = -4.5;
+        angleEpsilon = 0.01;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -66,11 +67,11 @@ public class AutoBalance extends CommandBase {
         double forward = 0;
 
         rollLogger.setDouble(gyro.getRoll());
-        rollLoggerCalculated.setDouble(gyro.getRoll());
+        rollLoggerCalculated.setDouble(calculatedRoll);
         rollState.setString(currentState.toString());
 
         if (calculatedRoll < threshold) {
-            forward = -0.1;
+            forward = -0.8;
             currentState = State.CORRECTION;
         } else if (currentState != State.CORRECTION) {
             forward = 0.5;
@@ -88,7 +89,8 @@ public class AutoBalance extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return MathUtil.applyDeadband(calculatedRoll, angleEpsilon) == 0;
+        // return false;
+        return MathUtil.applyDeadband(calculatedRoll, angleEpsilon) == 0 && currentState == State.CORRECTION;
     }
 
 }
