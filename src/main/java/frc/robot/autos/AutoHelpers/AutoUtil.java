@@ -42,7 +42,7 @@ public class AutoUtil {
         }
 
         return PathPlanner.generatePath(
-            new PathConstraints(Constants.Swerve.maxSpeed, 2), 
+            new PathConstraints(Constants.SwerveConstants.maxSpeed, 2), 
             pointList
         );
     }

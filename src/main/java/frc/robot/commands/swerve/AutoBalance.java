@@ -1,0 +1,94 @@
+package frc.robot.commands.swerve;
+
+import com.ctre.phoenix.sensors.Pigeon2;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.Swerve;
+
+/**
+ * @author 
+ */
+public class AutoBalance extends CommandBase {
+
+    private final Swerve swerve;
+    private Pigeon2 gyro;
+
+    LinearFilter filter = LinearFilter.highPass(0.1, 0.2);
+    double calculatedRoll;
+    double threshold = 1;
+    double angleEpsilon = 1;
+
+    enum State {
+        GENERAL,
+        CORRECTION
+    }
+
+    State currentState;
+
+    GenericEntry rollLogger = Shuffleboard.getTab("Auto Balance").add("Roll", 0.0).withWidget(BuiltInWidgets.kGraph).getEntry();
+    GenericEntry rollLoggerCalculated = Shuffleboard.getTab("Auto Balance").add("Filtered Roll", 0.0).withWidget(BuiltInWidgets.kGraph).getEntry();
+    GenericEntry rollState = Shuffleboard.getTab("Auto Balance").add("State", State.GENERAL.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
+    
+    GenericEntry thresholdEntry = Shuffleboard.getTab("Auto Balance").add("Roll", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+    GenericEntry angleEpsilonEntry = Shuffleboard.getTab("Auto Balance").add("Filtered Roll", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+
+    public AutoBalance(Swerve swerve) {
+        this.swerve = swerve;
+        gyro = swerve.gyro;
+
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(swerve);
+    }
+
+    // Called when the command is initially scheduled.
+    @Override
+    public void initialize() {
+        currentState = State.GENERAL;
+
+        filter.reset();
+
+        threshold = thresholdEntry.getDouble(1);
+        angleEpsilon = angleEpsilonEntry.getDouble(1);
+    }
+
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        calculatedRoll = filter.calculate(gyro.getRoll());
+        double forward = 0;
+
+        rollLogger.setDouble(gyro.getRoll());
+        rollLoggerCalculated.setDouble(gyro.getRoll());
+        rollState.setString(currentState.toString());
+
+        if (calculatedRoll < threshold) {
+            forward = -0.1;
+            currentState = State.CORRECTION;
+        } else if (currentState != State.CORRECTION) {
+            forward = 0.5;
+        }
+
+        swerve.drive(new Translation2d(forward, 0), 0, true, false);
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {
+        swerve.lock();
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return MathUtil.applyDeadband(calculatedRoll, angleEpsilon) == 0;
+    }
+
+}

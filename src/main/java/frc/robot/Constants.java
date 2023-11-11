@@ -16,7 +16,7 @@ import frc.lib.util.SwerveModuleConstants;
 public final class Constants {
     public static final double stickDeadband = 0.1;
 
-    public static final class Swerve {
+    public static final class SwerveConstants {
         public static final int pigeonID = 51;
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
@@ -229,7 +229,8 @@ public final class Constants {
     public static final ArmTargets stow = new ArmTargets(0, 0);
     
     // public static final ArmTargets coneSubstation = new ArmTargets(2933, 10842);
-    public static final ArmTargets coneSubstation = new ArmTargets().fromDegrees(15, -49);
+    // public static final ArmTargets coneSubstation = new ArmTargets().fromDegrees(15, -49);
+    public static final ArmTargets coneSubstation = new ArmTargets().fromDegrees(14, -47);
     public static final ArmTargets coneHigh = new ArmTargets(-63004, -45933, globalSafeZone);
     public static final ArmTargets coneMid = new ArmTargets(-67582, -26966, globalSafeZone);
     public static final ArmTargets coneHybrid = new ArmTargets().fromDegrees(10, 70);
