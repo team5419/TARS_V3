@@ -297,6 +297,7 @@ public class OptimizedArm extends SubsystemBase {
     }
 
     public void stop() {
+        System.out.println("STOPPING");
         setBicep(ControlMode.Velocity, 0);
         setWrist(ControlMode.Velocity, 0);
     }

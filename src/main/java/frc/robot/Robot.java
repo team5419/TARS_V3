@@ -89,13 +89,14 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // chooser.getSelected().Run();
-    new SequentialCommandGroup(
-      new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.coneMid),
-      new InstantCommand(() -> m_robotContainer.mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS)),
-      new WaitCommand(2),
-      new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.stow)
-    ).schedule();
+    chooser.getSelected().Run();
+    // new SequentialCommandGroup(
+    //  new InstantCommand(() -> m_robotContainer.mIntake.set(Constants.IntakeConstants.INTAKE_PCT)),
+    //   new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.coneMid),
+    //   new InstantCommand(() -> m_robotContainer.mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS)),
+    //   new WaitCommand(2),
+    //   new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.stow)
+    // ).schedule();
   }
 
   /** This function is called periodically during autonomous. */
