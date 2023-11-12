@@ -220,9 +220,12 @@ public class RobotContainer {
 
         map.put("Balance", new AutoBalance(s_Swerve));
         
-        map.put("ArmCubeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround)));
-        map.put("ArmConeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround)));
-
+        // map.put("ArmCubeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround)));
+        // map.put("ArmConeGround", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround)));
+        
+        map.put("ArmCubeGround", new OptimizedMoveV3(m_arm, cubeGround));
+        map.put("ArmConeGround", new OptimizedMoveV3(m_arm, coneGround));
+        
         map.put("ArmStow", new MoveToPos(m_arm, stow));
         map.put("ConstantIntakeStart", Commands.runOnce(() -> mIntake.set(-0.4)));
         map.put("RunIntake", Commands.runOnce(() -> mIntake.set(INTAKE_PCT)));
