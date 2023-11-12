@@ -191,7 +191,7 @@ public class RobotContainer {
 
         // Mid
         coDriver.x().onTrue(new OptimizedMoveV3(m_arm, coneMid));
-        coDriver.povRight().onTrue(new OptimizedMoveV3(m_arm, cubeMid));
+        coDriver.povRight().onTrue(new MoveToPos(m_arm, cubeMid));
         coDriver.povLeft().onTrue(new OptimizedMoveV3(m_arm, cubeMid));
 
         // Hybrid

@@ -154,6 +154,10 @@ public class OptimizedArm extends SubsystemBase {
 
         SmartDashboard.putNumber("Bicep Encoder in Degrees", getBicepPositionDegrees());
         SmartDashboard.putNumber("Wrist Encoder in Degrees", getWristPositionDegrees());
+
+        SmartDashboard.putNumber("Wrist - CURRENT DEG", OptimizedArm.ticksToDegreesWrist(wristTalon.getSelectedSensorPosition()));
+        SmartDashboard.putNumber("Wrist - SETPOINT DEG", OptimizedArm.ticksToDegreesWrist(wristTalon.getClosedLoopTarget()));
+        SmartDashboard.putNumber("Wrist - CLE RAW", wristTalon.getClosedLoopError());
     }
 
 
@@ -297,9 +301,9 @@ public class OptimizedArm extends SubsystemBase {
     }
 
     public void stop() {
-        System.out.println("STOPPING");
-        setBicep(ControlMode.Velocity, 0);
-        setWrist(ControlMode.Velocity, 0);
+        System.out.println("STOPPING ARM -------------------------------------");
+        // setBicep(ControlMode.Velocity, 0);
+        // setWrist(ControlMode.Velocity, 0);
     }
 
     public void slowWrist() {

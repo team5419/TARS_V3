@@ -51,7 +51,7 @@ public class OptimizedMoveV3 extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        arm.stop(); // Stop the arm
+        // arm.stop(); // Stop the arm
         arm.resetMotionMagic(); // Reset the motion magic
 
         waypoints = new LinkedList<ArmState>();
@@ -83,8 +83,6 @@ public class OptimizedMoveV3 extends CommandBase {
         // SmartDashboard.putNumber("Wrist - CLE", wrist.getClosedLoopError());
         // SmartDashboard.putNumber("Wrist - OUT VOLT", wrist.getMotorOutputVoltage());
         // SmartDashboard.putNumber("Wrist - OUT CURRENT", wrist.getStatorCurrent());
-        SmartDashboard.putNumber("Wrist - CURRENT DEG", OptimizedArm.ticksToDegreesWrist(wrist.getSelectedSensorPosition()));
-        SmartDashboard.putNumber("Wrist - SETPOINT DEG", OptimizedArm.ticksToDegreesWrist(wrist.getClosedLoopTarget()));
 
         if(arm.isAtWithEpsilon(waypoints.getFirst(), 2000)) {
             waypoints.removeFirst();
@@ -100,7 +98,7 @@ public class OptimizedMoveV3 extends CommandBase {
             arm.stop();
         }
 
-        arm.resetMotionMagic();
+        // arm.resetMotionMagic();
 
         System.out.println("EXITED -------------------------------------------------------------------------------------------");
     }
