@@ -49,17 +49,17 @@ public class Swerve extends SubsystemBase {
     public boolean isIntakeActive = false;
 
     public Swerve() {
-        gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        gyro = new Pigeon2(Constants.SwerveConstants.pigeonID);
         gyro.configFactoryDefault();
         zeroGyro();
 
         // Shuffleboard.getTab("Shot selection").add(')
 
         mSwerveMods = new SwerveModule[] {
-            new SwerveModule(0, Constants.Swerve.Mod0.constants),
-            new SwerveModule(1, Constants.Swerve.Mod1.constants),
-            new SwerveModule(2, Constants.Swerve.Mod2.constants),
-            new SwerveModule(3, Constants.Swerve.Mod3.constants)
+            new SwerveModule(0, Constants.SwerveConstants.Mod0.constants),
+            new SwerveModule(1, Constants.SwerveConstants.Mod1.constants),
+            new SwerveModule(2, Constants.SwerveConstants.Mod2.constants),
+            new SwerveModule(3, Constants.SwerveConstants.Mod3.constants)
         };
 
         /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
@@ -71,7 +71,7 @@ public class Swerve extends SubsystemBase {
         // swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), getModulePositions());
 
         estimator = new SwerveDrivePoseEstimator(
-            Constants.Swerve.swerveKinematics, 
+            Constants.SwerveConstants.swerveKinematics, 
             Rotation2d.fromDegrees(gyro.getYaw()), 
             getModulePositions(), 
             new Pose2d(0, 0, Rotation2d.fromDegrees(0)),           
@@ -82,7 +82,7 @@ public class Swerve extends SubsystemBase {
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
-            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+            Constants.SwerveConstants.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
@@ -94,7 +94,7 @@ public class Swerve extends SubsystemBase {
                                     translation.getY(), 
                                     rotation)
                                 );
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.SwerveConstants.maxSpeed);
 
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
@@ -103,7 +103,7 @@ public class Swerve extends SubsystemBase {
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.SwerveConstants.maxSpeed);
         
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
@@ -141,7 +141,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public Rotation2d getYaw() {
-        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getYaw()) : Rotation2d.fromDegrees(gyro.getYaw());
+        return (Constants.SwerveConstants.invertGyro) ? Rotation2d.fromDegrees(360 - gyro.getYaw()) : Rotation2d.fromDegrees(gyro.getYaw());
     }
 
     public void resetModulesToAbsolute(){
@@ -161,7 +161,7 @@ public class Swerve extends SubsystemBase {
                 new PPSwerveControllerCommand(
                         trajectory,
                         this::getPose, // Pose supplier
-                        Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
+                        Constants.SwerveConstants.swerveKinematics, // SwerveDriveKinematics
                         new PIDController(15, 0, 0.01), // X controller. Tune these values for your robot. Leaving them 0 will only use feed forwards.
                         new PIDController(15, 0, 0.01), // Y controller (usually the same values as X controller)
                         new PIDController(5, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feed forwards.
@@ -177,7 +177,7 @@ public class Swerve extends SubsystemBase {
             autoBuilder = new SwerveAutoBuilder(
                 this::getPose,
                 this::resetOdometry,
-                Constants.Swerve.swerveKinematics,
+                Constants.SwerveConstants.swerveKinematics,
                 new PIDConstants(15, 0, 0.01),
                 new PIDConstants(5, 0, 0),
                 this::setModuleStates,

@@ -14,7 +14,7 @@ import frc.robot.subsystems.arm.OptimizedArm;
  * @author Grayson
  */
 public class OptimizedMove extends SequentialCommandGroup {
-    public OptimizedMove(OptimizedArm arm, ArmTargets target) { //, ArmWaypoints[] waypoints) {
+    public OptimizedMove(OptimizedArm arm, ArmTargets target) {
 
         arm.stop(); // Stop the arm
         arm.resetMotionMagic(); // Reset the motion magic
@@ -50,4 +50,8 @@ public class OptimizedMove extends SequentialCommandGroup {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(arm);
     }
+
+    // public InterruptionBehavior getInterruptionBehavior() {
+    //     return InterruptionBehavior.kCancelIncoming;
+    // }
 }

@@ -149,7 +149,7 @@ public class AutoAlignPenn extends CommandBase {
       AutoConstants.kMaxSpeedMetersPerSecond,
       AutoConstants.kMaxAccelerationMetersPerSecondSquared
     )
-      .setKinematics(Constants.Swerve.swerveKinematics);
+      .setKinematics(Constants.SwerveConstants.swerveKinematics);
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       waypoints,
       trajectoryConfig
@@ -160,7 +160,7 @@ public class AutoAlignPenn extends CommandBase {
     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
       trajectory,
       swerve::getPose,
-      Constants.Swerve.swerveKinematics,
+      Constants.SwerveConstants.swerveKinematics,
       new PIDController(Constants.AutoConstants.kPXController, 0, 0),
       new PIDController(Constants.AutoConstants.kPYController, 0, 0),
       rotationController,

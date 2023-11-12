@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlFrame;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.networktables.GenericEntry;
@@ -28,6 +30,8 @@ public class Intake extends SubsystemBase {
     public Intake() {
         //intakeMotor = new CANSparkMax(Constants.INTAKE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
         intakeMotor = new WPI_TalonFX(INTAKE_ID);
+
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 100);
 
         // would this help ?
         //intakeMotor.restoreFactoryDefaults();

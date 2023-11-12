@@ -57,15 +57,15 @@ public class SnapTo extends CommandBase {
 
         /* Slow down the robot to allow greater precision */
         if (slowMode.getAsBoolean()) {
-            translationVal *= Constants.Swerve.slowModeSpeedMultiplier;
-            strafeVal *= Constants.Swerve.slowModeSpeedMultiplier;
-            rotationVal *= Constants.Swerve.slowModeTurnMultiplier;
+            translationVal *= Constants.SwerveConstants.slowModeSpeedMultiplier;
+            strafeVal *= Constants.SwerveConstants.slowModeSpeedMultiplier;
+            rotationVal *= Constants.SwerveConstants.slowModeTurnMultiplier;
         }
 
         /* Drive */
         swerve.drive(
-            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
-            rotationVal * Constants.Swerve.maxAngularVelocity, 
+            new Translation2d(translationVal, strafeVal).times(Constants.SwerveConstants.maxSpeed), 
+            rotationVal * Constants.SwerveConstants.maxAngularVelocity, 
             true, 
             true
         );
