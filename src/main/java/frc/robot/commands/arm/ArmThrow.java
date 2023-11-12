@@ -12,7 +12,7 @@ import frc.robot.subsystems.arm.OptimizedArm;
 public class ArmThrow extends ParallelCommandGroup {
     public ArmThrow (OptimizedArm arm, Intake intake, ArmTargets target) {
         addCommands(
-            new OptimizedMove(arm, target), // Move
+            new OptimizedMoveV2(arm, target), // Move
             new SequentialCommandGroup(
                 // new WaitCommand(0.2), // Delay the shot
                 new WaitUntilCommand(() -> {

@@ -162,8 +162,8 @@ public class RobotContainer {
 
 
         //** CO DRIVER BINDINGS **//
-        // Stow
-        coDriver.a().onTrue(new MoveToPos(m_arm, stow));
+        // // Stow
+        // coDriver.a().onTrue(new MoveToPos(m_arm, stow));
         
         // // High
         // coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
@@ -185,6 +185,9 @@ public class RobotContainer {
         // // Substations
         // coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
         // coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
+
+        // Stow
+        coDriver.a().onTrue(new OptimizedMoveV2(m_arm, stow));
 
         // High
         coDriver.y().onTrue(new OptimizedMoveV2(m_arm, coneHigh));
