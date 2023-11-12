@@ -99,6 +99,7 @@ public class Auto {
 
     public void start() {
         System.out.println("Auto Sequence Started! Running auto: " + autoName);
+        swerve.zeroGyro();
     }
     
     public void end() {
