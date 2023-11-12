@@ -34,12 +34,12 @@ public class AutoBalance extends CommandBase {
 
     State currentState;
 
-    GenericEntry rollLogger = Shuffleboard.getTab("Auto Balance").add("Roll", 0.0).withWidget(BuiltInWidgets.kGraph).getEntry();
-    GenericEntry rollLoggerCalculated = Shuffleboard.getTab("Auto Balance").add("Filtered Roll", 0.0).withWidget(BuiltInWidgets.kGraph).getEntry();
-    GenericEntry rollState = Shuffleboard.getTab("Auto Balance").add("State", State.GENERAL.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
+    // GenericEntry rollLogger = Shuffleboard.getTab("Auto Balance").add("Roll", 0.0).withWidget(BuiltInWidgets.kGraph).getEntry();
+    // GenericEntry rollLoggerCalculated = Shuffleboard.getTab("Auto Balance").add("Filtered Roll", 0.0).withWidget(BuiltInWidgets.kGraph).getEntry();
+    // GenericEntry rollState = Shuffleboard.getTab("Auto Balance").add("State", State.GENERAL.toString()).withWidget(BuiltInWidgets.kTextView).getEntry();
     
-    GenericEntry thresholdEntry = Shuffleboard.getTab("Auto Balance").add("Threshold", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
-    GenericEntry angleEpsilonEntry = Shuffleboard.getTab("Auto Balance").add("Angle Epsilon", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+    // GenericEntry thresholdEntry = Shuffleboard.getTab("Auto Balance").add("Threshold", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
+    // GenericEntry angleEpsilonEntry = Shuffleboard.getTab("Auto Balance").add("Angle Epsilon", 0.0).withWidget(BuiltInWidgets.kNumberSlider).getEntry();
 
     public AutoBalance(Swerve swerve) {
         this.swerve = swerve;
@@ -67,9 +67,9 @@ public class AutoBalance extends CommandBase {
         calculatedRoll = filter.calculate(gyro.getRoll());
         double forward = 0;
 
-        rollLogger.setDouble(gyro.getRoll());
-        rollLoggerCalculated.setDouble(calculatedRoll);
-        rollState.setString(currentState.toString());
+        // rollLogger.setDouble(gyro.getRoll());
+        // rollLoggerCalculated.setDouble(calculatedRoll);
+        // rollState.setString(currentState.toString());
 
         // if(calculatedRoll < -threshold) {
         //     currentState = State.GENERAL;

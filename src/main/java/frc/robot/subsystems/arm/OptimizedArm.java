@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
+import frc.robot.Constants.ArmTargets;
 import frc.robot.commands.arm.ResetArmPose;
 
 public class OptimizedArm extends SubsystemBase {
@@ -176,6 +177,10 @@ public class OptimizedArm extends SubsystemBase {
         isInBrakeMode = areBrakesOn;
     }
 
+    public WPI_TalonFX getWristTalon() {
+        return wristTalon;
+    }
+
     public double getBicepPosition() {
         return bicepTalon.getSelectedSensorPosition();
     }
@@ -196,8 +201,12 @@ public class OptimizedArm extends SubsystemBase {
         return bicepAtTarget(basePos) && wristAtTarget(wristPos);
     }
 
-    public boolean isAtWithEpsilon(ArmWaypoints waypoint, double epsilon) {
-        return (Math.abs(getBicepPosition() - degreesToTicksBicep(waypoint.point.bicep)) < epsilon) && (Math.abs(getWristPosition() - degreesToTicksWrist(waypoint.point.wrist)) < epsilon);
+    public boolean isAtWithEpsilon(ArmState waypoint, double epsilon) {
+        return (Math.abs(getBicepPosition() - degreesToTicksBicep(waypoint.bicep)) < epsilon) && (Math.abs(getWristPosition() - degreesToTicksWrist(waypoint.wrist)) < epsilon);
+    }
+
+     public boolean isAtWithEpsilon(ArmTargets target, double epsilon) {
+        return (Math.abs(getBicepPosition() - target.bicepTarget) < epsilon) && (Math.abs(getWristPosition() - target.wristTarget) < epsilon);
     }
 
     public boolean bicepAtTarget(double target) {

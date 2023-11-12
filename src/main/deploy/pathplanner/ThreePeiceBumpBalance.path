@@ -1,0 +1,219 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 1.8245613086970867,
+        "y": 0.46903625722145237
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.824561308697087,
+        "y": 0.46903625722145237
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "ShootMidCone"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.081420673479646,
+        "y": 0.9025394646533988
+      },
+      "prevControl": {
+        "x": 4.816444100973309,
+        "y": 0.8172601451585889
+      },
+      "nextControl": {
+        "x": 7.346397245985982,
+        "y": 0.9878187841482086
+      },
+      "holonomicAngle": 0.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 1.838774528612888,
+        "y": 1.0304584438956126
+      },
+      "prevControl": {
+        "x": 3.739476303446866,
+        "y": 0.6394341274193761
+      },
+      "nextControl": {
+        "x": 3.739476303446866,
+        "y": 0.6394341274193761
+      },
+      "holonomicAngle": 0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [
+          "ShootCube"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 6.732866040909776,
+        "y": 1.638737952161525
+      },
+      "prevControl": {
+        "x": 6.140135631596835,
+        "y": 0.7399329417739137
+      },
+      "nextControl": {
+        "x": 6.140135631596835,
+        "y": 0.7399329417739137
+      },
+      "holonomicAngle": 54.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.0,
+        "y": 1.0304584438956126
+      },
+      "prevControl": {
+        "x": 2.369390064094508,
+        "y": 0.4766516039319664
+      },
+      "nextControl": {
+        "x": 1.6709058514932684,
+        "y": 1.5238517648064054
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "ShootCube"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0.5
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 2.446259589074673,
+        "y": 2.0637812079342037
+      },
+      "prevControl": {
+        "x": 2.4191291684934377,
+        "y": 2.0547377344071247
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": 3.0,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Balance"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "maxVelocity": 3.0,
+  "maxAcceleration": 2.5,
+  "isReversed": null,
+  "markers": [
+    {
+      "position": 0.0,
+      "names": [
+        "ArmCubeGround",
+        "RunIntake"
+      ]
+    },
+    {
+      "position": 1.2,
+      "names": [
+        "ArmStow",
+        "ConstantIntakeStart"
+      ]
+    },
+    {
+      "position": 2.2,
+      "names": [
+        "ArmCubeGround",
+        "RunIntake"
+      ]
+    },
+    {
+      "position": 3.1,
+      "names": [
+        "ArmStow",
+        "ConstantIntakeStart"
+      ]
+    },
+    {
+      "position": 1.7454545454545427,
+      "names": [
+        "ArmToMidCube"
+      ]
+    },
+    {
+      "position": 2.0909090909090873,
+      "names": [
+        "ArmStow"
+      ]
+    },
+    {
+      "position": 3.7636363636363517,
+      "names": [
+        "ArmToHybridCube"
+      ]
+    },
+    {
+      "position": 4.272727272727275,
+      "names": [
+        "ArmStow"
+      ]
+    },
+    {
+      "position": 3.886363636363627,
+      "names": [
+        "ShootCube"
+      ]
+    }
+  ]
+}

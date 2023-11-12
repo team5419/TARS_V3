@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.autos.Auto;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.testing.AutoAlignPennTester;
@@ -87,7 +89,13 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    chooser.getSelected().Run();
+    // chooser.getSelected().Run();
+    new SequentialCommandGroup(
+      new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.coneMid),
+      new InstantCommand(() -> m_robotContainer.mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS)),
+      new WaitCommand(2),
+      new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.stow)
+    ).schedule();
   }
 
   /** This function is called periodically during autonomous. */
