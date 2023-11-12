@@ -27,6 +27,7 @@ public class AutoBalance extends CommandBase {
     double angleEpsilon;
 
     enum State {
+        INITIAL,
         GENERAL,
         CORRECTION
     }
@@ -51,13 +52,13 @@ public class AutoBalance extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        currentState = State.GENERAL;
+        currentState = State.INITIAL;
 
         filter.reset();
 
         // threshold = thresholdEntry.getDouble(10);
-        threshold = -4.5;
-        angleEpsilon = 0.01;
+        threshold = 4.5;
+        angleEpsilon = 1;
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -70,11 +71,29 @@ public class AutoBalance extends CommandBase {
         rollLoggerCalculated.setDouble(calculatedRoll);
         rollState.setString(currentState.toString());
 
-        if (calculatedRoll < threshold) {
-            forward = -0.8;
-            currentState = State.CORRECTION;
-        } else if (currentState != State.CORRECTION) {
+        // if(calculatedRoll < -threshold) {
+        //     currentState = State.GENERAL;
+        // } else if (calculatedRoll < threshold && currentState != State.INITIAL) {
+        //     forward = -0.8;
+        //     currentState = State.CORRECTION;
+        // } else if (currentState != State.CORRECTION) {
+        //     forward = 0.5;
+        // }
+
+        if (currentState == State.INITIAL) {
+            forward = 1;
+
+            if(calculatedRoll > threshold) {
+                currentState = State.GENERAL;
+            }
+        } else if (currentState == State.GENERAL) {
             forward = 0.5;
+
+            if(calculatedRoll < -threshold) {
+                currentState = State.CORRECTION;
+            }
+        } else if (currentState == State.CORRECTION) {
+            forward = -0.2;
         }
 
         swerve.drive(new Translation2d(forward, 0), 0, true, false);
@@ -90,7 +109,7 @@ public class AutoBalance extends CommandBase {
     @Override
     public boolean isFinished() {
         // return false;
-        return MathUtil.applyDeadband(calculatedRoll, angleEpsilon) == 0 && currentState == State.CORRECTION;
+        return MathUtil.applyDeadband(gyro.getRoll(), angleEpsilon) == 0 && currentState == State.CORRECTION;
     }
 
 }

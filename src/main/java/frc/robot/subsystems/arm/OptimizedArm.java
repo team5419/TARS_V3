@@ -111,9 +111,9 @@ public class OptimizedArm extends SubsystemBase {
         } else {
             resetMotionMagic();
 
-            bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 30, 0.1));
-            bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 30, 0.1));
-            wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 40, 30, 0.1));
+            bicepTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 40, 0.1));
+            bicepTalonFollower.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 40, 0.1));
+            wristTalon.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 30, 40, 0.1));
         }
 
         tab.add("Reset Arm Pose", new ResetArmPose(this));
@@ -194,6 +194,10 @@ public class OptimizedArm extends SubsystemBase {
 
     public boolean isAt(double basePos, double wristPos) {
         return bicepAtTarget(basePos) && wristAtTarget(wristPos);
+    }
+
+    public boolean isAtWithEpsilon(ArmWaypoints waypoint, double epsilon) {
+        return (Math.abs(getBicepPosition() - degreesToTicksBicep(waypoint.point.bicep)) < epsilon) && (Math.abs(getWristPosition() - degreesToTicksWrist(waypoint.point.wrist)) < epsilon);
     }
 
     public boolean bicepAtTarget(double target) {

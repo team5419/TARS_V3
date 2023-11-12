@@ -13,6 +13,7 @@ import frc.robot.commands.lights.AnimateLights;
 import frc.robot.commands.arm.ArmThrow;
 import frc.robot.commands.arm.MoveToPos;
 import frc.robot.commands.arm.OptimizedMove;
+import frc.robot.commands.arm.OptimizedMoveV2;
 import frc.robot.commands.arm.TwoPartHigh;
 import frc.robot.commands.arm.OnTheFlyCommand;
 import frc.robot.commands.arm.ParallelToPos;
@@ -113,6 +114,7 @@ public class RobotContainer {
         // Auto align
         driver.back().whileTrue(new AutoAlign(s_Swerve, vision2, 0.15));
 
+        // Auto Balance
         driver.povUp().whileTrue(new AutoBalance(s_Swerve));
 
         // Testing
@@ -162,31 +164,49 @@ public class RobotContainer {
         //** CO DRIVER BINDINGS **//
         // Stow
         coDriver.a().onTrue(new MoveToPos(m_arm, stow));
+        
+        // // High
+        // coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
+        // coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh), m_arm));
+
+        // // Mid
+        // coDriver.x().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneMid), m_arm));
+        // coDriver.povRight().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
+        // coDriver.povLeft().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
+
+        // // Hybrid
+        // coDriver.povDown().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid)));
+        // coDriver.b().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid)));
+
+        // // Ground Intakes
+        // coDriver.leftTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
+        // coDriver.rightTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
+
+        // // Substations
+        // coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
+        // coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
 
         // High
-        coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
-        coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh), m_arm));
-        // coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, coneHigh, true, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
-        // coDriver.y().onTrue(new OnTheFlyCommand(() -> new TwoPartHigh(m_arm, cubeHigh, false, () -> driver.leftTrigger().getAsBoolean()))); //! Currently in beta
+        coDriver.y().onTrue(new OptimizedMoveV2(m_arm, coneHigh));
+        coDriver.povUp().onTrue(new OptimizedMoveV2(m_arm, cubeHigh));
 
         // Mid
-        // coDriver.x().onTrue(new MoveToPos(m_arm, coneMid));
-        coDriver.x().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneMid), m_arm));
-        coDriver.povRight().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
-        coDriver.povLeft().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
+        coDriver.x().onTrue(new OptimizedMoveV2(m_arm, coneMid));
+        coDriver.povRight().onTrue(new OptimizedMoveV2(m_arm, cubeMid));
+        coDriver.povLeft().onTrue(new OptimizedMoveV2(m_arm, cubeMid));
 
         // Hybrid
-        coDriver.povDown().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid)));
-        coDriver.b().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid)));
+        coDriver.povDown().onTrue(new OptimizedMoveV2(m_arm, cubeHybrid));
+        coDriver.b().onTrue(new OptimizedMoveV2(m_arm, coneHybrid));
 
         // Ground Intakes
-        coDriver.leftTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
-        coDriver.rightTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
+        coDriver.leftTrigger().onTrue(new OptimizedMoveV2(m_arm, cubeGround)).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
+        coDriver.rightTrigger().onTrue(new OptimizedMoveV2(m_arm, coneGround)).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
 
         // Substations
-        coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
-        coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
-
+        coDriver.leftBumper().onTrue(new OptimizedMoveV2(m_arm, cubeSubstation)).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
+        coDriver.rightBumper().onTrue(new OptimizedMoveV2(m_arm, coneSubstation)).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
+        
         // Change LEDS
         coDriver.back().onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = !s_Swerve.isUsingCones));
 
