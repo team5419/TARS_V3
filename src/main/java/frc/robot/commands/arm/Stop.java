@@ -24,8 +24,7 @@ public class Stop extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        arm.setBicep(ControlMode.Velocity, 0);
-        arm.setWrist(ControlMode.Velocity, 0);
+        arm.stop();
     }
 
     // Returns true when the command should end.
