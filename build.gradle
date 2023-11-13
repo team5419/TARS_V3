@@ -152,3 +152,6 @@ spotless {
         endWithNewline()
     }
 }
+
+// force spotless to apply changes before compile
+compileJava.dependsOn 'spotlessApply'
