@@ -38,8 +38,7 @@
 
 //         var thetaController =
 //             new ProfiledPIDController(
-//                 Constants.AutoConstants.kPThetaController, 0, 0,
-// Constants.AutoConstants.kThetaControllerConstraints);
+//                 Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
 //         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
 //         SwerveControllerCommand swerveControllerCommand =
@@ -52,6 +51,7 @@
 //                 thetaController,
 //                 s_Swerve::setModuleStates,
 //                 s_Swerve);
+
 
 //         addCommands(
 //             new InstantCommand(() -> s_Swerve.resetOdometry(exampleTrajectory.getInitialPose())),

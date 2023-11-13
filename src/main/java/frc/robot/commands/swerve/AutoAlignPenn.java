@@ -5,6 +5,8 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -13,6 +15,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
@@ -22,7 +26,10 @@ import frc.robot.autos.AutoHelpers.Point;
 import frc.robot.autos.CustomPath;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.arm.OptimizedArm;
+import frc.robot.subsystems.limelight.LimelightHelpers;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,7 +39,7 @@ public class AutoAlignPenn extends CommandBase {
 
   private final Swerve swerve;
   private final OptimizedArm arm;
-  // test true one more time, just to see with points being made correct
+  //test true one more time, just to see with points being made correct
   private final boolean custom = false;
   private final SubsystemlessVision vision = new SubsystemlessVision();
   private CustomPath path;
@@ -55,14 +62,15 @@ public class AutoAlignPenn extends CommandBase {
     this.swerve = swerve;
     this.arm = arm;
     this.path = directPath();
-    this.horizontalController = new PIDController(0.1, 0, 0); // untuned
-    this.verticalController = new PIDController(0.1, 0, 0); // untuned
+    this.horizontalController = new PIDController(0.1, 0, 0); //untuned
+    this.verticalController = new PIDController(0.1, 0, 0); //untuned
     this.rotationController =
-        new ProfiledPIDController(
-            Constants.AutoConstants.kPThetaController,
-            0,
-            0,
-            Constants.AutoConstants.kThetaControllerConstraints);
+      new ProfiledPIDController(
+        Constants.AutoConstants.kPThetaController,
+        0,
+        0,
+        Constants.AutoConstants.kThetaControllerConstraints
+      );
     rotationController.enableContinuousInput(-Math.PI, Math.PI);
 
     this.timeLimit = timeLimit;
@@ -70,44 +78,16 @@ public class AutoAlignPenn extends CommandBase {
     addRequirements(swerve, arm);
   }
 
-  public void configTab() {
-    tab.addDouble(
-        "newHorizontal",
-        () -> {
-          return newHorizontal;
-        });
-    tab.addDouble(
-        "newVertical",
-        () -> {
-          return newVertical;
-        });
-    tab.addDouble(
-        "newRotation",
-        () -> {
-          return newRotation;
-        });
-    tab.addBoolean(
-        "custom",
-        () -> {
-          return custom;
-        });
-    tab.addDouble(
-        "tx",
-        () -> {
-          return vision.getTX();
-        });
-    tab.addDouble(
-        "ty",
-        () -> {
-          return vision.getTY();
-        });
-    tab.addDouble(
-        "DTT",
-        () -> {
-          return distanceToTarget;
-        });
-  }
+  public void configTab(){
+    tab.addDouble("newHorizontal", () -> {return newHorizontal;});
+    tab.addDouble("newVertical", () -> {return newVertical;});
+    tab.addDouble("newRotation", () -> {return newRotation;});
+    tab.addBoolean("custom", () -> {return custom;});
+    tab.addDouble("tx", () -> {return vision.getTX();});
+    tab.addDouble("ty", () -> {return vision.getTY();});
+    tab.addDouble("DTT", () -> {return distanceToTarget;});
 
+  }
   @Override
   public void initialize() {
     timer.reset();
@@ -118,9 +98,9 @@ public class AutoAlignPenn extends CommandBase {
   public void execute() {
     vision.updateEntries();
     path = directPath();
-    if (custom) {
-      customClosedLoopPathCalculation();
-    } else {
+    if(custom){
+        customClosedLoopPathCalculation();
+    } else{
       customTwo();
     }
     // else{
@@ -128,7 +108,8 @@ public class AutoAlignPenn extends CommandBase {
     //     currentCommand = closedLoopPathCalculation();
     //     currentCommand.schedule();
     // }
-    distanceToTarget = Util.getDistance(vision.getHorizontalDistance(), vision.getVertical());
+    distanceToTarget =
+      Util.getDistance(vision.getHorizontalDistance(), vision.getVertical());
   }
 
   @Override
@@ -139,67 +120,88 @@ public class AutoAlignPenn extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    if (!vision.isAlive()) {
+    if(!vision.isAlive()){
       System.out.println("VISION NOT ALIVE");
     }
-    if (distanceToTarget < epsilonDistance) {
+    if(distanceToTarget < epsilonDistance){
       System.out.println("DISTANCE TO TARGET LITTLE");
     }
-    if (timer.get() > timeLimit) {
+    if(timer.get() > timeLimit){
       System.out.println("TIME LIMIT EXCEEDED");
     }
-    return (!vision.isAlive() || distanceToTarget < epsilonDistance || timer.get() > timeLimit);
+    return (
+      !vision.isAlive() ||
+      distanceToTarget < epsilonDistance ||
+      timer.get() > timeLimit
+    );
   }
 
-  // shouldnt be void in earnest - in ref to customClosedPathCalculation
-  // some stuff can go in swerve drive class ?
-  // could i just use TrajectoryGeneartor
+  //shouldnt be void in earnest - in ref to customClosedPathCalculation
+  //some stuff can go in swerve drive class ?
+  //could i just use TrajectoryGeneartor
 
-  // !! INCOMPLETE !!
+
+  //!! INCOMPLETE !!
   private Command closedLoopPathCalculation() {
     List<Pose2d> waypoints = new ArrayList<>();
     path.getPoints().forEach(point -> waypoints.add(Util.pointToPose2d(point)));
-    TrajectoryConfig trajectoryConfig =
-        new TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-            .setKinematics(Constants.SwerveConstants.swerveKinematics);
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(waypoints, trajectoryConfig);
-    // ! ^^^ We have path planner, an should probably be using that as it allows for an easier time.
-    // * For how to use I'd take a look at the last constructor in the Auto.java file -- G
+    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
+      AutoConstants.kMaxSpeedMetersPerSecond,
+      AutoConstants.kMaxAccelerationMetersPerSecondSquared
+    )
+      .setKinematics(Constants.SwerveConstants.swerveKinematics);
+    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+      waypoints,
+      trajectoryConfig
+    );
+    //! ^^^ We have path planner, an should probably be using that as it allows for an easier time.
+    //* For how to use I'd take a look at the last constructor in the Auto.java file -- G
 
-    SwerveControllerCommand swerveControllerCommand =
-        new SwerveControllerCommand(
-            trajectory,
-            swerve::getPose,
-            Constants.SwerveConstants.swerveKinematics,
-            new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-            new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-            rotationController,
-            swerve::setModuleStates,
-            swerve);
+    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+      trajectory,
+      swerve::getPose,
+      Constants.SwerveConstants.swerveKinematics,
+      new PIDController(Constants.AutoConstants.kPXController, 0, 0),
+      new PIDController(Constants.AutoConstants.kPYController, 0, 0),
+      rotationController,
+      swerve::setModuleStates,
+      swerve
+    );
     return swerveControllerCommand;
   }
 
   private void customClosedLoopPathCalculation() {
     Point target;
     Point current = path.current();
-    // arbitrary constants
-    if (Util.getDistance(current.x, current.y) < 0.1
-        && (swerve.getRotationDegrees() - current.rotation) < 5) {
+    //arbitrary constants
+    if (
+      Util.getDistance(current.x, current.y) < 0.1 &&
+      (swerve.getRotationDegrees() - current.rotation) < 5
+    ) {
       target = path.next();
       System.out.println("NEXT POINT IN PATH");
     } else {
       target = current;
     }
-    // possibly swapped
-    newHorizontal = horizontalController.calculate(vision.getTX(), target.x);
+    //possibly swapped
+    newHorizontal = horizontalController.calculate(
+      vision.getTX(),
+      target.x
+    );
     newVertical = verticalController.calculate(vision.getTY(), target.y);
-    newRotation = rotationController.calculate(swerve.getRotationDegrees(), target.rotation);
-    // ??Why not fieldrelative or closed loop? Possibly something to fiddle with...
-    swerve.drive(new Translation2d(newHorizontal, newVertical), newRotation, false, false);
-    System.out.println("Target Y " + target.y);
-    System.out.println("TARGET X " + target.x);
+    newRotation = rotationController.calculate(
+      swerve.getRotationDegrees(),
+      target.rotation
+    );
+    //??Why not fieldrelative or closed loop? Possibly something to fiddle with...
+    swerve.drive(
+      new Translation2d(newHorizontal, newVertical),
+      newRotation,
+      false,
+      false
+    );
+    System.out.println("Target Y " +target.y);
+    System.out.println("TARGET X " +target.x);
   }
 
   // private CustomPath customPath() {
@@ -211,28 +213,40 @@ public class AutoAlignPenn extends CommandBase {
 
   private CustomPath directPath() {
     List<Point> points = new ArrayList<>();
-    // not sure if array indexes are correct
-    points.add(new Point(vision.getHorizontalDistance(), vision.getVertical(), 0));
+    //not sure if array indexes are correct
+    points.add(
+      new Point(vision.getHorizontalDistance(), vision.getVertical(), 0)
+    );
     return new CustomPath(points);
   }
+private Point getTarget(){
+    return new Point(vision.getHorizontalDistance(), vision.getVertical(), Rotation2d.fromDegrees(180).getRadians());
+}
+public void customTwo(){
+   Point target = getTarget();
+   System.out.println(target);
 
-  private Point getTarget() {
-    return new Point(
-        vision.getHorizontalDistance(),
-        vision.getVertical(),
-        Rotation2d.fromDegrees(180).getRadians());
-  }
-
-  public void customTwo() {
-    Point target = getTarget();
-    System.out.println(target);
-
-    newHorizontal = horizontalController.calculate(0.0, target.x);
-    newVertical = verticalController.calculate(0.0, target.y);
-    newRotation = rotationController.calculate(swerve.getRotationRadians(), target.rotation);
-    swerve.drive(new Translation2d(newHorizontal * 5, -newVertical * 5), newRotation, false, false);
-  }
+    newHorizontal = horizontalController.calculate(
+      0.0,
+      target.x
+    );
+    newVertical = verticalController.calculate(
+      0.0, 
+      target.y
+    );
+    newRotation = rotationController.calculate(
+      swerve.getRotationRadians(),
+      target.rotation
+    );
+    swerve.drive(
+      new Translation2d(newHorizontal*5, -newVertical*5),
+      newRotation,
+      false,
+      false
+    );
+}
 }
 
-// Get Position of Tag In Robot Space
-// Drive To Tag Position
+
+//Get Position of Tag In Robot Space
+//Drive To Tag Position

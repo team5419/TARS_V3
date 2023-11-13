@@ -1,5 +1,7 @@
 package frc.robot.subsystems.arm;
 
+import com.pathplanner.lib.PathPlannerTrajectory.Waypoint;
+
 public class ArmState {
   public double bicep; // x
   public double wrist; // y
@@ -10,7 +12,6 @@ public class ArmState {
   }
 
   public ArmState toMotorState() {
-    return new ArmState(
-        OptimizedArm.ticksToDegreesBicep(bicep), OptimizedArm.ticksToDegreesWrist(wrist));
+    return new ArmState(OptimizedArm.ticksToDegreesBicep(bicep), OptimizedArm.ticksToDegreesWrist(wrist));
   }
 }

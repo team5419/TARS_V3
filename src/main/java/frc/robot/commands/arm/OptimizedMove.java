@@ -1,7 +1,9 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmTargets;
 import frc.robot.subsystems.arm.ArmState;
 import frc.robot.subsystems.arm.ArmWaypoints;
@@ -12,45 +14,44 @@ import frc.robot.subsystems.arm.OptimizedArm;
  * @author Grayson
  */
 public class OptimizedMove extends SequentialCommandGroup {
-  public OptimizedMove(OptimizedArm arm, ArmTargets target) {
+    public OptimizedMove(OptimizedArm arm, ArmTargets target) {
 
-    arm.stop(); // Stop the arm
-    arm.resetMotionMagic(); // Reset the motion magic
-    // arm.slowWrist();
+        arm.stop(); // Stop the arm
+        arm.resetMotionMagic(); // Reset the motion magic
+        // arm.slowWrist();
 
-    ArmWaypoints[] waypoints =
-        GraphStator.tracePath(
-            new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), target);
-
-    if (waypoints.length != 0
-        && waypoints[0] == null) { // This is only true if moving into invalid space
-      System.err.println("[OPTIMIZED MOVE] Invalid position requested, abandoning move");
-      return;
-    }
-
-    for (ArmWaypoints point : waypoints) {
-      addCommands(
-          // new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new
-          // ArmState(point.point.bicep, point.point.wrist))),
-          // new PrintCommand("GOING TO " + point.name()),
-          new RetimeArm(arm, point, false), new ParallelToPos(arm, point, false));
-    }
-
-    addCommands(
-        // new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new
-        // ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()))),
-        // new PrintCommand("GOING TO " + GraphStator.getSectorStateFromCoords(new
-        // ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees())).name()),
-        new RetimeArm(arm, target, true), // Make them arrive at the same time (not entirely needed)
-        new ParallelToPos(arm, target, true), // Execute move
-        new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
+        ArmWaypoints[] waypoints = GraphStator.tracePath(
+            new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), 
+            target
         );
 
-    // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(arm);
-  }
+        if(waypoints.length != 0 && waypoints[0] == null) { // This is only true if moving into invalid space
+            System.err.println("[OPTIMIZED MOVE] Invalid position requested, abandoning move");
+            return;
+        }
+        
+        for (ArmWaypoints point : waypoints) {
+            addCommands(
+                // new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(point.point.bicep, point.point.wrist))),
+                // new PrintCommand("GOING TO " + point.name()),
+                new RetimeArm(arm, point, false),
+                new ParallelToPos(arm, point, false)
+            );
+        }
+        
+        addCommands(
+            // new PrintCommand("Currently in " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()))),
+            // new PrintCommand("GOING TO " + GraphStator.getSectorStateFromCoords(new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees())).name()),
+            new RetimeArm(arm, target, true), // Make them arrive at the same time (not entirely needed)
+            new ParallelToPos(arm, target, true), // Execute move
+            new InstantCommand(() -> arm.resetMotionMagic()) // Reset our speed adjustments
+        );
 
-  // public InterruptionBehavior getInterruptionBehavior() {
-  //     return InterruptionBehavior.kCancelIncoming;
-  // }
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(arm);
+    }
+
+    // public InterruptionBehavior getInterruptionBehavior() {
+    //     return InterruptionBehavior.kCancelIncoming;
+    // }
 }

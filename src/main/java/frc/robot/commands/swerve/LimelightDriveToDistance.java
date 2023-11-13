@@ -14,6 +14,7 @@
 // import frc.robot.subsystems.Swerve;
 // import frc.robot.subsystems.Vision2;
 
+
 // /* A faux auto ported from lithium the Snail */
 // public class LimelightDriveToDistance extends CommandBase {
 
@@ -37,6 +38,7 @@
 
 // 	private boolean shouldJostle = false;
 
+
 // 	public LimelightDriveToDistance(Vision2 vision, Swerve swerve, double targetDist) {
 // 		// Use addRequirements() here to declare subsystem dependencies.
 // 		this.vision = vision;
@@ -47,8 +49,8 @@
 // 		addRequirements(vision, swerve);
 // 	}
 
-// 	public LimelightDriveToDistance(Vision2 vision, Swerve swerve, double targetDist, double
-// timeoutTime) {
+
+// 	public LimelightDriveToDistance(Vision2 vision, Swerve swerve, double targetDist, double timeoutTime) {
 // 		// Use addRequirements() here to declare subsystem dependencies.
 // 		this.vision = vision;
 // 		this.swerve = swerve;
@@ -58,8 +60,7 @@
 // 		addRequirements(vision, swerve);
 // 	}
 
-// 	public LimelightDriveToDistance(Vision2 vision, Swerve swerve, double targetDist, double
-// timeoutTime, double overrideMaxSpeed) {
+// 	public LimelightDriveToDistance(Vision2 vision, Swerve swerve, double targetDist, double timeoutTime, double overrideMaxSpeed) {
 // 		// Use addRequirements() here to declare subsystem dependencies.
 // 		this.vision = vision;
 // 		this.swerve = swerve;
@@ -69,8 +70,7 @@
 // 		addRequirements(vision, swerve);
 // 	}
 
-// 		public LimelightDriveToDistance(Vision2 vision, Swerve swerve, double targetDist, double
-// timeoutTime, double overrideMaxSpeed, boolean shouldJostleUponFailure) {
+// 		public LimelightDriveToDistance(Vision2 vision, Swerve swerve, double targetDist, double timeoutTime, double overrideMaxSpeed, boolean shouldJostleUponFailure) {
 // 		// Use addRequirements() here to declare subsystem dependencies.
 // 		this.vision = vision;
 // 		this.swerve = swerve;
@@ -87,7 +87,7 @@
 // 		controller.reset();
 // 		timer.restart();
 // 	}
-
+	
 // 	// Called every time the scheduler runs while the command is scheduled.
 // 	@Override
 // 	public void execute() {
@@ -103,18 +103,15 @@
 // 		double rotationSpeed = 0;
 // 		// double currentRotation = swerve.getHeading().getDegrees();
 // 		// if(vision.getTagPose3d(vision.getId()).isPresent()) {
-// 		// 	rotationSpeed = -rotationController.calculate(currentRotation, (DriverStation.getAlliance()
-// == Alliance.Blue ? 0 : 180));
+// 		// 	rotationSpeed = -rotationController.calculate(currentRotation, (DriverStation.getAlliance() == Alliance.Blue ? 0 : 180));
 // 		// }
 
 // 		double driveSpeed = -controller.calculate(distFromTag, targetDist); // Limit the max speed
 
 // 		if(driveSpeed > 0) {
-// 			driveSpeed = Math.min(driveSpeed * speedMultiplier, maxSpeed); // make it actually do
-// something
+// 			driveSpeed = Math.min(driveSpeed * speedMultiplier, maxSpeed); // make it actually do something
 // 		} else if (driveSpeed < 0) {
-// 			driveSpeed = Math.max(driveSpeed * speedMultiplier, -maxSpeed); // make it actually do
-// something
+// 			driveSpeed = Math.max(driveSpeed * speedMultiplier, -maxSpeed); // make it actually do something
 // 		}
 
 // 		if(!vision.limelightSeesTarget()) {
@@ -137,16 +134,12 @@
 // 	public boolean isFinished() {
 // 		SwerveModuleState[] states = swerve.getModuleStates();
 
-// 		double currentSpeed = (states[0].speedMetersPerSecond + states[1].speedMetersPerSecond +
-// states[2].speedMetersPerSecond + states[3].speedMetersPerSecond) / 4.0; // average out all the
-// speeds
-
+// 		double currentSpeed = (states[0].speedMetersPerSecond + states[1].speedMetersPerSecond + states[2].speedMetersPerSecond + states[3].speedMetersPerSecond) / 4.0; // average out all the speeds
+		
 // 		if(timeoutTime == -1) {
-// 			return (MathUtil.applyDeadband((distFromTag - targetDist), epsilon) == 0) &&
-// (MathUtil.applyDeadband(currentSpeed, 0.05) == 0) || forceExit;
+// 			return (MathUtil.applyDeadband((distFromTag - targetDist), epsilon) == 0) && (MathUtil.applyDeadband(currentSpeed, 0.05) == 0) || forceExit;
 // 		} else {
-// 			return (MathUtil.applyDeadband((distFromTag - targetDist), epsilon) == 0) &&
-// (MathUtil.applyDeadband(currentSpeed, 0.05) == 0) || (timer.get() >= timeoutTime) || forceExit;
+// 			return (MathUtil.applyDeadband((distFromTag - targetDist), epsilon) == 0) && (MathUtil.applyDeadband(currentSpeed, 0.05) == 0) || (timer.get() >= timeoutTime) || forceExit;
 // 		}
 // 	}
 
