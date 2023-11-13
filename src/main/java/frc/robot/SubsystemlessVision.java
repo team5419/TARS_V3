@@ -1,13 +1,7 @@
 package frc.robot;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
-/*
- * @author Ammel
- */
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -17,19 +11,19 @@ import frc.robot.subsystems.limelight.LimelightHelpers.LimelightResults;
 
 public class SubsystemlessVision {
 
-  private final NetworkTable limelight = NetworkTableInstance
-    .getDefault()
-    .getTable("limelight");
+  private final NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
   private NetworkTableEntry validTarget;
   private NetworkTableEntry tx;
   private NetworkTableEntry ty;
   private ShuffleboardTab tab = Shuffleboard.getTab("ll");
   private boolean alive = true;
   private double[] rbootpose_array = new double[6];
-  private Notifier limelightStatusNotifier = new Notifier(() -> {
-    LimelightResults current = LimelightHelpers.getLatestResults("limelight");
-    alive = current != null;
-  });
+  private Notifier limelightStatusNotifier =
+      new Notifier(
+          () -> {
+            LimelightResults current = LimelightHelpers.getLatestResults("limelight");
+            alive = current != null;
+          });
 
   public SubsystemlessVision() {
     configLL();
@@ -41,10 +35,9 @@ public class SubsystemlessVision {
     tab.addDouble("3", () -> rbootpose_array[3]);
     tab.addDouble("4", () -> rbootpose_array[4]);
     tab.addDouble("5", () -> rbootpose_array[5]);
-
-
   }
-  public void configLL(){
+
+  public void configLL() {
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
     NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
   }
@@ -53,11 +46,8 @@ public class SubsystemlessVision {
   public void updateEntries() {
     tx = limelight.getEntry("tx");
     ty = limelight.getEntry("ty");
-        rbootpose_array = limelight.getEntry("targetpose_robotspace")
-    .getDoubleArray(new double[6]);
-    //DEFAULT VALUE
-
-
+    rbootpose_array = limelight.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+    // DEFAULT VALUE
 
   }
 
@@ -75,35 +65,34 @@ public class SubsystemlessVision {
 
   public double[] getTargetInRobotSpace() {
 
-    rbootpose_array = limelight.getEntry("targetpose_robotspace")
-    .getDoubleArray(new double[6]);
-    
-    return limelight
-      .getEntry("targetpose_robotspace")
-      .getDoubleArray(new double[6]);
+    rbootpose_array = limelight.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
+
+    return limelight.getEntry("targetpose_robotspace").getDoubleArray(new double[6]);
   }
 
   public double[] getRobotInTargetSpace() {
-    return limelight
-      .getEntry("botpose_targetspace")
-      .getDoubleArray(new double[6]);
+    return limelight.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
   }
 
   public double[] getBotposeColorRelative(boolean isBlue) {
     return isBlue
-      ? limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[6])
-      : limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
+        ? limelight.getEntry("botpose_wpiblue").getDoubleArray(new double[6])
+        : limelight.getEntry("botpose_wpired").getDoubleArray(new double[6]);
   }
-  public double getTX(){
-    return limelight.getEntry("tx").getDouble(0.0); 
+
+  public double getTX() {
+    return limelight.getEntry("tx").getDouble(0.0);
   }
-  public double getTY(){
+
+  public double getTY() {
     return limelight.getEntry("ty").getDouble(0.0);
   }
-  public double getHorizontalDistance(){
+
+  public double getHorizontalDistance() {
     return rbootpose_array[0];
   }
-    public double getVertical(){
+
+  public double getVertical() {
     return rbootpose_array[2];
   }
 }

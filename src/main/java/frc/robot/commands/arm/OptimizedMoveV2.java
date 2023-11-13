@@ -25,7 +25,7 @@
 //     private boolean isDone;
 
 //     public OptimizedMoveV2(OptimizedArm arm, ArmTargets target) {
-//         this.arm = arm;        
+//         this.arm = arm;
 //         this.target = target;
 
 //         // Use addRequirements() here to declare subsystem dependencies.
@@ -42,7 +42,7 @@
 //         isDone = false;
 
 //         waypoints = GraphStator.tracePath(
-//             new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), 
+//             new ArmState(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()),
 //             target
 //         );
 
@@ -59,7 +59,7 @@
 //         } else {
 //             configAndMoveTo(waypoints[0]);
 //         }
-        
+
 //         currentPoint = waypoints[0];
 
 //         System.out.println("Number points " + numWaypoints);
@@ -69,7 +69,7 @@
 //     @Override
 //     public void execute() {
 //         System.out.println("Arm is at epsilon " + arm.isAtWithEpsilon(currentPoint, 2000));
-//         if(!isDone && arm.isAtWithEpsilon(currentPoint, 2000)) { 
+//         if(!isDone && arm.isAtWithEpsilon(currentPoint, 2000)) {
 //             waypointIndex++;
 //             System.out.println("Going to waypoint " + waypointIndex);
 //             if(waypointIndex < numWaypoints) {
@@ -92,7 +92,8 @@
 
 //         arm.resetMotionMagic();
 
-//         System.out.println("EXITED -------------------------------------------------------------------------------------------");
+//         System.out.println("EXITED
+// -------------------------------------------------------------------------------------------");
 //     }
 
 //     // Returns true when the command should end.
@@ -104,25 +105,29 @@
 //     private void configAndMoveTo (ArmWaypoints point) {
 //         arm.configMotionMagic(
 //             GraphStator.calculateNewMotionMagic(
-//                 new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), 
-//                 new Waypoint(OptimizedArm.degreesToTicksBicep(point.point.bicep), OptimizedArm.degreesToTicksBicep(point.point.wrist)), 
+//                 new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()),
+//                 new Waypoint(OptimizedArm.degreesToTicksBicep(point.point.bicep),
+// OptimizedArm.degreesToTicksBicep(point.point.wrist)),
 //                 arm, true
 //             )
 //     );
-    
-//         arm.setBicep(ControlMode.MotionMagic, OptimizedArm.degreesToTicksBicep(point.point.bicep));
-//         arm.setWrist(ControlMode.MotionMagic, OptimizedArm.degreesToTicksBicep(point.point.wrist));
+
+//         arm.setBicep(ControlMode.MotionMagic,
+// OptimizedArm.degreesToTicksBicep(point.point.bicep));
+//         arm.setWrist(ControlMode.MotionMagic,
+// OptimizedArm.degreesToTicksBicep(point.point.wrist));
 //     }
 
 //     private void configAndMoveTo (Waypoint point) {
 //         arm.configMotionMagic(
 //                     GraphStator.calculateNewMotionMagic(
-//                         new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()), 
-//                         new Waypoint(point.bicep, point.wrist), 
+//                         new Waypoint(arm.getBicepPositionDegrees(),
+// arm.getWristPositionDegrees()),
+//                         new Waypoint(point.bicep, point.wrist),
 //                         arm, true
 //                     )
 //                 );
-    
+
 //         arm.setBicep(ControlMode.MotionMagic, point.bicep);
 //         arm.setWrist(ControlMode.MotionMagic, point.wrist);
 //     }
