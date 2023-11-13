@@ -7,7 +7,7 @@
 
 // public class Vision2 extends SubsystemBase {
 // 	Swerve swerve;
-	
+
 // 	LimelightResults prevResult;
 // 	public boolean isLimelightAlive = true;
 
@@ -23,10 +23,10 @@
 // 	}
 
 // 	public void periodic() {
-// 		// Pose2d llPose = DriverStation.getAlliance() == Alliance.Blue ? LimelightHelpers.getBotPose2d_wpiBlue("") : LimelightHelpers.getBotPose2d_wpiRed("");
-// 		// swerve.estimator.addVisionMeasurement(llPose, Timer.getFPGATimestamp());		
+// 		// Pose2d llPose = DriverStation.getAlliance() == Alliance.Blue ?
+// LimelightHelpers.getBotPose2d_wpiBlue("") : LimelightHelpers.getBotPose2d_wpiRed("");
+// 		// swerve.estimator.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
 // 	}
-
 
 // 	public boolean limelightSeesTarget() {
 // 		return LimelightHelpers.getTV("");
@@ -49,7 +49,8 @@
 // 	}
 
 // 	public double[] getBotposeColorRelative (boolean isBlue) {
-// 		return isBlue ? LimelightHelpers.getBotPose_wpiBlue("") : LimelightHelpers.getBotPose_wpiRed("");
+// 		return isBlue ? LimelightHelpers.getBotPose_wpiBlue("") :
+// LimelightHelpers.getBotPose_wpiRed("");
 // 	}
 
 // 	public double[] getTargetInRobotSpace () {

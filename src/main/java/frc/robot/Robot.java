@@ -4,27 +4,17 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.autos.Auto;
+import frc.robot.commands.arm.MoveToPos;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.simulation.FlywheelSim;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.autos.Auto;
-import frc.robot.commands.arm.MoveToPos;
-import frc.robot.commands.testing.AutoAlignPennTester;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -36,7 +26,7 @@ public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private RobotContainer m_robotContainer;
   // private SubsystemlessVision vision = new SubsystemlessVision();
-  private static LinkedHashMap<String, Auto> autoMap = new LinkedHashMap<String, Auto>(); 
+  private static LinkedHashMap<String, Auto> autoMap = new LinkedHashMap<String, Auto>();
   private static LinkedHashMap<String, Auto> tempMap = new LinkedHashMap<String, Auto>();
   private static SendableChooser<Auto> chooser;
 
@@ -56,7 +46,8 @@ public class Robot extends TimedRobot {
       chooser.addOption(autoName, choice.getValue());
       System.out.println("Added " + autoName);
     }
-    chooser.setDefaultOption("Do Nothing", new Auto(new InstantCommand(), m_robotContainer.s_Swerve));
+    chooser.setDefaultOption(
+        "Do Nothing", new Auto(new InstantCommand(), m_robotContainer.s_Swerve));
     SmartDashboard.putData("Auto Chooser", chooser);
   }
 
@@ -78,8 +69,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   @Override
   public void disabledPeriodic() {
@@ -91,9 +81,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     chooser.getSelected().Run();
     // new SequentialCommandGroup(
-    //  new InstantCommand(() -> m_robotContainer.mIntake.set(Constants.IntakeConstants.INTAKE_PCT)),
+    //  new InstantCommand(() ->
+    // m_robotContainer.mIntake.set(Constants.IntakeConstants.INTAKE_PCT)),
     //   new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.coneMid),
-    //   new InstantCommand(() -> m_robotContainer.mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS)),
+    //   new InstantCommand(() ->
+    // m_robotContainer.mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS)),
     //   new WaitCommand(2),
     //   new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.stow)
     // ).schedule();
@@ -106,11 +98,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
-    // teleop starts running. 
+    // teleop starts running.
     chooser.getSelected().end();
 
     // Try to avoid arm snapping when enabled
-    new MoveToPos(m_robotContainer.m_arm, m_robotContainer.m_arm.getBicepPosition(), m_robotContainer.m_arm.getWristPosition()); 
+    new MoveToPos(
+        m_robotContainer.m_arm,
+        m_robotContainer.m_arm.getBicepPosition(),
+        m_robotContainer.m_arm.getWristPosition());
   }
 
   /** This function is called periodically during operator control. */
@@ -127,11 +122,10 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {}
 
-  public void simulationPeriodic(){
-  }
+  public void simulationPeriodic() {}
 
   private LinkedHashMap<String, Auto> configurePrebuiltAutos() {
-    File pathplannerDir = new File(Filesystem.getDeployDirectory(),"pathplanner");
+    File pathplannerDir = new File(Filesystem.getDeployDirectory(), "pathplanner");
     tempMap.clear();
     for (File file : pathplannerDir.listFiles()) {
       String fileName = file.getName();
@@ -139,7 +133,6 @@ public class Robot extends TimedRobot {
         String[] autoName = fileName.split("[.]");
         tempMap.put(fileName, new Auto(m_robotContainer.s_Swerve, autoName[0]));
       }
-
     }
     return tempMap;
   }
