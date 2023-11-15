@@ -23,7 +23,9 @@
 //         addRequirements(mChassis);
 
 //         if (isRed){
-//             fourMetersForward = PathPlannerTrajectory.transformTrajectoryForAlliance(fourMetersForward, DriverStation.Alliance.Red);
+//             fourMetersForward =
+// PathPlannerTrajectory.transformTrajectoryForAlliance(fourMetersForward,
+// DriverStation.Alliance.Red);
 //         }
 
 //         addCommands(

@@ -1,32 +1,30 @@
 package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.arm.OptimizedArm;
 
 public class ResetArmPose extends CommandBase {
 
-    private OptimizedArm arm;
+  private OptimizedArm arm;
 
-    public ResetArmPose (OptimizedArm arm) {
-        this.arm = arm;
+  public ResetArmPose(OptimizedArm arm) {
+    this.arm = arm;
+  }
+
+  public void initialize() {
+    arm.resetArmPose();
+
+    if (arm.getCurrentCommand() != null) {
+      arm.getCurrentCommand().cancel();
     }
+  }
 
-    public void initialize() {
-        arm.resetArmPose();
+  public boolean isFinished() {
+    return true;
+  }
 
-        if(arm.getCurrentCommand() != null) {
-            arm.getCurrentCommand().cancel();
-        }
-    }
-
-    public boolean isFinished() {
-        return true;
-    }
-
-    @Override
-    public boolean runsWhenDisabled() {
-        return true;
-    }
+  @Override
+  public boolean runsWhenDisabled() {
+    return true;
+  }
 }
