@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.autos.Auto;
 import frc.robot.commands.arm.MoveToPos;
+import frc.robot.commands.swerve.Detector;
 import frc.robot.commands.testing.AutoAlignPennTester;
 
 /**
@@ -37,6 +38,7 @@ public class Robot extends TimedRobot {
   private static LinkedHashMap<String, Auto> autoMap = new LinkedHashMap<String, Auto>(); 
   private static LinkedHashMap<String, Auto> tempMap = new LinkedHashMap<String, Auto>();
   private static SendableChooser<Auto> chooser;
+  private Detector detector = new Detector();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -71,6 +73,7 @@ public class Robot extends TimedRobot {
     // commands, running already-scheduled commands, removing finished or interrupted commands,
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
+    detector.updateEntries();
     CommandScheduler.getInstance().run();
   }
 
