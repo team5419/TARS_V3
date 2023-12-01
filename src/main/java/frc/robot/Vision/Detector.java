@@ -1,4 +1,7 @@
-package frc.robot.commands.swerve;
+package frc.robot.Vision;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -15,13 +18,8 @@ public class Detector {
     .getDefault()
     .getTable("detector");
 
-    //ASSUMES ONE OBJECT
-    private NetworkTableEntry label;
-    private NetworkTableEntry certainty;
-    private NetworkTableEntry yBottom;
-    private NetworkTableEntry yTop;
-    private NetworkTableEntry xLeft;
-    private NetworkTableEntry xRight;
+    private List<Detected> detected_objects;
+    private NetworkTableEntry total_detected;
 
     private ShuffleboardTab tab = Shuffleboard.getTab("detector");
     private boolean alive = true;
@@ -33,25 +31,31 @@ public class Detector {
 
     public Detector(){
         // limelightStatusNotifier.startPeriodic(0.25);
-        configTab();
+        // configTab();
     }
     private void configTab(){
-        tab.addString("Label: ", () -> label.getString("NULL"));
-        tab.addDouble("Y BOTTOM: ", () -> yBottom.getDouble(0.0));
-        tab.addDouble("Y TOP: ", () -> yTop.getDouble(0.0));
-        tab.addDouble("X LEFT: ", () -> xLeft.getDouble(0.0));
-        tab.addDouble("X RIGHT: ", () -> xRight.getDouble(0.0));
-        tab.addDouble("CERTAINTY", certainty.getDouble(0.0));`
     }
 
     public void updateEntries(){
-        label = pi.getEntry("Label");
-        certainty = pi.getEntry("Certainty");
-        yBottom = pi.getEntry("Y Bottom");
-        yTop = pi.getEntry("Y Top");
-        xLeft = pi.getEntry("X Left");
-        xRight = pi.getEntry("X Right");
+        detected_objects = new ArrayList<>();
+        total_detected = pi.getEntry("Total Objects Detected");
+        for(var i = 0; i < total_detected.getInteger(0); i++){
+            var label = pi.getEntry(i + "Label");
+            var certainty = pi.getEntry(i + "Certainty");
+            var yBottom = pi.getEntry(i + "Y Bottom");
+            var yTop = pi.getEntry(i + "Y Top");
+            var xLeft = pi.getEntry(i + "X Left");
+            var xRight = pi.getEntry(i + "X Right");
+            detected_objects.add(new Detected(label, certainty, yBottom, yTop, xLeft, xRight));
+        updateShuffleboard();
+        }
 
+    }
+    //TODO MAKE THIS
+    public void updateShuffleboard(){
+    }
+    public List<Detected> getDetectedObjects(){
+        return detected_objects;
     }
     public boolean isAlive() {
         return alive;
