@@ -20,9 +20,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.robot.Vision.Detector;
 import frc.robot.autos.Auto;
 import frc.robot.commands.arm.MoveToPos;
-import frc.robot.commands.swerve.Detector;
 import frc.robot.commands.testing.AutoAlignPennTester;
 
 /**
