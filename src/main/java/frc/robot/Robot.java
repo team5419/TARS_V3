@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 public class Robot extends TimedRobot {
   public static CTREConfigs ctreConfigs;
   private RobotContainer m_robotContainer;
-  // private SubsystemlessVision vision = new SubsystemlessVision();
   private static LinkedHashMap<String, Auto> autoMap = new LinkedHashMap<String, Auto>();
   private static LinkedHashMap<String, Auto> tempMap = new LinkedHashMap<String, Auto>();
   private static SendableChooser<Auto> chooser;
@@ -80,15 +79,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     chooser.getSelected().Run();
-    // new SequentialCommandGroup(
-    //  new InstantCommand(() ->
-    // m_robotContainer.mIntake.set(Constants.IntakeConstants.INTAKE_PCT)),
-    //   new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.coneMid),
-    //   new InstantCommand(() ->
-    // m_robotContainer.mIntake.setVolts(Constants.IntakeConstants.OUTTAKE_VOLTS)),
-    //   new WaitCommand(2),
-    //   new MoveToPos(m_robotContainer.m_arm, Constants.ArmConstants.stow)
-    // ).schedule();
   }
 
   /** This function is called periodically during autonomous. */

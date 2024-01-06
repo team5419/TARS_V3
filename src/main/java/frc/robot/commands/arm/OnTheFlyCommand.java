@@ -10,6 +10,8 @@ import java.util.concurrent.Callable;
 /**
  * This class allows you to use a command that freezes configuration on construction that you would
  * like to be deferred until initialization.
+ * 
+ * @deprecated DO NOT USE !!!!
  *
  * @author G
  */

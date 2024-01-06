@@ -14,13 +14,12 @@ public class ArmThrow extends ParallelCommandGroup {
     addCommands(
         new OptimizedMoveV3(arm, target), // Move
         new SequentialCommandGroup(
-            // new WaitCommand(0.2), // Delay the shot
             new WaitUntilCommand(
                 () -> {
                   return arm.isAt(
                       OptimizedArm.degreesToTicksBicep(-90),
                       OptimizedArm.degreesToTicksWrist(-100));
-                }),
+                }), // Delay the shot
             new InstantCommand(() -> intake.set(100)), // Shoot
             new WaitCommand(0.5), // Wait a sec
             new InstantCommand(() -> intake.set(0)) // Stop moving

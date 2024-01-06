@@ -20,6 +20,7 @@ import frc.robot.commands.arm.OptimizedMove;
 import frc.robot.commands.arm.OptimizedMoveV3;
 import frc.robot.commands.auto.ShootAuto;
 import frc.robot.commands.lights.AnimateLights;
+import frc.robot.commands.swerve.AutoAlign;
 import frc.robot.commands.swerve.AutoBalance;
 import frc.robot.commands.swerve.SnapTo;
 import frc.robot.commands.swerve.TeleopSwerve;
@@ -50,7 +51,7 @@ public class RobotContainer {
   public final OptimizedArm m_arm = new OptimizedArm(false);
   public final Intake mIntake = new Intake();
   public final Lights leds = new Lights(52);
-  // private final Vision2 vision2 = new Vision2(s_Swerve);
+  private final Vision2 vision2 = new Vision2(s_Swerve);
 
   public GenericEntry bicepTuningEntry =
       Shuffleboard.getTab("Tuning")
@@ -172,36 +173,6 @@ public class RobotContainer {
                 mIntake));
 
     // ** CO DRIVER BINDINGS **//
-    // // Stow
-    // coDriver.a().onTrue(new MoveToPos(m_arm, stow));
-
-    // // High
-    // coDriver.y().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
-    // coDriver.povUp().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh),
-    // m_arm));
-
-    // // Mid
-    // coDriver.x().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneMid), m_arm));
-    // coDriver.povRight().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid),
-    // m_arm));
-    // coDriver.povLeft().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid),
-    // m_arm));
-
-    // // Hybrid
-    // coDriver.povDown().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid)));
-    // coDriver.b().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid)));
-
-    // // Ground Intakes
-    // coDriver.leftTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm,
-    // cubeGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
-    // coDriver.rightTrigger().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm,
-    // coneGround))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
-
-    // // Substations
-    // coDriver.leftBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm,
-    // cubeSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = false));
-    // coDriver.rightBumper().onTrue(new OnTheFlyCommand(() -> new OptimizedMove(m_arm,
-    // coneSubstation))).onTrue(Commands.runOnce(() -> s_Swerve.isUsingCones = true));
 
     // Stow
     coDriver.a().onTrue(new OptimizedMoveV3(m_arm, stow));
@@ -251,7 +222,7 @@ public class RobotContainer {
   private void setUpEventMap() {
     HashMap<String, Command> map = Constants.AutoConstants.eventMap;
 
-    // map.put("TimedAutoAlign", new AutoAlign(s_Swerve, vision2, 0.2, 1.1));
+    map.put("TimedAutoAlign", new AutoAlign(s_Swerve, vision2, 0.2, 1.1));
 
     map.put("Balance", new AutoBalance(s_Swerve));
 
@@ -287,13 +258,11 @@ public class RobotContainer {
     map.put("ShootMidCone", new ShootAuto(false, coneMid, mIntake, m_arm));
     map.put("ShootHighCone", new ShootAuto(false, coneHigh, mIntake, m_arm));
 
-    map.put(
-        "ArmToHybridCone", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid), m_arm));
+    map.put("ArmToHybridCone", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHybrid), m_arm));
     map.put("ArmToMidCone", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneMid), m_arm));
     map.put("ArmToHighCone", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, coneHigh), m_arm));
 
-    map.put(
-        "ArmToHybridCube", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid), m_arm));
+    map.put("ArmToHybridCube", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHybrid), m_arm));
     map.put("ArmToMidCube", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeMid), m_arm));
     map.put("ArmToHighCube", new OnTheFlyCommand(() -> new OptimizedMove(m_arm, cubeHigh), m_arm));
   }

@@ -6,7 +6,8 @@ import frc.robot.autos.AutoHelpers.Point;
 
 public class Util {
   public static final double getDistance(double x, double y) {
-    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    // return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    return Math.hypot(x, y);
   }
 
   public static final Pose2d pointToPose2d(Point point) {

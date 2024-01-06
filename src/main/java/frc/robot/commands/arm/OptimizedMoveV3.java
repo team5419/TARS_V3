@@ -101,8 +101,7 @@ public class OptimizedMoveV3 extends CommandBase {
 
     // arm.resetMotionMagic();
 
-    System.out.println(
-        "EXITED -------------------------------------------------------------------------------------------");
+    System.out.println("[OPTIMIZED MOVE] EXITED");
   }
 
   // Returns true when the command should end.
@@ -127,18 +126,5 @@ public class OptimizedMoveV3 extends CommandBase {
     arm.setBicep(ControlMode.MotionMagic, OptimizedArm.degreesToTicksBicep(state.bicep));
     arm.setWrist(ControlMode.MotionMagic, OptimizedArm.degreesToTicksWrist(state.wrist));
   }
-
-  // private void configAndMoveTo (Waypoint point) {
-  //     arm.configMotionMagic(
-  //                 GraphStator.calculateNewMotionMagic(
-  //                     new Waypoint(arm.getBicepPositionDegrees(), arm.getWristPositionDegrees()),
-  //                     new Waypoint(point.bicep, point.wrist),
-  //                     arm, true
-  //                 )
-  //             );
-
-  //     arm.setBicep(ControlMode.MotionMagic, point.bicep);
-  //     arm.setWrist(ControlMode.MotionMagic, point.wrist);
-  // }
 
 }

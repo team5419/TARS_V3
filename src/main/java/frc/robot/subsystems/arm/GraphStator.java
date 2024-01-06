@@ -12,26 +12,7 @@ public enum GraphStator {
       LegalState.ILLEGAL,
       new ArmState(0, 0),
       new ArmState(0, 0),
-      // new ArmWaypoints[][] {
-      //       new ArmWaypoints[] {null}, // A to NOSTATE, can be null if you want to error
-      //       new ArmWaypoints[] {null}, // A to A
-      //       new ArmWaypoints[] {null}, // A to B
-      //       new ArmWaypoints[] {null}, // A to C
-      //       new ArmWaypoints[] {null}, // A to D
-      //       new ArmWaypoints[] {null}, // A to E
-      //       new ArmWaypoints[] {null}
-      // }
       null),
-
-  // new ArmWaypoints[][] {
-  //       new ArmWaypoints[] {null},
-  //       new ArmWaypoints[] {null},
-  //       new ArmWaypoints[] {null},
-  //       new ArmWaypoints[] {null},
-  //       new ArmWaypoints[] {null},
-  //       new ArmWaypoints[] {null},
-  //       new ArmWaypoints[] {null},
-  //   }
   A(
       LegalState.LEGAL,
       new ArmState(-150, -80),
@@ -169,8 +150,6 @@ public enum GraphStator {
   }
 
   public static ArmWaypoints[] tracePath(ArmState startWaypoint, ArmTargets targetWaypoint) {
-    // System.out.println(getSectorStateFromCoords(OptimizedArm.ticksToDegreesBicep(targetWaypoint.bicepTarget), OptimizedArm.ticksToDegreesWrist(targetWaypoint.wristTarget)).legalState);
-
     GraphStator start = getSectorStateFromCoords(startWaypoint);
     GraphStator end =
         getSectorStateFromCoords(
@@ -239,19 +218,19 @@ public enum GraphStator {
     }
 
     /**
-     * bicep --> 100 wrist --> 50
+     * <p> bicep --> 100 wrist --> 50
      *
-     * <p>ratio --> 2
+     * <p> ratio --> 2
      *
-     * <p>would mean divide bicep by 2 (slow it down to match)
+     * <p> would mean divide bicep by 2 (slow it down to match)
      *
-     * <p>---------------------------------------------------------------
+     * <p> ---------------------------------------------------------------
      *
-     * <p>bicep --> 50 wrist --> 100
+     * <p> bicep --> 50 wrist --> 100
      *
-     * <p>ratio --> 0.5
+     * <p> ratio --> 0.5
      *
-     * <p>would mean multiply wrist by 0.5 (slow it down to match)
+     * <p> would mean multiply wrist by 0.5 (slow it down to match)
      */
   }
 }
